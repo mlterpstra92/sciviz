@@ -1,5 +1,9 @@
 #ifndef VISUALIZATION_H
 #define VISUALIZATION_H
+#include <rfftw.h>              //the numerical simulation FFTW library
+#include <math.h>               //for various math functions
+#include <GL/glut.h>            //the GLUT graphics library
+#include "model.h"
 
 class Visualization {
 public:

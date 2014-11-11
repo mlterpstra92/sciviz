@@ -8,9 +8,9 @@ void Visualization::rainbow(float value,float* R,float* G,float* B)
 	if (value<0)
 	value=0; if (value>1) value=1;
 	value = (6-2*dx)*value+dx;
-	*R = max(0.0,(3-fabs(value-4)-fabs(value-5))/2);
-	*G = max(0.0,(4-fabs(value-2)-fabs(value-4))/2);
-	*B = max(0.0,(3-fabs(value-1)-fabs(value-2))/2);
+	*R = fmax(0.0,(3-fabs(value-4)-fabs(value-5))/2);
+	*G = fmax(0.0,(4-fabs(value-2)-fabs(value-4))/2);
+	*B = fmax(0.0,(3-fabs(value-1)-fabs(value-2))/2);
 }
 
 //set_colormap: Sets three different types of colormaps
@@ -60,7 +60,7 @@ void Visualization::direction_to_color(float x, float y, int method)
 
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
-	int i, j;
+	int i, j, idx;
 	double px, py;
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     for (j = 0; j < model->DIM - 1; j++)           //draw smoke

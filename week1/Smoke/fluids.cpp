@@ -2,12 +2,10 @@
 //        the velocity field at the mouse location. Press the indicated keys to change options
 //--------------------------------------------------------------------------------------------------
 
-#include <rfftw.h>              //the numerical simulation FFTW library
 #include <stdio.h>              //for printing the help text
-#include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
 #include "fluids.h"
-#include "model.h"         //Simulation part of the application
+#include "model.h"              //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
 
 
