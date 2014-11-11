@@ -1,30 +1,32 @@
-C++        = g++
-OBJECTS1    = fluids.o
-OBJECTS2	= 
-CFILES      = $(OBJECTS:.o=.c)
-EXECFILE    = smoke
+# GNU (everywhere)
+CPP = g++ -g -Wall
+
 LIBS        = -lglut -lrfftw -lfftw -lGL -lGLU -lm
-#Possible flags for release (ffast-math uses less precision for floating-point numbers, check that your application can handle this)
-#CFLAGS      = -O3 -march=x86-64 -mtune=generic -DNDEBUG -mfpmath=sse -ffast-math -Wall -pipe
-#Debug flags
-CFLAGS      = -ggdb -Wall -pipe
-LINKFLAGS   =
 
+EXECUTABLE = smoke
 
-.SILENT:
+OBJS = fluids.o simulation.o visualization.o
 
-all: $(EXECFILE)
+### TARGETS
 
-$(EXECFILE): $(OBJECTS)
-		cc $(LINKFLAGS) $(OBJECTS) -o $(EXECFILE) $(LIBDIRS) $(LIBS)
+$(EXECUTABLE): $(OBJS)
+	$(CPP) $(OBJS) $(LIBS) -o $@
 
-.c.o: $$@.c $$@.h
-		cc $(CFLAGS) $(INCLUDEDIRS) -c $<
+depend: make.dep
 
 clean:
-		-rm -rf $(OBJECTS) $(EXECFILE)
+	- /bin/rm -f  *.bak *~ $(OBJS) $(EXECUTABLE)
+	
+make.dep:
+	gcc -MM $(OBJS:.o=.cpp) > make.dep
 
-depend:
-		gcc -MM $(CFILES) > make.dep
+### RULES
 
--include make.dep
+.SUFFIXES: .cpp .o
+
+.cpp.o:
+	$(CPP) -c -o $@ $<
+
+### DEPENDENCIES
+
+include make.dep
