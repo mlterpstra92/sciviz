@@ -6,9 +6,16 @@
 #include <stdio.h>              //for printing the help text
 #include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
-#include "simulation.h"         //Simulation part of the application
+#include "fluids.h"
+#include "model.h"         //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
-#include "interaction.h"         //Interaction 
+
+
+const int DIM = 50;             //size of simulation grid
+Model model(DIM);
+Visualization vis;
+int draw_smoke = 0;    //draw the smoke or not
+int draw_vecs  = 1;    //draw the vector field or not
 
 void printStart()
 {
@@ -27,24 +34,174 @@ void printStart()
     return;
 }
 
+//display: Handle window redrawing events. Simply delegates to visualize().
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    visualize();
+    glFlush();
+    glutSwapBuffers();
+}
+
+//reshape: Handle window resizing (reshaping) events
+void reshape(int w, int h)
+{
+    glViewport(0.0f, 0.0f, (GLfloat)w, (GLfloat)h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, (GLdouble)w, 0.0, (GLdouble)h);
+    model.winWidth = w;
+    model.winHeight = h;
+}
+
+//keyboard: Handle key presses
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 't':
+            model.dt -= 0.001;
+            break;
+        case 'T':
+            model.dt += 0.001;
+            break;
+        case 'c':
+            vis.color_dir = 1 - vis.color_dir;
+            break;
+        case 'S':
+            vis.vec_scale *= 1.2;
+            break;
+        case 's':
+            vis.vec_scale *= 0.8;
+            break;
+        case 'V':
+            model.visc *= 5;
+            break;
+        case 'v':
+            model.visc *= 0.2;
+            break;
+        case 'x':
+            draw_smoke = 1 - draw_smoke;
+            if (draw_smoke==0)
+            {
+                draw_vecs = 1;
+            }
+            break;
+        case 'y':
+            draw_vecs = 1 - draw_vecs;
+            if (draw_vecs==0)
+            {
+                draw_smoke = 1;
+            }
+            break;
+        case 'm':
+            vis.scalar_col++;
+            if (vis.scalar_col > vis.COLOR_BANDS)
+            {
+                vis.scalar_col = vis.COLOR_BLACKWHITE;
+            }
+            break;
+        case 'a':
+            vis.frozen = 1 - vis.frozen;
+            break;
+        case 'q':
+            exit(0);
+    }
+}
+
+
+
+// drag: When the user drags with the mouse, add a force that corresponds to the direction of the mouse
+//       cursor movement. Also inject some new matter into the field at the mouse location.
+void drag(int mx, int my)
+{
+    int xi, yi, X, Y;
+    double  dx, dy, len;
+    static int lmx=0,lmy=0;             //remembers last mouse location
+
+    // Compute the array index that corresponds to the cursor location
+    xi = (int)model.clamp((double)(DIM + 1) * ((double)mx / (double)model.winWidth));
+    yi = (int)model.clamp((double)(DIM + 1) * ((double)(model.winHeight - my) / (double)model.winHeight));
+
+    X = xi;
+    Y = yi;
+
+    if (X > (DIM - 1))
+    {
+        X = DIM - 1;
+    }
+    if (Y > (DIM - 1))
+    {
+        Y = DIM - 1;
+    }
+    if (X < 0)
+    {
+        X = 0; 
+    }
+    if (Y < 0)
+    {
+        Y = 0;
+    }
+
+    // Add force at the cursor location
+    my = model.winHeight - my;
+    dx = mx - lmx;
+    dy = my - lmy;
+    len = sqrt(dx * dx + dy * dy);
+    if (len != 0.0)
+    {
+        dx *= 0.1 / len;
+        dy *= 0.1 / len;
+    }
+    model.fx[Y * DIM + X] += dx;
+    model.fy[Y * DIM + X] += dy;
+    model.rho[Y * DIM + X] = 10.0f;
+    lmx = mx;
+    lmy = my;
+}
+
+void do_one_step(void)
+{
+    if (!vis.frozen)
+    {
+        model.do_one_simulation_step(DIM);
+        glutPostRedisplay();
+    }
+}
+
+//visualize: This is the main visualization function
+void visualize()
+{
+    fftw_real  wn = (fftw_real)model.winWidth / (fftw_real)(DIM + 1);   // Grid cell width
+    fftw_real  hn = (fftw_real)model.winHeight / (fftw_real)(DIM + 1);  // Grid cell height
+
+    if (draw_smoke)
+    {
+        vis.draw_smoke(wn, hn, &model);
+    }
+
+    if (draw_vecs)
+    {
+        vis.draw_velocities(wn, hn, &model);
+    }
+}
+
 //main: The main program
 int main(int argc, char **argv)
-{
+{   
     printStart();
-    Simulation* simulation = new Simulation;
-    Visualization* visualization = new Visualization;
-    Interaction* interaction = new Interaction
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(500,500);
     glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
-    glutIdleFunc(do_one_simulation_step);
+    glutIdleFunc(do_one_step);
     glutKeyboardFunc(keyboard);
     glutMotionFunc(drag);
 
-    init_simulation(DIM);   //initialize the simulation data structures
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
 }

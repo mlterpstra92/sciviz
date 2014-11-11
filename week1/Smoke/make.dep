@@ -1,1 +1,3 @@
-fluids.o: fluids.c
+fluids.o: fluids.cpp model.h visualization.h
+model.o: model.cpp model.h
+visualization.o: visualization.cpp visualization.h model.h

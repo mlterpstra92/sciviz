@@ -5,7 +5,7 @@ LIBS        = -lglut -lrfftw -lfftw -lGL -lGLU -lm
 
 EXECUTABLE = smoke
 
-OBJS = fluids.o simulation.o visualization.o
+OBJS = fluids.o model.o visualization.o
 
 ### TARGETS
 
@@ -18,7 +18,7 @@ clean:
 	- /bin/rm -f  *.bak *~ $(OBJS) $(EXECUTABLE)
 	
 make.dep:
-	gcc -MM $(OBJS:.o=.cpp) > make.dep
+	g++ -MM $(OBJS:.o=.cpp) > make.dep
 
 ### RULES
 

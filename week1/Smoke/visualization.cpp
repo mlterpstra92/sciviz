@@ -1,4 +1,5 @@
 #include "visualization.h"
+#include "model.h"
 
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
@@ -15,20 +16,20 @@ void Visualization::rainbow(float value,float* R,float* G,float* B)
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
-   float R,G,B;
+	float R,G,B;
 
-   if (scalar_col==COLOR_BLACKWHITE)
-       R = G = B = vy;
-   else if (scalar_col==COLOR_RAINBOW)
-       rainbow(vy,&R,&G,&B);
-   else if (scalar_col==COLOR_BANDS)
-       {
-          const int NLEVELS = 7;
-          vy *= NLEVELS; vy = (int)(vy); vy/= NLEVELS;
-	      rainbow(vy,&R,&G,&B);
-	   }
+	if (scalar_col==COLOR_BLACKWHITE)
+		R = G = B = vy;
+	else if (scalar_col==COLOR_RAINBOW)
+		rainbow(vy,&R,&G,&B);
+	else if (scalar_col==COLOR_BANDS)
+	{
+		const int NLEVELS = 7;
+		vy *= NLEVELS; vy = (int)(vy); vy/= NLEVELS;
+		rainbow(vy,&R,&G,&B);
+	}
 
-   glColor3f(R,G,B);
+	glColor3f(R,G,B);
 }
 
 
@@ -40,76 +41,73 @@ void Visualization::direction_to_color(float x, float y, int method)
 	float r,g,b,f;
 	if (method)
 	{
-	  f = atan2(y,x) / 3.1415927 + 1;
-	  r = f;
-	  if(r > 1) r = 2 - r;
-	  g = f + .66667;
-      if(g > 2) g -= 2;
-	  if(g > 1) g = 2 - g;
-	  b = f + 2 * .66667;
-	  if(b > 2) b -= 2;
-	  if(b > 1) b = 2 - b;
+		f = atan2(y,x) / 3.1415927 + 1;
+		r = f;
+		if(r > 1) r = 2 - r;
+		g = f + .66667;
+		if(g > 2) g -= 2;
+		if(g > 1) g = 2 - g;
+		b = f + 2 * .66667;
+		if(b > 2) b -= 2;
+		if(b > 1) b = 2 - b;
 	}
 	else
-	{ r = g = b = 1; }
+	{ 
+		r = g = b = 1; 
+	}
 	glColor3f(r,g,b);
 }
 
-//visualize: This is the main visualization function
-void Visualization::visualize(void)
+void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
-	int        i, j, idx; double px,py;
-	fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
-	fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
-
-	if (draw_smoke)
-	{
+	int i, j;
+	double px, py;
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	for (j = 0; j < DIM - 1; j++)			//draw smoke
-	{
-		glBegin(GL_TRIANGLE_STRIP);
+    for (j = 0; j < model->DIM - 1; j++)           //draw smoke
+    {
+        glBegin(GL_TRIANGLE_STRIP);
 
-		i = 0;
-		px = wn + (fftw_real)i * wn;
-		py = hn + (fftw_real)j * hn;
-		idx = (j * DIM) + i;
-		glColor3f(rho[idx],rho[idx],rho[idx]);
-		glVertex2f(px,py);
+        i = 0;
+        px = wn + (fftw_real)i * wn;
+        py = hn + (fftw_real)j * hn;
+        idx = (j * model->DIM) + i;
+        glColor3f(model->rho[idx],model->rho[idx],model->rho[idx]);
+        glVertex2f(px,py);
 
-		for (i = 0; i < DIM - 1; i++)
-		{
-			px = wn + (fftw_real)i * wn;
-			py = hn + (fftw_real)(j + 1) * hn;
-			idx = ((j + 1) * DIM) + i;
-			set_colormap(rho[idx]);
-			glVertex2f(px, py);
-			px = wn + (fftw_real)(i + 1) * wn;
-			py = hn + (fftw_real)j * hn;
-			idx = (j * DIM) + (i + 1);
-			set_colormap(rho[idx]);
-			glVertex2f(px, py);
-		}
+        for (i = 0; i < model->DIM - 1; i++)
+        {
+            px = wn + (fftw_real)i * wn;
+            py = hn + (fftw_real)(j + 1) * hn;
+            idx = ((j + 1) * model->DIM) + i;
+            set_colormap(model->rho[idx]);
+            glVertex2f(px, py);
+            px = wn + (fftw_real)(i + 1) * wn;
+            py = hn + (fftw_real)j * hn;
+            idx = (j * model->DIM) + (i + 1);
+            set_colormap(model->rho[idx]);
+            glVertex2f(px, py);
+        }
 
-		px = wn + (fftw_real)(DIM - 1) * wn;
-		py = hn + (fftw_real)(j + 1) * hn;
-		idx = ((j + 1) * DIM) + (DIM - 1);
-		set_colormap(rho[idx]);
-		glVertex2f(px, py);
-		glEnd();
-	}
-	}
+        px = wn + (fftw_real)(model->DIM - 1) * wn;
+        py = hn + (fftw_real)(j + 1) * hn;
+        idx = ((j + 1) * model->DIM) + (model->DIM - 1);
+        set_colormap(model->rho[idx]);
+        glVertex2f(px, py);
+        glEnd();
+    }
+}
 
-	if (draw_vecs)
-	{
-	  glBegin(GL_LINES);				//draw velocities
-	  for (i = 0; i < DIM; i++)
-	    for (j = 0; j < DIM; j++)
+void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
+{	
+	int i, j, idx;
+	glBegin(GL_LINES);				//draw velocities
+	for (i = 0; i < model->DIM; i++)
+	    for (j = 0; j < model->DIM; j++)
 	    {
-		  idx = (j * DIM) + i;
-		  direction_to_color(vx[idx],vy[idx],color_dir);
+		  idx = (j * model->DIM) + i;
+		  direction_to_color(model->vx[idx],model->vy[idx],color_dir);
 		  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-		  glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vx[idx], (hn + (fftw_real)j * hn) + vec_scale * vy[idx]);
+		  glVertex2f((wn + (fftw_real)i * wn) + vec_scale * model->vx[idx], (hn + (fftw_real)j * hn) + vec_scale * model->vy[idx]);
 	    }
-	  glEnd();
-	}
+	glEnd();
 }
