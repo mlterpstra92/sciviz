@@ -8,7 +8,7 @@ OBJS = fluids.o model.o visualization.o
 ### TARGETS
 
 $(EXECUTABLE): $(OBJS)
-	$(CPP) $(OBJS) $(LIBS) $(INCLUDEDIRS) $(LIBDIRS) -o $@
+	$(CPP) $(OBJS) $(LIBS) -o $@
 
 depend: make.dep
 
