@@ -4,16 +4,18 @@
 
 #include <stdio.h>              //for printing the help text
 #include <GL/glut.h>            //the GLUT graphics library
+#include <GL/glui.h>
 #include "fluids.h"
 #include "model.h"              //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
-#include <GL/glui.h>
 
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);
 Visualization vis(0, 0, 0, 1000);
 int draw_smoke = 0;    //draw the smoke or not
 int draw_vecs  = 1;    //draw the vector field or not
+
+int window = -1; // Window ID for GLUT/GLUI
 
 void printStart()
 {
@@ -46,7 +48,7 @@ void display(void)
 //reshape: Handle window resizing (reshaping) events
 void reshape(int w, int h)
 {
-    glViewport(0.0f, 0.0f, (GLfloat)w, (GLfloat)h);
+    GLUI_Master.auto_set_viewport();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.0, (GLdouble)w, 0.0, (GLdouble)h);
@@ -159,6 +161,10 @@ void do_one_step(void)
     if (!vis.isFrozen())
     {
         model.do_one_simulation_step(DIM);
+        // Window has to be set explicitly, otherwise
+        // the redisplay might be sent to the GLUI window
+        // in stead of the GLUT window.
+        glutSetWindow(window);
         glutPostRedisplay();
     }
 }
@@ -187,12 +193,22 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(500,500);
-    glutCreateWindow("Real-time smoke simulation and visualization");
+
+    window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
-    glutIdleFunc(do_one_step);
-    glutKeyboardFunc(keyboard);
+    GLUI_Master.set_glutReshapeFunc(reshape);
+    GLUI_Master.set_glutIdleFunc(do_one_step);
+    GLUI_Master.set_glutKeyboardFunc(keyboard);
+
     glutMotionFunc(drag);
+
+    // Make the GLUT window a subwindow of the GLUI window.
+    GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
+    glui->set_main_gfx_window(window);
+
+    // Add a test checkbox. To see that it works.
+    int test;
+    glui->add_checkbox("Test", &test);
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;

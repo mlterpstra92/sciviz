@@ -1,6 +1,6 @@
 # GNU (everywhere)
 CPP = g++ -g -Wall
-LIBS        = -lglut -lrfftw -lfftw -lGL -lGLU -lglui -lm
+LIBS        = -lglui -lglut -lGLU -lGL -lrfftw -lfftw -lm
 EXECUTABLE = smoke
 
 OBJS = fluids.o model.o visualization.o
