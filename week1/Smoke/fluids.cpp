@@ -96,7 +96,6 @@ void keyboard(unsigned char key, int x, int y)
             vis.nextColor();
             break;
         case 'a':
-            //vis.frozen = 1 - vis.frozen;
             vis.toggleFrozen();
             break;
         case 'q':
