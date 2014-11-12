@@ -7,7 +7,7 @@
 #include "fluids.h"
 #include "model.h"              //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
-
+#include <GL/glui.h>
 
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);

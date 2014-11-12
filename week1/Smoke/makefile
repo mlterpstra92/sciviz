@@ -1,8 +1,6 @@
 # GNU (everywhere)
 CPP = g++ -g -Wall
-
-LIBS        = -lglut -lrfftw -lfftw -lGL -lGLU -lm
-
+LIBS        = -lglut -lrfftw -lfftw -lGL -lGLU -lglui -lm
 EXECUTABLE = smoke
 
 OBJS = fluids.o model.o visualization.o
@@ -10,7 +8,7 @@ OBJS = fluids.o model.o visualization.o
 ### TARGETS
 
 $(EXECUTABLE): $(OBJS)
-	$(CPP) $(OBJS) $(LIBS) -o $@
+	$(CPP) $(OBJS) $(LIBS) $(INCLUDEDIRS) $(LIBDIRS) -o $@
 
 depend: make.dep
 
