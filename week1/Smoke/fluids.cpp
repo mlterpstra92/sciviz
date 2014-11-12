@@ -11,7 +11,7 @@
 
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);
-Visualization vis;
+Visualization vis(0, 0, 0, 1000);
 int draw_smoke = 0;    //draw the smoke or not
 int draw_vecs  = 1;    //draw the vector field or not
 
@@ -66,13 +66,13 @@ void keyboard(unsigned char key, int x, int y)
             model.dt += 0.001;
             break;
         case 'c':
-            vis.color_dir = 1 - vis.color_dir;
+            vis.toggleDirectionColor();
             break;
         case 'S':
-            vis.vec_scale *= 1.2;
+            vis.scaleHedgehogLength(1.2);
             break;
         case 's':
-            vis.vec_scale *= 0.8;
+            vis.scaleHedgehogLength(0.8);
             break;
         case 'V':
             model.visc *= 5;
@@ -83,26 +83,21 @@ void keyboard(unsigned char key, int x, int y)
         case 'x':
             draw_smoke = 1 - draw_smoke;
             if (draw_smoke==0)
-            {
                 draw_vecs = 1;
-            }
+
             break;
         case 'y':
             draw_vecs = 1 - draw_vecs;
             if (draw_vecs==0)
-            {
                 draw_smoke = 1;
-            }
+
             break;
         case 'm':
-            vis.scalar_col++;
-            if (vis.scalar_col > vis.COLOR_BANDS)
-            {
-                vis.scalar_col = vis.COLOR_BLACKWHITE;
-            }
+            vis.nextColor();
             break;
         case 'a':
-            vis.frozen = 1 - vis.frozen;
+            //vis.frozen = 1 - vis.frozen;
+            vis.toggleFrozen();
             break;
         case 'q':
             exit(0);
@@ -162,7 +157,7 @@ void drag(int mx, int my)
 
 void do_one_step(void)
 {
-    if (!vis.frozen)
+    if (!vis.isFrozen())
     {
         model.do_one_simulation_step(DIM);
         glutPostRedisplay();
