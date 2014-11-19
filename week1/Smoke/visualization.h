@@ -16,14 +16,15 @@ private:
     int frozen;                 //toggles on/off the animation
     float vec_scale;            //scaling of hedgehogs
 
+    //set_colormap: Sets three different types of colormaps
+    void set_colormap(float vy);
+    
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_scale) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), scalar_col(a_scalar_col), frozen(a_frozen), vec_scale(a_vec_scale){}
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 
-    //set_colormap: Sets three different types of colormaps
-    void set_colormap(float vy);
 
     //draw smoke
     void draw_smoke(fftw_real wn, fftw_real hn, Model* model);

@@ -48,12 +48,14 @@ void display(void)
 //reshape: Handle window resizing (reshaping) events
 void reshape(int w, int h)
 {
-    GLUI_Master.auto_set_viewport();
+    int tx, ty, tw, th;
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0, (GLdouble)w, 0.0, (GLdouble)h);
-    model.winWidth = w;
-    model.winHeight = h;
+    GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
+    glViewport(tx, ty, tw, th);
+    gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
+    model.winWidth = tw;
+    model.winHeight = th;
 }
 
 //keyboard: Handle key presses
@@ -186,20 +188,47 @@ void visualize()
     }
 }
 
+// some controls generate a callback when they are changed
+void glui_callback(int control)
+{
+    switch(control)
+    {
+        case ANIMATE_ID:
+            vis.toggleFrozen();
+            break;
+        case DRAW_HEDGEHOGS_ID:
+            draw_vecs = 1 - draw_vecs;
+            if (draw_vecs==0)
+                draw_smoke = 1;
+            break;
+        case DRAW_MATTER_ID:
+            draw_smoke = 1 - draw_smoke;
+            if (draw_smoke==0)
+                draw_vecs = 1;
+
+            break;
+        case DIRECTION_COLOR_ID:
+            vis.toggleDirectionColor();
+            break;
+        default:
+            break;
+    }
+    glutPostRedisplay();
+}
+
 //main: The main program
 int main(int argc, char **argv)
 {   
     printStart();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(500,500);
+    glutInitWindowSize(700,500);
 
     window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
     GLUI_Master.set_glutReshapeFunc(reshape);
     GLUI_Master.set_glutIdleFunc(do_one_step);
     GLUI_Master.set_glutKeyboardFunc(keyboard);
-
     glutMotionFunc(drag);
 
     // Make the GLUT window a subwindow of the GLUI window.
@@ -207,8 +236,24 @@ int main(int argc, char **argv)
     glui->set_main_gfx_window(window);
 
     // Add a test checkbox. To see that it works.
-    int test;
-    glui->add_checkbox("Test", &test);
+    int direction_coloring, drawMatter, drawHedgehogs, scalarColoring, animate;
+    //int rolloutOpen = 0;
+    float timeStep = 0.4f;
+    float viscosity = 0.001;
+    float hedgehogScale = 1.0f;
+    glui->add_checkbox("Direction coloring", &direction_coloring, DIRECTION_COLOR_ID, glui_callback);
+    glui->add_checkbox("Draw matter", &drawMatter, DRAW_MATTER_ID, glui_callback);
+    glui->add_checkbox("Draw hedgehogs", &drawHedgehogs, DRAW_HEDGEHOGS_ID, glui_callback);
+    //glui->add_checkbox("Scalar coloring", &scalarColoring, SCALAR_COLORING_ID, glui_callback);
+    glui->add_checkbox("Animate", &animate, ANIMATE_ID, glui_callback);
+    //glui->add_rollout("BAM", rolloutOpen);
+    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &timeStep);
+    timestep_spinner->set_float_limits(0.0f, 1.0f);
+
+    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &hedgehogScale);
+
+    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosity);
+    //spinner->set_speed(0.001f);
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
