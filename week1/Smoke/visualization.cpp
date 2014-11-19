@@ -1,7 +1,7 @@
 #include "visualization.h"
 #include "model.h"
 #include "GL/glui.h"
-
+#include <iostream>
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
@@ -125,41 +125,39 @@ void Visualization::draw_color_legend()
 
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
-	int i, j, idx;
-	double px, py;
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    for (j = 0; j < model->DIM - 1; j++)           //draw smoke
+	int i, j;
+ 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_TRIANGLES);
+    for (j = 0; j < model->DIM - 1; j++)            //draw smoke
     {
-        glBegin(GL_TRIANGLE_STRIP);
-
-        i = 0;
-        px = wn + (fftw_real)i * wn;
-        py = hn + (fftw_real)j * hn;
-        idx = (j * model->DIM) + i;
-        glColor3f(model->rho[idx],model->rho[idx],model->rho[idx]);
-        glVertex2f(px,py);
-
         for (i = 0; i < model->DIM - 1; i++)
         {
-            px = wn + (fftw_real)i * wn;
-            py = hn + (fftw_real)(j + 1) * hn;
-            idx = ((j + 1) * model->DIM) + i;
-            set_colormap(model->rho[idx]);
-            glVertex2f(px, py);
-            px = wn + (fftw_real)(i + 1) * wn;
-            py = hn + (fftw_real)j * hn;
-            idx = (j * model->DIM) + (i + 1);
-            set_colormap(model->rho[idx]);
-            glVertex2f(px, py);
-        }
+            double px0 = wn + (fftw_real)i * wn;
+            double py0 = hn + (fftw_real)j * hn;
+            int idx0 = (j * model->DIM) + i;
 
-        px = wn + (fftw_real)(model->DIM - 1) * wn;
-        py = hn + (fftw_real)(j + 1) * hn;
-        idx = ((j + 1) * model->DIM) + (model->DIM - 1);
-        set_colormap(model->rho[idx]);
-        glVertex2f(px, py);
-        glEnd();
+            double px1 = wn + (fftw_real)i * wn;
+            double py1 = hn + (fftw_real)(j + 1) * hn;
+            int idx1 = ((j + 1) * model->DIM) + i;
+
+            double px2 = wn + (fftw_real)(i + 1) * wn;
+            double py2 = hn + (fftw_real)(j + 1) * hn;
+            int idx2 = ((j + 1) * model->DIM) + (i + 1);
+
+            double px3 = wn + (fftw_real)(i + 1) * wn;
+            double py3 = hn + (fftw_real)j * hn;
+            int idx3 = (j * model->DIM) + (i + 1);
+
+            set_colormap(model->rho[idx0]);    glVertex2f(px0, py0);
+            set_colormap(model->rho[idx1]);    glVertex2f(px1, py1);
+            set_colormap(model->rho[idx2]);    glVertex2f(px2, py2);
+
+            set_colormap(model->rho[idx0]);    glVertex2f(px0, py0);
+            set_colormap(model->rho[idx2]);    glVertex2f(px2, py2);
+            set_colormap(model->rho[idx3]);    glVertex2f(px3, py3);
+        }
     }
+    glEnd();
 }
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)

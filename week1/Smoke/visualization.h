@@ -22,7 +22,9 @@ private:
     
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_scale) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_scale(a_vec_scale){}
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f){
+        vec_length = vec_base_length * vec_scale;
+    }
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 

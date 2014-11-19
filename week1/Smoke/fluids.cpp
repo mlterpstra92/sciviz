@@ -3,6 +3,7 @@
 //--------------------------------------------------------------------------------------------------
 
 #include <stdio.h>              //for printing the help text
+#include <iostream>
 #include <GL/glui.h>
 #include "fluids.h"
 #include "model.h"              //Simulation part of the application
