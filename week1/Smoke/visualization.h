@@ -4,6 +4,7 @@
 #include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
 #include "model.h"
+#include <string>
 
 class Visualization {
 private:
@@ -29,6 +30,12 @@ public:
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 
+
+    //
+    void display_text(float x, float y, char* string);
+
+    // Draw color legend
+    void draw_color_legend();
 
     //draw smoke
     void draw_smoke(fftw_real wn, fftw_real hn, Model* model);
