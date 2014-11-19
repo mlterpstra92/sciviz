@@ -19,9 +19,6 @@ private:
     float vec_length;           //base length of hedgehogs
     float vec_base_length;
     float vec_scale;            //scale factor
-
-    //set_colormap: Sets three different types of colormaps
-    void set_colormap(float vy);
     
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
@@ -35,6 +32,7 @@ public:
     //set_colormap: Sets three different types of colormaps
     void set_colormap(float vy);
 
+    void display_text(float x, float y, char* const string);
     // Draw color legend
     void draw_color_legend();
 
