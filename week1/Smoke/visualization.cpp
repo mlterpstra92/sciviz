@@ -83,6 +83,45 @@ void Visualization::direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
+void Visualization::display_text(float x, float y, char* const string)
+{
+	char * ch;
+
+    glColor3f( 0.0f, 0.0f, 0.0f );
+    glRasterPos3f( x, y, 0.0 );
+
+    for( ch = string; *ch; ch++ ) {
+        glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, (int)*ch );
+    }
+}
+
+void Visualization::draw_color_legend()
+{
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	glBegin(GL_QUAD_STRIP);
+	for (int i = 0; i < h; i += 10)
+	{
+		set_colormap(((float) i )/ h);
+		glVertex2f(w * 0.9, i);
+		glVertex2f(w, i);
+		glVertex2f(w * 0.9, i + 5);
+		glVertex2f(w, i + 5);
+	}
+	glEnd();
+
+	float min = 0.0f;
+	float max = 1.0f;
+
+	char* minStr = NULL;
+	char* maxStr = NULL;
+	asprintf(&minStr, "%g", min);
+	asprintf(&maxStr, "%g", max);
+
+	display_text(200, 200, minStr);
+	display_text(200, 300, maxStr);
+}
+
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
 	int i, j, idx;
@@ -132,7 +171,7 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 		  idx = (j * model->DIM) + i;
 		  direction_to_color(model->vx[idx],model->vy[idx],color_dir);
 		  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-		  glVertex2f((wn + (fftw_real)i * wn) + vec_scale * model->vx[idx], (hn + (fftw_real)j * hn) + vec_scale * model->vy[idx]);
+		  glVertex2f((wn + (fftw_real)i * wn) + vec_length * model->vx[idx], (hn + (fftw_real)j * hn) + vec_length * model->vy[idx]);
 	    }
 	glEnd();
 }

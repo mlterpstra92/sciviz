@@ -4,6 +4,7 @@
 #include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
 #include "model.h"
+#include <string>
 
 class Visualization {
 private:
@@ -15,8 +16,13 @@ private:
     int COLOR_BIPOLAR;
     int scalar_col;             //method for scalar coloring
     int frozen;                 //toggles on/off the animation
-    float vec_scale;            //scaling of hedgehogs
+    float vec_length;           //base length of hedgehogs
+    float vec_base_length;
+    float vec_scale;            //scale factor
 
+    //set_colormap: Sets three different types of colormaps
+    void set_colormap(float vy);
+    
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_scale) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_scale(a_vec_scale){}
@@ -28,6 +34,9 @@ public:
 
     //set_colormap: Sets three different types of colormaps
     void set_colormap(float vy);
+
+    // Draw color legend
+    void draw_color_legend();
 
     //draw smoke
     void draw_smoke(fftw_real wn, fftw_real hn, Model* model);
@@ -55,6 +64,10 @@ public:
         color_dir = 1 - color_dir;
     }
 
+    int getDirectionColor(){
+        return color_dir;
+    }
+
     //Select next color profile
     void nextColor(){
         scalar_col++;
@@ -67,7 +80,8 @@ public:
     // Scale the hedgehog length by a percentage
     // So putting scale = 1.2 makes the hedgehogs 20% larger
     void scaleHedgehogLength(float scale){
-        vec_scale *= scale;
+        vec_scale = scale;
+        vec_length = vec_base_length * vec_scale;
     }
 };
 
