@@ -112,6 +112,7 @@ void keyboard(unsigned char key, int x, int y)
 //       cursor movement. Also inject some new matter into the field at the mouse location.
 void drag(int mx, int my)
 {
+    mx /= 0.8;
     int xi, yi, X, Y;
     double  dx, dy, len;
     static int lmx=0,lmy=0;             //remembers last mouse location
