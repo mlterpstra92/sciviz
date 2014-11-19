@@ -7,18 +7,39 @@ void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
 	const float dx = 0.8;
 	if (value<0)
-	value=0; if (value>1) value=1;
+	{
+		value=0;
+	}
+	if (value>1)
+	{
+		value=1;
+	}
 	value = (6-2*dx)*value+dx;
-	*R = fmax(0.0,(3-fabs(value-4)-fabs(value-5))/2);
-	*G = fmax(0.0,(4-fabs(value-2)-fabs(value-4))/2);
-	*B = fmax(0.0,(3-fabs(value-1)-fabs(value-2))/2);
+	*R = fmax(0.0, (3-fabs(value-4)-fabs(value-5))/2);
+	*G = fmax(0.0, (4-fabs(value-2)-fabs(value-4))/2);
+	*B = fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2);
+}
+
+//diverge: Implements a color pallete that diverges
+void Visualization::bipolar(float value,float* R,float* G,float* B)
+{
+	if (value<0)
+	{
+		value=0;
+	}
+	if (value>1)
+	{
+		value=1;
+	}
+	*R = value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2);
+	*G = 0;
+	*B = 1 - (value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2));
 }
 
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
 	float R,G,B;
-
 	if (scalar_col==COLOR_BLACKWHITE)
 		R = G = B = vy;
 	else if (scalar_col==COLOR_RAINBOW)
@@ -28,6 +49,10 @@ void Visualization::set_colormap(float vy)
 		const int NLEVELS = 7;
 		vy *= NLEVELS; vy = (int)(vy); vy/= NLEVELS;
 		rainbow(vy,&R,&G,&B);
+	}
+	else if (scalar_col == COLOR_BIPOLAR)
+	{
+		bipolar(vy,&R,&G,&B);
 	}
 
 	glColor3f(R,G,B);

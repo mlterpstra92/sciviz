@@ -13,6 +13,7 @@ private:
     int COLOR_BLACKWHITE;       //different types of color mapping: black-and-white, rainbow, banded
     int COLOR_RAINBOW;
     int COLOR_BANDS;
+    int COLOR_BIPOLAR;
     int scalar_col;             //method for scalar coloring
     int frozen;                 //toggles on/off the animation
     float vec_length;           //base length of hedgehogs
@@ -24,15 +25,15 @@ private:
     
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f){
-        vec_length = vec_base_length * vec_scale;
-    }
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_scale) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_scale(a_vec_scale){}
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 
+    //diverging: Implements a color palette that diverges
+    void bipolar(float value, float* R, float* G, float* B);
 
-    //
-    void display_text(float x, float y, char* string);
+    //set_colormap: Sets three different types of colormaps
+    void set_colormap(float vy);
 
     // Draw color legend
     void draw_color_legend();
@@ -70,7 +71,7 @@ public:
     //Select next color profile
     void nextColor(){
         scalar_col++;
-        if (scalar_col > COLOR_BANDS)
+        if (scalar_col > COLOR_BIPOLAR)
         {
             scalar_col = COLOR_BLACKWHITE;
         }
