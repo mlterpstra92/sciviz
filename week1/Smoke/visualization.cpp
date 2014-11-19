@@ -58,7 +58,7 @@ void Visualization::direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
-void Visualization::display_text(float x, float y, char* string)
+void Visualization::display_text(float x, float y, char* const string)
 {
 	char * ch;
 
@@ -88,8 +88,13 @@ void Visualization::draw_color_legend()
 	float min = 0.0f;
 	float max = 1.0f;
 
-	display_text(200, 200, std::to_string(min).c_str());
-	display_text(200, 300, std::to_string(max).c_str());
+	char* minStr = NULL;
+	char* maxStr = NULL;
+	asprintf(&minStr, "%g", min);
+	asprintf(&maxStr, "%g", max);
+
+	display_text(200, 200, minStr);
+	display_text(200, 300, maxStr);
 }
 
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
