@@ -107,7 +107,7 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 		  idx = (j * model->DIM) + i;
 		  direction_to_color(model->vx[idx],model->vy[idx],color_dir);
 		  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-		  glVertex2f((wn + (fftw_real)i * wn) + vec_scale * model->vx[idx], (hn + (fftw_real)j * hn) + vec_scale * model->vy[idx]);
+		  glVertex2f((wn + (fftw_real)i * wn) + vec_length * model->vx[idx], (hn + (fftw_real)j * hn) + vec_length * model->vy[idx]);
 	    }
 	glEnd();
 }

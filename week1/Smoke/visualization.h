@@ -14,14 +14,18 @@ private:
     int COLOR_BANDS;
     int scalar_col;             //method for scalar coloring
     int frozen;                 //toggles on/off the animation
-    float vec_scale;            //scaling of hedgehogs
+    float vec_length;           //base length of hedgehogs
+    float vec_base_length;
+    float vec_scale;            //scale factor
 
     //set_colormap: Sets three different types of colormaps
     void set_colormap(float vy);
     
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_scale) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), scalar_col(a_scalar_col), frozen(a_frozen), vec_scale(a_vec_scale){}
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f){
+        vec_length = vec_base_length * vec_scale;
+    }
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 
@@ -52,6 +56,10 @@ public:
         color_dir = 1 - color_dir;
     }
 
+    int getDirectionColor(){
+        return color_dir;
+    }
+
     //Select next color profile
     void nextColor(){
         scalar_col++;
@@ -64,7 +72,8 @@ public:
     // Scale the hedgehog length by a percentage
     // So putting scale = 1.2 makes the hedgehogs 20% larger
     void scaleHedgehogLength(float scale){
-        vec_scale *= scale;
+        vec_scale = scale;
+        vec_length = vec_base_length * vec_scale;
     }
 };
 

@@ -11,7 +11,7 @@
 
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);
-Visualization vis(0, 0, 0, 1000);
+Visualization vis(0, 0, 0, 1000.0f);
 int draw_smoke = 0;    //draw the smoke or not
 int draw_vecs  = 1;    //draw the vector field or not
 
@@ -195,24 +195,47 @@ void glui_callback(int control)
     {
         case ANIMATE_ID:
             vis.toggleFrozen();
+            animate = !vis.isFrozen();
             break;
         case DRAW_HEDGEHOGS_ID:
             draw_vecs = 1 - draw_vecs;
             if (draw_vecs==0)
                 draw_smoke = 1;
+
+            drawMatter = draw_smoke;
+            drawHedgehogs = draw_vecs;
             break;
         case DRAW_MATTER_ID:
             draw_smoke = 1 - draw_smoke;
             if (draw_smoke==0)
                 draw_vecs = 1;
 
+            drawMatter = draw_smoke;
+            drawHedgehogs = draw_vecs;
             break;
         case DIRECTION_COLOR_ID:
             vis.toggleDirectionColor();
+            direction_coloring = vis.getDirectionColor();
             break;
+
+        case NEXT_COLOR_ID:
+            vis.nextColor();
+            break;
+
+        case TIMESTEP_SPINNER_ID:
+            model.dt = timeStep;
+            break;
+        case HEDGEHOG_SPINNER_ID:
+            vis.scaleHedgehogLength(hedgehogScale);
+            break;
+
+        case VISCOSITY_SPINNER_ID:
+            model.visc_scale_factor = viscosityScale;
+            model.visc = model.base_visc * model.visc_scale_factor;
         default:
             break;
     }
+    GLUI_Master.sync_live_all();
     glutPostRedisplay();
 }
 
@@ -236,24 +259,29 @@ int main(int argc, char **argv)
     glui->set_main_gfx_window(window);
 
     // Add a test checkbox. To see that it works.
-    int direction_coloring, drawMatter, drawHedgehogs, scalarColoring, animate;
     //int rolloutOpen = 0;
-    float timeStep = 0.4f;
-    float viscosity = 0.001;
-    float hedgehogScale = 1.0f;
+    timeStep = 0.4f;
+    //viscosity = 0.001;
+    viscosityScale = 1.0f;
+    hedgehogScale = 1.0f;
+    animate = !vis.isFrozen();
+    direction_coloring = vis.getDirectionColor();
+    drawMatter = draw_smoke;
+    drawHedgehogs = draw_vecs;
     glui->add_checkbox("Direction coloring", &direction_coloring, DIRECTION_COLOR_ID, glui_callback);
     glui->add_checkbox("Draw matter", &drawMatter, DRAW_MATTER_ID, glui_callback);
     glui->add_checkbox("Draw hedgehogs", &drawHedgehogs, DRAW_HEDGEHOGS_ID, glui_callback);
     //glui->add_checkbox("Scalar coloring", &scalarColoring, SCALAR_COLORING_ID, glui_callback);
     glui->add_checkbox("Animate", &animate, ANIMATE_ID, glui_callback);
+    glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
     //glui->add_rollout("BAM", rolloutOpen);
-    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &timeStep);
+    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &timeStep, TIMESTEP_SPINNER_ID, glui_callback);
     timestep_spinner->set_float_limits(0.0f, 1.0f);
 
-    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &hedgehogScale);
-
-    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosity);
-    //spinner->set_speed(0.001f);
+    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &hedgehogScale, HEDGEHOG_SPINNER_ID, glui_callback);
+    hedgehog_spinner->set_float_limits(0.0f, 10.0f);
+    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosityScale, VISCOSITY_SPINNER_ID, glui_callback);
+    viscosity_spinner->set_float_limits(-1.0f, 100.0f);
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;

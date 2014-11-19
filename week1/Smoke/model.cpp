@@ -10,7 +10,9 @@ Model::Model (int n)
     size_t dim;
     DIM      = n;
     dt       = 0.4;
-    visc     = 0.001;
+    base_visc= 0.001;
+    visc_scale_factor = 1.0f;
+    visc     = base_visc*visc_scale_factor;
     dim      = n * 2*(n/2+1)*sizeof(fftw_real);        //Allocate data structures
     vx       = (fftw_real*) malloc(dim);
     vy       = (fftw_real*) malloc(dim);

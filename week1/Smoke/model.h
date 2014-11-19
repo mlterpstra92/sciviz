@@ -10,7 +10,7 @@ public:
     //--- SIMULATION PARAMETERS ------------------------------------------------------------------------
     int DIM;
     double dt;            //simulation time step
-    float visc;          //fluid viscosity
+    float visc, base_visc, visc_scale_factor;          //fluid viscosity
     int winWidth, winHeight;          //size of the graphics window, in pixels
     fftw_real *vx, *vy;             //(vx,vy)   = velocity field at the current moment
     fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
