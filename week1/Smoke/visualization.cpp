@@ -1,5 +1,6 @@
 #include "visualization.h"
 #include "model.h"
+#include "GL/glui.h"
 
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
@@ -72,16 +73,16 @@ void Visualization::display_text(float x, float y, char* const string)
 
 void Visualization::draw_color_legend()
 {
-	int h = glutGet(GLUT_WINDOW_HEIGHT);
-	int w = glutGet(GLUT_WINDOW_WIDTH);
+	int tx, ty, tw, th;
+	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
 	glBegin(GL_QUAD_STRIP);
-	for (int i = 0; i < h; i += 10)
+	for (int i = 0; i < th; i += 10)
 	{
-		set_colormap(((float) i )/ h);
-		glVertex2f(w * 0.9, i);
-		glVertex2f(w, i);
-		glVertex2f(w * 0.9, i + 5);
-		glVertex2f(w, i + 5);
+		set_colormap(((float) i )/ th);
+		glVertex2f(tw * 0.9, i);
+		glVertex2f(tw, i);
+		glVertex2f(tw * 0.9, i + 5);
+		glVertex2f(tw, i + 5);
 	}
 	glEnd();
 
