@@ -58,6 +58,40 @@ void Visualization::direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
+void Visualization::display_text(float x, float y, char* string)
+{
+	char * ch;
+
+    glColor3f( 0.0f, 0.0f, 0.0f );
+    glRasterPos3f( x, y, 0.0 );
+
+    for( ch = string; *ch; ch++ ) {
+        glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, (int)*ch );
+    }
+}
+
+void Visualization::draw_color_legend()
+{
+	int h = glutGet(GLUT_WINDOW_HEIGHT);
+	int w = glutGet(GLUT_WINDOW_WIDTH);
+	glBegin(GL_QUAD_STRIP);
+	for (int i = 0; i < h; i += 10)
+	{
+		set_colormap(((float) i )/ h);
+		glVertex2f(w * 0.9, i);
+		glVertex2f(w, i);
+		glVertex2f(w * 0.9, i + 5);
+		glVertex2f(w, i + 5);
+	}
+	glEnd();
+
+	float min = 0.0f;
+	float max = 1.0f;
+
+	display_text(200, 200, std::to_string(min).c_str());
+	display_text(200, 300, std::to_string(max).c_str());
+}
+
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
 	int i, j, idx;

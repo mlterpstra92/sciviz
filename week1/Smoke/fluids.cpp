@@ -172,12 +172,13 @@ void do_one_step(void)
 //visualize: This is the main visualization function
 void visualize()
 {
-    fftw_real  wn = (fftw_real)model.winWidth / (fftw_real)(DIM + 1);   // Grid cell width
+    fftw_real  wn = (fftw_real)model.winWidth / (fftw_real)(DIM + 1)*0.8;   // Grid cell width
     fftw_real  hn = (fftw_real)model.winHeight / (fftw_real)(DIM + 1);  // Grid cell height
 
     if (draw_smoke)
     {
         vis.draw_smoke(wn, hn, &model);
+        vis.draw_color_legend();
     }
 
     if (draw_vecs)
@@ -192,7 +193,7 @@ int main(int argc, char **argv)
     printStart();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(500,500);
+    glutInitWindowSize(800,500);
 
     window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
@@ -208,7 +209,7 @@ int main(int argc, char **argv)
 
     // Add a test checkbox. To see that it works.
     int test;
-    glui->add_checkbox("Test", &test);
+    glui->add_checkbox("Testhsrelfknsrdkjnrd", &test);
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
