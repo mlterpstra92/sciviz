@@ -87,7 +87,6 @@ void Visualization::set_colormap(float vy)
 	glColor3f(R,G,B);
 }
 
-
 //-(void)hsvToRGB:(struct rgbhsvColor*)color
 void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V)
 {
@@ -141,27 +140,23 @@ void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, flo
  
 // calc HSV values of rgbhsvColor from RGB values
 void Visualization::rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V)
-{
+{	
 	float maxValue=MAX(MAX(*R, *G), *B);
 	float minValue=MIN(MIN(*R, *G), *B);
 
 	float delta = maxValue - minValue;
 
 	if (delta == 0.0)
-		(*S) = 0.0;
-	if ((*S) == 0.0)
-		*H = 0.0;
-	if(maxValue == 0.0)
-		*V = 0.0;
+		(*H) = 0.0;
 	else {
 		if ((*R) == maxValue){
-			*H = 60.0 * ((int)round(((*G) - (*B))/delta) % 6);
+			*H = round(60.0 * ((((*G) - (*B))/delta)));
 		}
 		else if((*G) == maxValue){
-			*H = 60.0 * ((((*B) - (*R))/delta) + 2);
+			*H = round(60.0 * ((((*B) - (*R))/delta) + 2));
 		}
 		else {
-			*H = 60.0 * ((((*R) - (*G))/delta) + 4);
+			*H = round(60.0 * ((((*R) - (*G))/delta) + 4));
 		}
 
 		if((*H) < 0.0)
