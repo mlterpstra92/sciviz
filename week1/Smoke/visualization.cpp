@@ -63,10 +63,9 @@ void Visualization::set_colormap(float vy)
 {
 	if (limitColors == 1)
 	{
-		// Set color band
-		vy *= numColors - 1;
+		vy *= numColors ;
 		vy = (int)(vy);
-		vy /= numColors - 1;
+		vy /= numColors ;
 	}
 	float R,G,B,H,S,V;
 	if (color_map_idx==COLOR_BLACKWHITE)
@@ -204,39 +203,29 @@ void Visualization::display_text(float x, float y, char* const string)
     glRasterPos3f( x, y, 0.0 );
 
     for( ch = string; *ch; ch++ ) {
-        glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, (int)*ch );
+        glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18, (int)*ch );
     }
 }
 
 void Visualization::draw_color_legend()
 {
-	int tx, ty, tw, th, stepSize;
+	int tx, ty, tw, th;
 	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
 	glBegin(GL_QUAD_STRIP);
-	if (limitColors == 1)
+	if (limitColors == 0)
 	{
-		stepSize = th / numColors;
+		numColors = 256.0;
 	}
-	else
+	float stepSize = (th / float(numColors));	
+	for (int i = 0; i < numColors; ++i)
 	{
-		stepSize = 5;
+		set_colormap((float)(i * stepSize + ((float)(i + 1) / numColors) * stepSize) / th);
+		glVertex2f(tw * 0.9, i * stepSize);
+		glVertex2f(tw, i * stepSize);
+		glVertex2f(tw * 0.9, (i + 1) * stepSize);
+		glVertex2f(tw, (i + 1) * stepSize);
 	}
-	for (int i = 0; i < th; i += stepSize)
-	{
-		set_colormap(((float) i )/ th);
-		glVertex2f(tw * 0.9, i);
-		glVertex2f(tw, i);
-		glVertex2f(tw * 0.9, i + stepSize / 2);
-		glVertex2f(tw, i + stepSize / 2);
-	}
-	// Draw the remaining part, because integer division
-	set_colormap(1);
-	glVertex2f(tw * 0.9, th);
-	glVertex2f(tw, th);
-	glVertex2f(tw * 0.9, th - th % stepSize);
-	glVertex2f(tw, th - th % stepSize);
 	glEnd();
-
 	float min = 0.0f;
 	float max = 1.0f;
 
