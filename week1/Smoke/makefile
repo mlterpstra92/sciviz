@@ -1,5 +1,5 @@
 # GNU (everywhere)
-CPP = g++ -g -Wall
+CPP = g++ -std=c++11 -g -Wall
 LIBS        = -lglui -lglut -lGLU -lGL -lrfftw -lfftw -lm
 EXECUTABLE = smoke
 
