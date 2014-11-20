@@ -234,6 +234,12 @@ void glui_callback(int control)
         case VISCOSITY_SPINNER_ID:
             model.visc_scale_factor = viscosityScale;
             model.visc = model.base_visc * model.visc_scale_factor;
+
+        case NUM_COLOR_SPINNER_ID:
+            break;
+
+        case LIMIT_COLORS_ID:
+            break;
         default:
             break;
     }
@@ -283,6 +289,10 @@ int main(int argc, char **argv)
 
     GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosityScale, VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
+
+    glui->add_checkbox("Limit colors", &limitColors, LIMIT_COLORS_ID, glui_callback);
+    GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &numColors, NUM_COLOR_SPINNER_ID, glui_callback);
+    numColors_spinner->set_int_limits(2, 256);
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
 }
