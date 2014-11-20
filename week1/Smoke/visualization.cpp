@@ -64,17 +64,17 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
+	if (limitColors == 1)
+	{
+		vy *= numColors - 1;
+		vy = (int)(vy);
+		vy /= numColors - 1;
+	}
 	float R,G,B,H,S,V;
 	if (scalar_col==COLOR_BLACKWHITE)
 		R = G = B = vy;
 	else if (scalar_col==COLOR_RAINBOW)
 		rainbow(vy,&R,&G,&B);
-	else if (scalar_col==COLOR_BANDS)
-	{
-		const int NLEVELS = 7;
-		vy *= NLEVELS; vy = (int)(vy); vy/= NLEVELS;
-		rainbow(vy,&R,&G,&B);
-	}
 	else if (scalar_col == COLOR_BIPOLAR)
 	{
 		bipolar(vy,&R,&G,&B);
@@ -208,8 +208,6 @@ void Visualization::direction_to_color(float x, float y, int method)
 void Visualization::display_text(float x, float y, char* const string)
 {
 	char * ch;
-
-    glColor3f( 0.0f, 0.0f, 0.0f );
     glRasterPos3f( x, y, 0.0 );
 
     for( ch = string; *ch; ch++ ) {
@@ -219,17 +217,31 @@ void Visualization::display_text(float x, float y, char* const string)
 
 void Visualization::draw_color_legend()
 {
-	int tx, ty, tw, th;
+	int tx, ty, tw, th, stepSize;
 	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
 	glBegin(GL_QUAD_STRIP);
-	for (int i = 0; i < th; i += 10)
+	if (limitColors == 1)
+	{
+		stepSize = th / numColors;
+	}
+	else
+	{
+		stepSize = 5;
+	}
+	for (int i = 0; i < th; i += stepSize)
 	{
 		set_colormap(((float) i )/ th);
 		glVertex2f(tw * 0.9, i);
 		glVertex2f(tw, i);
-		glVertex2f(tw * 0.9, i + 5);
-		glVertex2f(tw, i + 5);
+		glVertex2f(tw * 0.9, i + stepSize / 2);
+		glVertex2f(tw, i + stepSize / 2);
 	}
+	// Draw the remaining part, because integer division
+	set_colormap(1);
+	glVertex2f(tw * 0.9, th);
+	glVertex2f(tw, th);
+	glVertex2f(tw * 0.9, th - th % stepSize);
+	glVertex2f(tw, th - th % stepSize);
 	glEnd();
 
 	float min = 0.0f;
@@ -240,8 +252,9 @@ void Visualization::draw_color_legend()
 	asprintf(&minStr, "%g", min);
 	asprintf(&maxStr, "%g", max);
 
-	display_text(200, 200, minStr);
-	display_text(200, 300, maxStr);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	display_text(tw * 0.9 - 24, 0, minStr);
+	display_text(tw * 0.9 - 24, th - 24, maxStr);
 }
 
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
