@@ -45,7 +45,7 @@ public:
 
     void display_text(float x, float y, char* const string);
     // Draw color legend
-    void draw_color_legend();
+    void draw_color_legend(float minRho, float maxRho);
 
     //draw smoke
     void draw_smoke(fftw_real wn, fftw_real hn, Model* model);
