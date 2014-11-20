@@ -245,11 +245,21 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 		asprintf(&strVal, "%0.2f", value);
 
 		display_text(tw * 0.9 - 50, (th / numbersToDraw) * i, strVal);
+
+		// Display line for where the value is on the legend
+		glBegin(GL_LINES);
+		glVertex2f(tw * 0.9 - 5, (th / numbersToDraw) * i);
+		glVertex2f(tw * 0.9, (th / numbersToDraw) * i);
+		glEnd();
 	}
 	char* maxStr = NULL;
 	asprintf(&maxStr, "%0.2f", maxRho);
 
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
+	glBegin(GL_LINES);
+	glVertex2f(tw * 0.9 - 5, th);
+	glVertex2f(tw * 0.9, th - 1);
+	glEnd();
 }
 
 // Draw smoke
