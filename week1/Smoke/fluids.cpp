@@ -130,10 +130,6 @@ void glui_callback(int control)
                 vis.drawHedgehogs = 1;
             break;
 
-        case NEXT_COLOR_ID:
-            vis.nextColor();
-            break;
-
         case HEDGEHOG_SPINNER_ID:
             vis.vec_length = vis.vec_base_length * vis.vec_scale;
             break;
@@ -150,21 +146,22 @@ void glui_callback(int control)
 
 void create_GUI()
 {
-    // Make the GLUT window a subwindow of the GLUI window.
+    // Function to create all glui GUI parts
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
 
-
+    // Add several checkboxes
     glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
     glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
     glui->add_checkbox("Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
-    // glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
+    // Add listbox with color maps
     GLUI_Listbox *color_map_list = glui->add_listbox("Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
     color_map_list->add_item(0, "Black/White");
     color_map_list->add_item(1, "Rainbow");
     color_map_list->add_item(2, "Bipolar");
 
+    // Add spinners
     GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
     timestep_spinner->set_float_limits(0.0f, 1.0f);
 
@@ -184,6 +181,7 @@ void create_GUI()
     GLUI_Spinner* saturation_spinner = glui->add_spinner("Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
+    // Radio button for Scale / Clamp
     GLUI_Panel* scale_clamp_panel = glui->add_panel("Dataset manipulation");
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
