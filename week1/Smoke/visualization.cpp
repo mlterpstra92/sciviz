@@ -87,8 +87,6 @@ void Visualization::direction_to_color(float x, float y, int method)
 void Visualization::display_text(float x, float y, char* const string)
 {
 	char * ch;
-
-    glColor3f( 0.0f, 0.0f, 0.0f );
     glRasterPos3f( x, y, 0.0 );
 
     for( ch = string; *ch; ch++ ) {
@@ -119,8 +117,9 @@ void Visualization::draw_color_legend()
 	asprintf(&minStr, "%g", min);
 	asprintf(&maxStr, "%g", max);
 
-	display_text(200, 200, minStr);
-	display_text(200, 300, maxStr);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	display_text(tw * 0.9 - 24, 0, minStr);
+	display_text(tw * 0.9 - 24, th - 24, maxStr);
 }
 
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
