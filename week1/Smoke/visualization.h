@@ -14,7 +14,7 @@ private:
 public:    
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
     int color_dir;              //use direction color-coding or not
-    int scalar_col;             //method for scalar coloring
+    int color_map_idx;             //method for scalar coloring
     int frozen;                 //toggles on/off the animation
     float vec_length;           //base length of hedgehogs
     float vec_base_length;
@@ -29,7 +29,7 @@ public:
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0){
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1){
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -60,10 +60,10 @@ public:
 
     //Select next color profile
     void nextColor(){
-        scalar_col++;
-        if (scalar_col > COLOR_BIPOLAR)
+        color_map_idx++;
+        if (color_map_idx > COLOR_BIPOLAR)
         {
-            scalar_col = COLOR_BLACKWHITE;
+            color_map_idx = COLOR_BLACKWHITE;
         }
     }
     float clamp(float x);

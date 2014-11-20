@@ -69,11 +69,11 @@ void Visualization::set_colormap(float vy)
 		vy /= numColors - 1;
 	}
 	float R,G,B,H,S,V;
-	if (scalar_col==COLOR_BLACKWHITE)
+	if (color_map_idx==COLOR_BLACKWHITE)
 		R = G = B = vy;
-	else if (scalar_col==COLOR_RAINBOW)
+	else if (color_map_idx==COLOR_RAINBOW)
 		rainbow(vy,&R,&G,&B);
-	else if (scalar_col == COLOR_BIPOLAR)
+	else if (color_map_idx == COLOR_BIPOLAR)
 	{
 		bipolar(vy,&R,&G,&B);
 	}

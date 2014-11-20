@@ -148,20 +148,8 @@ void glui_callback(int control)
     glutPostRedisplay();
 }
 
-//main: The main program
-int main(int argc, char **argv)
-{   
-    printStart();
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800,500);
-
-    window = glutCreateWindow("Real-time smoke simulation and visualization");
-    glutDisplayFunc(display);
-    GLUI_Master.set_glutReshapeFunc(reshape);
-    GLUI_Master.set_glutIdleFunc(do_one_step);
-    glutMotionFunc(drag);
-
+void create_GUI()
+{
     // Make the GLUT window a subwindow of the GLUI window.
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
@@ -171,7 +159,11 @@ int main(int argc, char **argv)
     glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
     glui->add_checkbox("Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
-    glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
+    // glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
+    GLUI_Listbox *color_map_list = glui->add_listbox("Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
+    color_map_list->add_item(0, "Black/White");
+    color_map_list->add_item(1, "Rainbow");
+    color_map_list->add_item(2, "Bipolar");
 
     GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
     timestep_spinner->set_float_limits(0.0f, 1.0f);
@@ -196,6 +188,22 @@ int main(int argc, char **argv)
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+}
+
+//main: The main program
+int main(int argc, char **argv)
+{   
+    printStart();
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(800,500);
+
+    window = glutCreateWindow("Real-time smoke simulation and visualization");
+    glutDisplayFunc(display);
+    GLUI_Master.set_glutReshapeFunc(reshape);
+    GLUI_Master.set_glutIdleFunc(do_one_step);
+    glutMotionFunc(drag);
+    create_GUI();
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
