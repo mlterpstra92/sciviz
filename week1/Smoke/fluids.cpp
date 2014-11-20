@@ -1,8 +1,6 @@
 // Usage: Drag with the mouse to add smoke to the fluid. This will also move a "rotor" that disturbs
 //        the velocity field at the mouse location. Press the indicated keys to change options
 //--------------------------------------------------------------------------------------------------
-
-#include <stdio.h>              //for printing the help text
 #include <iostream>
 #include <GL/glui.h>
 #include "fluids.h"
@@ -17,18 +15,9 @@ int window = -1; // Window ID for GLUT/GLUI
 
 void printStart()
 {
-    printf("Fluid Flow Simulation and Visualization\n");
-    printf("=======================================\n");
-    printf("Click and drag the mouse to steer the flow!\n");
-    printf("T/t:   increase/decrease simulation timestep\n");
-    printf("S/s:   increase/decrease hedgehog scaling\n");
-    printf("c:     toggle direction coloring on/off\n");
-    printf("V/v:   increase decrease fluid viscosity\n");
-    printf("x:     toggle drawing matter on/off\n");
-    printf("y:     toggle drawing hedgehogs on/off\n");
-    printf("m:     toggle thru scalar coloring\n");
-    printf("a:     toggle the animation on/off\n");
-    printf("q:     quit\n\n");
+    std::cout << "Fluid Flow Simulation and Visualization" << std::endl;
+    std::cout << "=======================================" << std::endl;
+    std::cout << "Click and drag the mouse to steer the flow!" << std::endl;
     return;
 }
 
@@ -55,57 +44,6 @@ void reshape(int w, int h)
     model.winWidth = tw;
     model.winHeight = th;
 }
-/*
-//keyboard: Handle key presses
-void keyboard(unsigned char key, int x, int y)
-{
-    switch (key)
-    {
-        case 't':
-            model.dt -= 0.001;
-            break;
-        case 'T':
-            model.dt += 0.001;
-            break;
-        case 'c':
-            vis.toggleDirectionColor();
-            break;
-        case 'S':
-            vis.scaleHedgehogLength(1.2);
-            break;
-        case 's':
-            vis.scaleHedgehogLength(0.8);
-            break;
-        case 'V':
-            model.visc *= 5;
-            break;
-        case 'v':
-            model.visc *= 0.2;
-            break;
-        case 'x':
-            draw_smoke = 1 - draw_smoke;
-            if (draw_smoke==0)
-                draw_vecs = 1;
-
-            break;
-        case 'y':
-            draw_vecs = 1 - draw_vecs;
-            if (draw_vecs==0)
-                draw_smoke = 1;
-
-            break;
-        case 'm':
-            vis.nextColor();
-            break;
-        case 'a':
-            vis.toggleFrozen();
-            break;
-        case 'q':
-            exit(0);
-    }
-}*/
-
-
 
 // drag: When the user drags with the mouse, add a force that corresponds to the direction of the mouse
 //       cursor movement. Also inject some new matter into the field at the mouse location.
@@ -159,7 +97,7 @@ void drag(int mx, int my)
 
 void do_one_step(void)
 {
-    if (!vis.isFrozen())
+    if (!vis.frozen)
     {
         model.do_one_simulation_step(DIM);
         // Window has to be set explicitly, otherwise
@@ -176,23 +114,19 @@ void glui_callback(int control)
     switch(control)
     {
         case ANIMATE_ID:
-            vis.toggleFrozen();
             break;
 
         case DRAW_HEDGEHOGS_ID:
-            vis.drawHedgehogs = 1 - vis.drawHedgehogs;
-            if (vis.drawHedgehogs==0)
+            if (vis.drawHedgehogs == 0)
                 vis.drawMatter = 1;
             break;
 
         case DRAW_MATTER_ID:
-            vis.drawMatter = 1 - vis.drawMatter;
-            if (vis.drawMatter==0)
+            if (vis.drawMatter == 0)
                 vis.drawHedgehogs = 1;
             break;
 
         case DIRECTION_COLOR_ID:
-            vis.toggleDirectionColor();
             break;
 
         case NEXT_COLOR_ID:
@@ -200,14 +134,14 @@ void glui_callback(int control)
             break;
 
         case TIMESTEP_SPINNER_ID:
-            model.dt = timeStep;
+            
             break;
         case HEDGEHOG_SPINNER_ID:
-            vis.scaleHedgehogLength(hedgehogScale);
+            vis.vec_length = vis.vec_base_length * vis.vec_scale;
+
             break;
 
         case VISCOSITY_SPINNER_ID:
-            model.visc_scale_factor = viscosityScale;
             model.visc = model.base_visc * model.visc_scale_factor;
 
         case NUM_COLOR_SPINNER_ID:
@@ -234,7 +168,6 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     GLUI_Master.set_glutReshapeFunc(reshape);
     GLUI_Master.set_glutIdleFunc(do_one_step);
-    //GLUI_Master.set_glutKeyboardFunc(keyboard);
     glutMotionFunc(drag);
 
     // Make the GLUT window a subwindow of the GLUI window.
@@ -242,12 +175,9 @@ int main(int argc, char **argv)
     glui->set_main_gfx_window(window);
 
     // Add a test checkbox. To see that it works.
-    timeStep = 0.4f;
+    /*timeStep = 0.4f;
     viscosityScale = 1.0f;
-    hedgehogScale = 1.0f;
-
-    std::cout <<  std::endl << &(vis.color_dir) << " " << *(&vis.color_dir) << std::endl;
-    std::cout << &vis.color_dir <<  std::endl;
+    hedgehogScale = 1.0f;*/
 
     glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
     glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
@@ -255,19 +185,19 @@ int main(int argc, char **argv)
     glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
     glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
 
-    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &timeStep, TIMESTEP_SPINNER_ID, glui_callback);
+    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
     timestep_spinner->set_float_limits(0.0f, 1.0f);
 
-    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &hedgehogScale, HEDGEHOG_SPINNER_ID, glui_callback);
+    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
     hedgehog_spinner->set_float_limits(0.0f, 10.0f);
 
-    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosityScale, VISCOSITY_SPINNER_ID, glui_callback);
+    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
 
     glui->add_checkbox("Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
     GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
-    GLUI_Master.sync_live_all();
+
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
 }
