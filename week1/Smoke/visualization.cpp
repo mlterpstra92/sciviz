@@ -45,6 +45,7 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 	*B = 1 - (value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2));
 }
 
+//clamp: Clamp all values between 0 and 1
 float Visualization::clamp(float x)
 {
     if (x >= 1.0) {
@@ -56,6 +57,7 @@ float Visualization::clamp(float x)
     }
 }
 
+//Scale all values between the overall min and max values
 float Visualization::scale(float x, fftw_real min, fftw_real max)
 {
     return (x - min) / (max - min);;
@@ -64,6 +66,7 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
+	// Create a color band when the limit Colors button is checked.
 	if (limitColors == 1)
 	{
 		vy *= numColors - 1;
@@ -71,16 +74,17 @@ void Visualization::set_colormap(float vy)
 		vy /= numColors  - 1;
 	}
 	float R,G,B,H,S,V;
+	// Different Color maps
 	if (color_map_idx==COLOR_BLACKWHITE)
 		R = G = B = vy;
 	else if (color_map_idx==COLOR_RAINBOW)
 		rainbow(vy,&R,&G,&B);
 	else if (color_map_idx == COLOR_BIPOLAR)
-	{
 		bipolar(vy,&R,&G,&B);
-	}
+
+	// Save calculations when Hue AND Saturation are set to 1
 	if (hue != 1.0 || saturation != 1.0)
-	{   // Save calculations when Hue AND Saturation are set to 1
+	{   
 		rgbToHSV(&R, &G, &B, &H, &S, &V);
 		H *= hue;
 		S *= saturation;
@@ -89,7 +93,7 @@ void Visualization::set_colormap(float vy)
 	glColor3f(R,G,B);
 }
 
-//-(void)hsvToRGB:(struct rgbhsvColor*)color
+// calc RGB values of from HSV values
 void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V)
 {
 	if ((*S) == 0.0)
@@ -200,6 +204,7 @@ void Visualization::direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
+// Display text in OpenGL
 void Visualization::display_text(float x, float y, char* const string)
 {
 	char * ch;
@@ -210,6 +215,7 @@ void Visualization::display_text(float x, float y, char* const string)
     }
 }
 
+// Draw color legend
 void Visualization::draw_color_legend(float minRho, float maxRho)
 {
 	int tx, ty, tw, th;
@@ -246,6 +252,7 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 }
 
+// Draw smoke
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
 	int i, j;
