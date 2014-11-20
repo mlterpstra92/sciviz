@@ -120,9 +120,6 @@ void glui_callback(int control)
 {
     switch(control)
     {
-        case ANIMATE_ID:
-            break;
-
         case DRAW_HEDGEHOGS_ID:
             if (vis.drawHedgehogs == 0)
                 vis.drawMatter = 1;
@@ -131,9 +128,6 @@ void glui_callback(int control)
         case DRAW_MATTER_ID:
             if (vis.drawMatter == 0)
                 vis.drawHedgehogs = 1;
-            break;
-
-        case DIRECTION_COLOR_ID:
             break;
 
         case NEXT_COLOR_ID:
@@ -151,11 +145,6 @@ void glui_callback(int control)
         case VISCOSITY_SPINNER_ID:
             model.visc = model.base_visc * model.visc_scale_factor;
 
-        case NUM_COLOR_SPINNER_ID:
-            break;
-
-        case LIMIT_COLORS_ID:
-            break;
         default:
             break;
     }
@@ -181,10 +170,6 @@ int main(int argc, char **argv)
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
 
-    // Add a test checkbox. To see that it works.
-    /*timeStep = 0.4f;
-    viscosityScale = 1.0f;
-    hedgehogScale = 1.0f;*/
 
     glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
     glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
@@ -204,6 +189,11 @@ int main(int argc, char **argv)
     glui->add_checkbox("Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
     GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
+
+    GLUI_Panel* scale_clamp_panel = glui->add_panel("Dataset manipulation");
+    GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
+    glui->add_radiobutton_to_group( scale_clamp, "Scale");
+    glui->add_radiobutton_to_group( scale_clamp, "Clamp");
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
