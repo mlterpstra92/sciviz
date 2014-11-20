@@ -16,7 +16,10 @@ void Visualization::visualize(Model* model)
     if (drawMatter)
     {
         draw_smoke(wn, hn, model);
-        draw_color_legend();
+        if(!clamping)
+        	draw_color_legend(model->min_rho, model->max_rho);
+        else
+        	draw_color_legend(0.0, 1.0);
     }
     if (drawHedgehogs)
     {
@@ -67,7 +70,7 @@ void Visualization::set_colormap(float vy)
 	if (limitColors == 1)
 	{
 		vy *= numColors - 1;
-		vy = (int)(vy);
+		vy = round(vy); // Round vy, otherwise only the max gets a different color
 		vy /= numColors  - 1;
 	}
 	float R,G,B,H,S,V;
@@ -213,7 +216,7 @@ void Visualization::display_text(float x, float y, char* const string)
 }
 
 // Draw color legend
-void Visualization::draw_color_legend()
+void Visualization::draw_color_legend(float minRho, float maxRho)
 {
 	int tx, ty, tw, th;
 	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
@@ -232,17 +235,15 @@ void Visualization::draw_color_legend()
 		glVertex2f(tw, (i + 1) * stepSize);
 	}
 	glEnd();
-	float min = 0.0f;
-	float max = 1.0f;
 
 	char* minStr = NULL;
 	char* maxStr = NULL;
-	asprintf(&minStr, "%g", min);
-	asprintf(&maxStr, "%g", max);
+	asprintf(&minStr, "%0.2f", minRho);
+	asprintf(&maxStr, "%0.2f", maxRho);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-	display_text(tw * 0.9 - 24, 0, minStr);
-	display_text(tw * 0.9 - 24, th - 24, maxStr);
+	display_text(tw * 0.9 - 50, 0, minStr);
+	display_text(tw * 0.9 - 50, th - 18, maxStr);
 }
 
 // Draw smoke
