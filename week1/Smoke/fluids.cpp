@@ -134,12 +134,8 @@ void glui_callback(int control)
             vis.nextColor();
             break;
 
-        case TIMESTEP_SPINNER_ID:
-            
-            break;
         case HEDGEHOG_SPINNER_ID:
             vis.vec_length = vis.vec_base_length * vis.vec_scale;
-
             break;
 
         case VISCOSITY_SPINNER_ID:

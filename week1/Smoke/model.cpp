@@ -140,9 +140,8 @@ void Model::do_one_simulation_step(const int DIM)
 // velocity diffusion step in the function above. The input matter densities are in rho0 and the result is written into rho.
 void Model::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, fftw_real *rho, fftw_real *rho0, fftw_real dt)
 {
-    fftw_real x, y, x0, y0, s, t;
+    fftw_real x, y, x0, y0, s, t, tmp;
     int i, j, i0, j0, i1, j1;
-
     for ( x=0.5f/n,i=0 ; i<n ; i++,x+=1.0f/n )
     {
         for ( y=0.5f/n,j=0 ; j<n ; j++,y+=1.0f/n )
@@ -157,7 +156,21 @@ void Model::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, fftw_real *rho, 
             t = y0-j0;
             j0 = (n+(j0%n))%n;
             j1 = (j0+1)%n;
-            rho[i+n*j] = (1-s)*((1-t)*rho0[i0+n*j0]+t*rho0[i0+n*j1])+s*((1-t)*rho0[i1+n*j0]+t*rho0[i1+n*j1]);
+            tmp = (1-s)*((1-t)*rho0[i0+n*j0]+t*rho0[i0+n*j1])+s*((1-t)*rho0[i1+n*j0]+t*rho0[i1+n*j1]);
+            if (i == 0 && j == 0)
+            {
+                min_rho = FLT_MAX;
+                max_rho = -FLT_MAX;
+            }
+            else if (tmp < min_rho)
+            {
+                min_rho = tmp;
+            }
+            else if (tmp > max_rho)
+            {
+                max_rho = tmp;
+            }
+            rho[i+n*j] = tmp;
         }
     }
 }

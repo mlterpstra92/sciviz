@@ -66,6 +66,8 @@ public:
             scalar_col = COLOR_BLACKWHITE;
         }
     }
+    float clamp(float x);
+    float scale(float x, fftw_real min, fftw_real max);
 };
 
 #endif
