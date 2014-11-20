@@ -36,6 +36,9 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 	*B = 1 - (value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2));
 }
 
+
+
+
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
@@ -58,6 +61,114 @@ void Visualization::set_colormap(float vy)
 	glColor3f(R,G,B);
 }
 
+/*
+-(void)hsvToRGB:(struct rgbhsvColor*)color
+{
+	if(color->saturation==0.0)
+	{
+		color->red=round(color->vvalue*255.0);
+		color->green=round(color->vvalue*255.0);
+		color->blue=round(color->vvalue*255.0);
+	}
+	else 
+	{
+		float hTemp=0.0;
+ 
+		if(color->hue==360.0)
+			hTemp=0.0;
+		else
+			hTemp=color->hue/60.0;
+ 
+		int i=trunc(hTemp);
+		float f=hTemp-i;
+ 
+		float p=color->vvalue*(1.0-color->saturation);
+		float q=color->vvalue*(1.0-(color->saturation*f));
+		float t=color->vvalue*(1.0-(color->saturation*(1.0-f)));
+ 
+		switch (i) 
+		{
+			default:
+			case 0:
+			case 6:
+				color->red=round(color->vvalue*255.0);
+				color->green=round(t*255.0);
+				color->blue=round(p*255.0);
+				break;
+			case 1:
+				color->red=round(q*255.0);
+				color->green=round(color->vvalue*255.0);
+				color->blue=round(p*255.0);
+				break;
+			case 2:
+				color->red=round(p*255.0);
+				color->green=round(color->vvalue*255.0);
+				color->blue=round(t*255.0);
+				break;
+			case 3:
+				color->red=round(p*255.0);
+				color->green=round(q*255.0);
+				color->blue=round(color->vvalue*255.0);
+				break;
+			case 4:
+				color->red=round(t*255.0);
+				color->green=round(p*255.0);
+				color->blue=round(color->vvalue*255.0);
+				break;
+			case 5:
+				color->red=round(color->vvalue*255.0);
+				color->green=round(p*255.0);
+				color->blue=round(q*255.0);
+				break;
+		}
+ 
+	}
+	return;
+}
+ 
+// calc HSV values of rgbhsvColor from RGB values
+glVector rgbToHSV(float* R,float* G,float* B)
+{
+	float maxRGBValue=MAX(MAX(*R, *G), *B);
+	float minValue=MIN(MIN(*R, *G), *B);
+	float maxValue=maxRGBValue;
+	float hue,saturation,vvalue,delta;
+ 
+	minValue=minValue/255.0;
+	maxValue=maxValue/255.0;
+ 
+	vvalue=maxValue;
+	delta=vvalue-minValue;
+ 
+	if(delta==0)
+		saturation=0;
+	else 
+		saturation=round(delta/vvalue);
+ 
+	if(saturation==0)
+		hue=0;
+	else 
+	{
+		if(color->red==maxRGBValue)
+			hue=60.0*(float)(color->green-color->blue)/255.0/delta;
+		else 
+		{
+			if(color->green==maxRGBValue)
+				hue=120.0+60.0*(float)(color->blue-color->red)/255.0/delta;
+			else 
+			{
+				if(color->blue==maxRGBValue)
+					hue=240.0+60.0*(float)(color->red-color->green)/255.0/delta;
+			}
+		}
+		if(hue<0.0)
+			hue+=360.0;
+	}
+	color->hue=round(hue);
+	color->saturation=round(saturation);
+	color->vvalue=round(vvalue);
+	return;	
+}*/
 
 //direction_to_color: Set the current color by mapping a direction vector (x,y), using
 //                    the color mapping method 'method'. If method==1, map the vector direction
