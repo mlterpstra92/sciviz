@@ -63,9 +63,9 @@ void Visualization::set_colormap(float vy)
 {
 	if (limitColors == 1)
 	{
-		vy *= numColors ;
+		vy *= numColors - 1;
 		vy = (int)(vy);
-		vy /= numColors ;
+		vy /= numColors  - 1;
 	}
 	float R,G,B,H,S,V;
 	if (color_map_idx==COLOR_BLACKWHITE)
