@@ -3,6 +3,8 @@
 //--------------------------------------------------------------------------------------------------
 #include <iostream>
 #include <GL/glui.h>
+#include <chrono>
+#include <thread>
 #include "fluids.h"
 #include "model.h"              //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
@@ -105,6 +107,11 @@ void do_one_step(void)
         // in stead of the GLUT window.
         glutSetWindow(window);
         glutPostRedisplay();
+    }
+    else
+    {
+        // Sleep, otherwise we use too much CPU.
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
