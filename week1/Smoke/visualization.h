@@ -14,7 +14,6 @@ public:
     int color_dir;              //use direction color-coding or not
     int COLOR_BLACKWHITE;       //different types of color mapping: black-and-white, rainbow, banded
     int COLOR_RAINBOW;
-    int COLOR_BANDS;
     int COLOR_BIPOLAR;
     int scalar_col;             //method for scalar coloring
     int frozen;                 //toggles on/off the animation
@@ -29,9 +28,8 @@ public:
     int limitColors;
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(1){
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BIPOLAR(2), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0){
         vec_length = vec_base_length * vec_scale;
-        std::cout << "Ctor: " << drawHedgehogs << std::endl;
     }
 
     void visualize(Model* model);
