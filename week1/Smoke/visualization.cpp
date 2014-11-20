@@ -217,9 +217,10 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 	glBegin(GL_QUAD_STRIP);
 	if (limitColors == 0)
 	{
-		numColors = 256.0;
+		numColors = 256;
 	}
-	float stepSize = (th / float(numColors));	
+	float stepSize = (th / float(numColors));
+	
 	for (int i = 0; i < numColors; ++i)
 	{
 		set_colormap((float)(i * stepSize + ((float)(i + 1) / numColors) * stepSize) / th);
@@ -229,14 +230,19 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 		glVertex2f(tw, (i + 1) * stepSize);
 	}
 	glEnd();
+	glColor3f(1.0f, 1.0f, 1.0f);
+	int numbersToDraw = numColors > 10 ? 10 : numColors;
+	for (int i = 0; i < numbersToDraw; ++i)
+	{
+		float value = ((float)i / numbersToDraw) * (maxRho - minRho) + minRho;
+		char* strVal = NULL;
+		asprintf(&strVal, "%0.2f", value);
 
-	char* minStr = NULL;
+		display_text(tw * 0.9 - 50, (th / numbersToDraw) * i, strVal);
+	}
 	char* maxStr = NULL;
-	asprintf(&minStr, "%0.2f", minRho);
 	asprintf(&maxStr, "%0.2f", maxRho);
 
-	glColor3f(1.0f, 1.0f, 1.0f);
-	display_text(tw * 0.9 - 50, 0, minStr);
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 }
 
