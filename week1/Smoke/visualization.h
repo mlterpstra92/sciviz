@@ -1,6 +1,5 @@
 #ifndef VISUALIZATION_H
 #define VISUALIZATION_H
-#include <iostream>
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
@@ -9,6 +8,9 @@
 #include "GL/glui.h"
 
 class Visualization {
+private:
+    void rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V);
+    void hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V);
 public:    
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
     int color_dir;              //use direction color-coding or not
@@ -21,18 +23,18 @@ public:
     float vec_length;           //base length of hedgehogs
     float vec_base_length;
     float vec_scale;            //scale factor
-    void rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V);
-    void hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V);
     int drawMatter;
     int drawHedgehogs;
     int numColors;
     int limitColors;
+    float saturation;
+    float hue;
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(1){
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(1), saturation(1.0f), hue(1.0f){
         vec_length = vec_base_length * vec_scale;
-        std::cout << "Ctor: " << drawHedgehogs << std::endl;
     }
+    
 
     void visualize(Model* model);
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB

@@ -198,6 +198,12 @@ int main(int argc, char **argv)
     GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
 
+    GLUI_Spinner* hue_spinner = glui->add_spinner("Hue", GLUI_SPINNER_FLOAT, &(vis.hue), HUE_SPINNER_ID, glui_callback);
+    hue_spinner->set_float_limits(0.0f, 1.0f);
+
+    GLUI_Spinner* saturation_spinner = glui->add_spinner("Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
+    saturation_spinner->set_float_limits(0.0f, 1.0f);
+
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
 }
