@@ -1,10 +1,12 @@
 #ifndef VISUALIZATION_H
 #define VISUALIZATION_H
+#include <iostream>
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include <math.h>               //for various math functions
 #include <GL/glut.h>            //the GLUT graphics library
 #include "model.h"
 #include <string>
+#include "GL/glui.h"
 
 class Visualization {
 public:    
@@ -26,14 +28,10 @@ public:
     int numColors;
     int limitColors;
 
-
-    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f){
+    Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(1), limitColors(1){
         vec_length = vec_base_length * vec_scale;
-        drawMatter = 1;
-        drawHedgehogs = 0;
-        limitColors = 0;
+        std::cout << "Ctor: " << drawHedgehogs << std::endl;
     }
 
     void visualize(Model* model);
@@ -61,25 +59,6 @@ public:
     //                    using a rainbow colormap. If method==0, simply use the white color
     void direction_to_color(float x, float y, int method);
 
-    // Returns true when animation is paused, false otherwise
-    int isFrozen(){
-        return frozen;
-    }
-
-    // Sets status to frozen if animation is enabled and vice versa
-    void toggleFrozen(){
-        frozen = 1 - frozen;
-    }
-
-    //Sets hedgehog color to black and white if color is used and vice versa
-    void toggleDirectionColor(){
-        color_dir = 1 - color_dir;
-    }
-
-    int getDirectionColor(){
-        return color_dir;
-    }
-
     //Select next color profile
     void nextColor(){
         scalar_col++;
@@ -87,13 +66,6 @@ public:
         {
             scalar_col = COLOR_BLACKWHITE;
         }
-    }
-
-    // Scale the hedgehog length by a percentage
-    // So putting scale = 1.2 makes the hedgehogs 20% larger
-    void scaleHedgehogLength(float scale){
-        vec_scale = scale;
-        vec_length = vec_base_length * vec_scale;
     }
 };
 

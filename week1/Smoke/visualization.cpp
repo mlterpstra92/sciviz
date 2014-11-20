@@ -18,7 +18,6 @@ void Visualization::visualize(Model* model)
         draw_smoke(wn, hn, model);
         draw_color_legend();
     }
-
     if (drawHedgehogs)
     {
         draw_velocities(wn, hn, model);
