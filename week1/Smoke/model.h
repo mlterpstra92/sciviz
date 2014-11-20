@@ -2,6 +2,7 @@
 #define SIMULATION_H
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include <math.h>               //for various math functions
+#include <cfloat>
 
 class Model {
 public:
@@ -16,6 +17,7 @@ public:
     fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
     fftw_real *fx, *fy;             //(fx,fy)   = user-controlled simulation forces, steered with the mouse
     fftw_real *rho, *rho0;          //smoke density at the current (rho) and previous (rho0) moment
+    fftw_real min_rho, max_rho;     // Min and max values of the 2d rho matrix
     rfftwnd_plan plan_rc, plan_cr;  //simulation domain discretization
 
     //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------

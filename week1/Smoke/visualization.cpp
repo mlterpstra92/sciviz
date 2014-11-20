@@ -28,14 +28,6 @@ void Visualization::visualize(Model* model)
 void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
 	const float dx = 0.8;
-	if (value<0)
-	{
-		value=0;
-	}
-	if (value>1)
-	{
-		value=1;
-	}
 	value = (6-2*dx)*value+dx;
 	*R = fmax(0.0, (3-fabs(value-4)-fabs(value-5))/2);
 	*G = fmax(0.0, (4-fabs(value-2)-fabs(value-4))/2);
@@ -45,27 +37,33 @@ void Visualization::rainbow(float value,float* R,float* G,float* B)
 //diverge: Implements a color pallete that diverges
 void Visualization::bipolar(float value,float* R,float* G,float* B)
 {
-	if (value<0)
-	{
-		value=0;
-	}
-	if (value>1)
-	{
-		value=1;
-	}
 	*R = value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2);
 	*G = 0;
 	*B = 1 - (value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2));
 }
 
+float Visualization::clamp(float x)
+{
+    if (x >= 1.0) {
+        return 1.0;
+    } else if (x < 0.0) {
+        return 0.0;
+    } else {
+        return x;
+    }
+}
 
-
+float Visualization::scale(float x, fftw_real min, fftw_real max)
+{
+    return (x - min) / (max - min);;
+}
 
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
 	if (limitColors == 1)
 	{
+		// Set color band
 		vy *= numColors - 1;
 		vy = (int)(vy);
 		vy /= numColors - 1;
@@ -80,7 +78,7 @@ void Visualization::set_colormap(float vy)
 		bipolar(vy,&R,&G,&B);
 	}
 	if (hue != 1.0 || saturation != 1.0)
-	{
+	{   // Save calculations when Hue AND Saturation are set to 1
 		rgbToHSV(&R, &G, &B, &H, &S, &V);
 		H *= hue;
 		S *= saturation;
@@ -260,6 +258,7 @@ void Visualization::draw_color_legend()
 void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
 {
 	int i, j;
+    fftw_real vy0, vy1, vy2, vy3;
  	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
     for (j = 0; j < model->DIM - 1; j++)            //draw smoke
@@ -282,13 +281,27 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
             double py3 = hn + (fftw_real)j * hn;
             int idx3 = (j * model->DIM) + (i + 1);
 
-            set_colormap(model->rho[idx0]);    glVertex2f(px0, py0);
-            set_colormap(model->rho[idx1]);    glVertex2f(px1, py1);
-            set_colormap(model->rho[idx2]);    glVertex2f(px2, py2);
+            if (clamping == 1)
+            {  // Clamp
+                vy0 = clamp(model->rho[idx0]);
+                vy1 = clamp(model->rho[idx1]);
+                vy2 = clamp(model->rho[idx2]);
+                vy3 = clamp(model->rho[idx3]);
+            }
+            else
+            {  // Scale
+                vy0 = scale(model->rho[idx0], model->min_rho, model->max_rho);
+                vy1 = scale(model->rho[idx1], model->min_rho, model->max_rho);
+                vy2 = scale(model->rho[idx2], model->min_rho, model->max_rho);
+                vy3 = scale(model->rho[idx3], model->min_rho, model->max_rho);
+            }
+            set_colormap(vy0);    glVertex2f(px0, py0);
+            set_colormap(vy1);    glVertex2f(px1, py1);
+            set_colormap(vy2);    glVertex2f(px2, py2);
 
-            set_colormap(model->rho[idx0]);    glVertex2f(px0, py0);
-            set_colormap(model->rho[idx2]);    glVertex2f(px2, py2);
-            set_colormap(model->rho[idx3]);    glVertex2f(px3, py3);
+            set_colormap(vy0);    glVertex2f(px0, py0);
+            set_colormap(vy2);    glVertex2f(px2, py2);
+            set_colormap(vy3);    glVertex2f(px3, py3);
         }
     }
     glEnd();
