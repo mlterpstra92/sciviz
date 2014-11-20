@@ -79,6 +79,13 @@ void Visualization::set_colormap(float vy)
 	{
 		bipolar(vy,&R,&G,&B);
 	}
+	if (hue != 1.0 || saturation != 1.0)
+	{
+		rgbToHSV(&R, &G, &B, &H, &S, &V);
+		H *= hue;
+		S *= saturation;
+		hsvToRGB(&R, &G, &B, &H, &S, &V);
+	}
 	glColor3f(R,G,B);
 }
 
@@ -86,108 +93,91 @@ void Visualization::set_colormap(float vy)
 //-(void)hsvToRGB:(struct rgbhsvColor*)color
 void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V)
 {
-	if((*S)==0.0)
+	if ((*S) == 0.0)
 	{
-		*R=round((*V)*255.0);
-		*G=round((*V)*255.0);
-		*B=round((*V)*255.0);
+		*R = *G = *B = *V;
 	}
-	else 
+	else
 	{
-		float hTemp=0.0;
- 
-		if((*H)==360.0)
-			hTemp=0.0;
-		else
-			hTemp=(*H)/60.0;
- 
-		int i=trunc(hTemp);
-		float f=hTemp-i;
- 
-		float p=(*V)*(1.0-(*S));
-		float q=(*V)*(1.0-((*S)*f));
-		float t=(*V)*(1.0-((*S)*(1.0-f)));
- 
-		switch (i) 
+		int Hi = (int)floor((*H) / 60.0);
+		float f = ((*H) / 60.0) - Hi; 
+		float p = (*V)*(1.0 - (*S));
+		float q = (*V)*(1.0 - f*(*S));
+		float t = (*V)*(1.0 - ((1.0 - f)*(*S)));
+
+		switch(Hi)
 		{
-			default:
 			case 0:
-			case 6:
-				*R=round((*V)*255.0);
-				*G=round(t*255.0);
-				*B=round(p*255.0);
+				*R = (*V);
+				*G = t;
+				*B = p;
 				break;
 			case 1:
-				*R=round(q*255.0);
-				*G=round((*V)*255.0);
-				*B=round(p*255.0);
+				*R = q;
+				*G = (*V);
+				*B = p;
 				break;
 			case 2:
-				*R=round(p*255.0);
-				*G=round((*V)*255.0);
-				*B=round(t*255.0);
+				*R = p;
+				*G = (*V);
+				*B = t;
 				break;
 			case 3:
-				*R=round(p*255.0);
-				*G=round(q*255.0);
-				*B=round((*V)*255.0);
+				*R = p;
+				*G = q;
+				*B = (*V);
 				break;
 			case 4:
-				*R=round(t*255.0);
-				*G=round(p*255.0);
-				*B=round((*V)*255.0);
+				*R = t;
+				*G = p;
+				*B = (*V);
 				break;
 			case 5:
-				*R=round((*V)*255.0);
-				*G=round(p*255.0);
-				*B=round(q*255.0);
+				*R = (*V);
+				*G = p;
+				*B = q;
 				break;
 		}
- 
 	}
 }
  
 // calc HSV values of rgbhsvColor from RGB values
 void Visualization::rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V)
 {
-	float maxRGBValue=MAX(MAX(*R, *G), *B);
+	float maxValue=MAX(MAX(*R, *G), *B);
 	float minValue=MIN(MIN(*R, *G), *B);
-	float maxValue=maxRGBValue;
-	float hue,saturation,vvalue,delta;
- 
-	minValue=minValue/255.0;
-	maxValue=maxValue/255.0;
- 
-	vvalue=maxValue;
-	delta=vvalue-minValue;
- 
-	if(delta==0)
-		saturation=0;
-	else 
-		saturation=round(delta/vvalue);
- 
-	if(saturation==0)
-		hue=0;
-	else 
-	{
-		if((*R)==maxRGBValue)
-			hue=60.0*(float)((*R) - (*B))/255.0/delta;
-		else 
-		{
-			if((*G)==maxRGBValue)
-				hue=120.0+60.0*(float)((*B)-(*R))/255.0/delta;
-			else 
-			{
-				if((*B)==maxRGBValue)
-					hue=240.0+60.0*(float)((*R)-(*G))/255.0/delta;
-			}
+
+	float delta = maxValue - minValue;
+
+	if (delta == 0.0)
+		(*S) = 0.0;
+	if ((*S) == 0.0)
+		*H = 0.0;
+	if(maxValue == 0.0)
+		*V = 0.0;
+	else {
+		if ((*R) == maxValue){
+			*H = 60.0 * ((int)round(((*G) - (*B))/delta) % 6);
 		}
-		if(hue<0.0)
-			hue+=360.0;
+		else if((*G) == maxValue){
+			*H = 60.0 * ((((*B) - (*R))/delta) + 2);
+		}
+		else {
+			*H = 60.0 * ((((*R) - (*G))/delta) + 4);
+		}
+
+		if((*H) < 0.0)
+			*H += 360.0;
+		if((*H) >= 360.0)
+			*H -= 360.0;
 	}
-	*H = round(hue);
-	*S = round(saturation);
-	*V = round(vvalue);
+
+	if (maxValue == 0.0)
+		*S = 0.0;
+	else
+		*S = delta / maxValue;
+
+	*V = maxValue;
 }
 
 //direction_to_color: Set the current color by mapping a direction vector (x,y), using
