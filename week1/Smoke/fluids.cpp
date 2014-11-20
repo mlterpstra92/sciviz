@@ -12,8 +12,6 @@
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);
 Visualization vis(0, 0, 0, 1000.0f);
-int draw_smoke = 0;    //draw the smoke or not
-int draw_vecs  = 1;    //draw the vector field or not
 
 int window = -1; // Window ID for GLUT/GLUI
 
@@ -40,7 +38,7 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    visualize();
+    vis.visualize(&model);
     glFlush();
     glutSwapBuffers();
 }
@@ -57,7 +55,7 @@ void reshape(int w, int h)
     model.winWidth = tw;
     model.winHeight = th;
 }
-
+/*
 //keyboard: Handle key presses
 void keyboard(unsigned char key, int x, int y)
 {
@@ -105,7 +103,7 @@ void keyboard(unsigned char key, int x, int y)
         case 'q':
             exit(0);
     }
-}
+}*/
 
 
 
@@ -172,24 +170,6 @@ void do_one_step(void)
     }
 }
 
-//visualize: This is the main visualization function
-void visualize()
-{
-    fftw_real  wn = (fftw_real)model.winWidth / (fftw_real)(DIM + 1)*0.8;   // Grid cell width
-    fftw_real  hn = (fftw_real)model.winHeight / (fftw_real)(DIM + 1);  // Grid cell height
-
-    if (draw_smoke)
-    {
-        vis.draw_smoke(wn, hn, &model);
-        vis.draw_color_legend();
-    }
-
-    if (draw_vecs)
-    {
-        vis.draw_velocities(wn, hn, &model);
-    }
-}
-
 // some controls generate a callback when they are changed
 void glui_callback(int control)
 {
@@ -197,27 +177,22 @@ void glui_callback(int control)
     {
         case ANIMATE_ID:
             vis.toggleFrozen();
-            animate = !vis.isFrozen();
             break;
+
         case DRAW_HEDGEHOGS_ID:
-            draw_vecs = 1 - draw_vecs;
-            if (draw_vecs==0)
-                draw_smoke = 1;
-
-            drawMatter = draw_smoke;
-            drawHedgehogs = draw_vecs;
+            vis.drawHedgehogs = 1 - vis.drawHedgehogs;
+            if (vis.drawHedgehogs==0)
+                vis.drawMatter = 1;
             break;
+
         case DRAW_MATTER_ID:
-            draw_smoke = 1 - draw_smoke;
-            if (draw_smoke==0)
-                draw_vecs = 1;
-
-            drawMatter = draw_smoke;
-            drawHedgehogs = draw_vecs;
+            vis.drawMatter = 1 - vis.drawMatter;
+            if (vis.drawMatter==0)
+                vis.drawHedgehogs = 1;
             break;
+
         case DIRECTION_COLOR_ID:
             vis.toggleDirectionColor();
-            direction_coloring = vis.getDirectionColor();
             break;
 
         case NEXT_COLOR_ID:
@@ -259,7 +234,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     GLUI_Master.set_glutReshapeFunc(reshape);
     GLUI_Master.set_glutIdleFunc(do_one_step);
-    GLUI_Master.set_glutKeyboardFunc(keyboard);
+    //GLUI_Master.set_glutKeyboardFunc(keyboard);
     glutMotionFunc(drag);
 
     // Make the GLUT window a subwindow of the GLUI window.
@@ -270,15 +245,14 @@ int main(int argc, char **argv)
     timeStep = 0.4f;
     viscosityScale = 1.0f;
     hedgehogScale = 1.0f;
-    animate = !vis.isFrozen();
-    direction_coloring = vis.getDirectionColor();
-    drawMatter = draw_smoke;
-    drawHedgehogs = draw_vecs;
 
-    glui->add_checkbox("Direction coloring", &direction_coloring, DIRECTION_COLOR_ID, glui_callback);
-    glui->add_checkbox("Draw matter", &drawMatter, DRAW_MATTER_ID, glui_callback);
-    glui->add_checkbox("Draw hedgehogs", &drawHedgehogs, DRAW_HEDGEHOGS_ID, glui_callback);
-    glui->add_checkbox("Animate", &animate, ANIMATE_ID, glui_callback);
+    std::cout <<  std::endl << &(vis.color_dir) << " " << *(&vis.color_dir) << std::endl;
+    std::cout << &vis.color_dir <<  std::endl;
+
+    glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
+    glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
+    glui->add_checkbox("Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
+    glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
     glui->add_button("Next color", NEXT_COLOR_ID, glui_callback);
 
     GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &timeStep, TIMESTEP_SPINNER_ID, glui_callback);
@@ -290,9 +264,10 @@ int main(int argc, char **argv)
     GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &viscosityScale, VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
 
-    glui->add_checkbox("Limit colors", &limitColors, LIMIT_COLORS_ID, glui_callback);
-    GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &numColors, NUM_COLOR_SPINNER_ID, glui_callback);
+    glui->add_checkbox("Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
+    GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
+    GLUI_Master.sync_live_all();
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
 }

@@ -7,7 +7,7 @@
 #include <string>
 
 class Visualization {
-private:
+public:    
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
     int color_dir;              //use direction color-coding or not
     int COLOR_BLACKWHITE;       //different types of color mapping: black-and-white, rainbow, banded
@@ -21,13 +21,22 @@ private:
     float vec_scale;            //scale factor
     void rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V);
     void hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V);
+    int drawMatter;
+    int drawHedgehogs;
+    int numColors;
+    int limitColors;
+
 
     
-public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_scalar_col, int a_frozen, float a_vec_length) : color_dir(a_color_dir), COLOR_BLACKWHITE(0), COLOR_RAINBOW(1), COLOR_BANDS(2), COLOR_BIPOLAR(3), scalar_col(a_scalar_col), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f){
         vec_length = vec_base_length * vec_scale;
+        drawMatter = 1;
+        drawHedgehogs = 0;
+        limitColors = 0;
     }
+
+    void visualize(Model* model);
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
 

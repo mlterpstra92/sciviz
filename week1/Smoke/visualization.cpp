@@ -5,6 +5,26 @@
 
 #define MAX(a, b) (a) > (b) ? (a) : (b)
 #define MIN(a, b) (a) < (b) ? (a) : (b)
+
+
+//visualize: This is the main visualization function
+void Visualization::visualize(Model* model)
+{
+    fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
+    fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
+
+    if (drawMatter)
+    {
+        draw_smoke(wn, hn, model);
+        draw_color_legend();
+    }
+
+    if (drawHedgehogs)
+    {
+        draw_velocities(wn, hn, model);
+    }
+}
+
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
