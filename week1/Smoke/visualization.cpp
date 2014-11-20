@@ -67,7 +67,7 @@ void Visualization::set_colormap(float vy)
 	if (limitColors == 1)
 	{
 		vy *= numColors - 1;
-		vy = (int)(vy);
+		vy = round(vy); // Round vy, otherwise only the max gets a different color
 		vy /= numColors  - 1;
 	}
 	float R,G,B,H,S,V;
