@@ -19,6 +19,9 @@ private:
     float vec_length;           //base length of hedgehogs
     float vec_base_length;
     float vec_scale;            //scale factor
+    void rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V);
+    void hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V);
+
     
 public:    
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------

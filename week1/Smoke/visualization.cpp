@@ -2,6 +2,9 @@
 #include "model.h"
 #include "GL/glui.h"
 #include <iostream>
+
+#define MAX(a, b) (a) > (b) ? (a) : (b)
+#define MIN(a, b) (a) < (b) ? (a) : (b)
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
@@ -42,7 +45,7 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 //set_colormap: Sets three different types of colormaps
 void Visualization::set_colormap(float vy)
 {
-	float R,G,B;
+	float R,G,B,H,S,V;
 	if (scalar_col==COLOR_BLACKWHITE)
 		R = G = B = vy;
 	else if (scalar_col==COLOR_RAINBOW)
@@ -57,77 +60,76 @@ void Visualization::set_colormap(float vy)
 	{
 		bipolar(vy,&R,&G,&B);
 	}
-
 	glColor3f(R,G,B);
 }
 
-/*
--(void)hsvToRGB:(struct rgbhsvColor*)color
+
+//-(void)hsvToRGB:(struct rgbhsvColor*)color
+void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V)
 {
-	if(color->saturation==0.0)
+	if((*S)==0.0)
 	{
-		color->red=round(color->vvalue*255.0);
-		color->green=round(color->vvalue*255.0);
-		color->blue=round(color->vvalue*255.0);
+		*R=round((*V)*255.0);
+		*G=round((*V)*255.0);
+		*B=round((*V)*255.0);
 	}
 	else 
 	{
 		float hTemp=0.0;
  
-		if(color->hue==360.0)
+		if((*H)==360.0)
 			hTemp=0.0;
 		else
-			hTemp=color->hue/60.0;
+			hTemp=(*H)/60.0;
  
 		int i=trunc(hTemp);
 		float f=hTemp-i;
  
-		float p=color->vvalue*(1.0-color->saturation);
-		float q=color->vvalue*(1.0-(color->saturation*f));
-		float t=color->vvalue*(1.0-(color->saturation*(1.0-f)));
+		float p=(*V)*(1.0-(*S));
+		float q=(*V)*(1.0-((*S)*f));
+		float t=(*V)*(1.0-((*S)*(1.0-f)));
  
 		switch (i) 
 		{
 			default:
 			case 0:
 			case 6:
-				color->red=round(color->vvalue*255.0);
-				color->green=round(t*255.0);
-				color->blue=round(p*255.0);
+				*R=round((*V)*255.0);
+				*G=round(t*255.0);
+				*B=round(p*255.0);
 				break;
 			case 1:
-				color->red=round(q*255.0);
-				color->green=round(color->vvalue*255.0);
-				color->blue=round(p*255.0);
+				*R=round(q*255.0);
+				*G=round((*V)*255.0);
+				*B=round(p*255.0);
 				break;
 			case 2:
-				color->red=round(p*255.0);
-				color->green=round(color->vvalue*255.0);
-				color->blue=round(t*255.0);
+				*R=round(p*255.0);
+				*G=round((*V)*255.0);
+				*B=round(t*255.0);
 				break;
 			case 3:
-				color->red=round(p*255.0);
-				color->green=round(q*255.0);
-				color->blue=round(color->vvalue*255.0);
+				*R=round(p*255.0);
+				*G=round(q*255.0);
+				*B=round((*V)*255.0);
 				break;
 			case 4:
-				color->red=round(t*255.0);
-				color->green=round(p*255.0);
-				color->blue=round(color->vvalue*255.0);
+				*R=round(t*255.0);
+				*G=round(p*255.0);
+				*B=round((*V)*255.0);
 				break;
 			case 5:
-				color->red=round(color->vvalue*255.0);
-				color->green=round(p*255.0);
-				color->blue=round(q*255.0);
+				*R=round((*V)*255.0);
+				*G=round(p*255.0);
+				*B=round(q*255.0);
 				break;
 		}
  
 	}
-	return;
 }
  
 // calc HSV values of rgbhsvColor from RGB values
-glVector rgbToHSV(float* R,float* G,float* B)
+void Visualization::rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V)
 {
 	float maxRGBValue=MAX(MAX(*R, *G), *B);
 	float minValue=MIN(MIN(*R, *G), *B);
@@ -149,26 +151,25 @@ glVector rgbToHSV(float* R,float* G,float* B)
 		hue=0;
 	else 
 	{
-		if(color->red==maxRGBValue)
-			hue=60.0*(float)(color->green-color->blue)/255.0/delta;
+		if((*R)==maxRGBValue)
+			hue=60.0*(float)((*R) - (*B))/255.0/delta;
 		else 
 		{
-			if(color->green==maxRGBValue)
-				hue=120.0+60.0*(float)(color->blue-color->red)/255.0/delta;
+			if((*G)==maxRGBValue)
+				hue=120.0+60.0*(float)((*B)-(*R))/255.0/delta;
 			else 
 			{
-				if(color->blue==maxRGBValue)
-					hue=240.0+60.0*(float)(color->red-color->green)/255.0/delta;
+				if((*B)==maxRGBValue)
+					hue=240.0+60.0*(float)((*R)-(*G))/255.0/delta;
 			}
 		}
 		if(hue<0.0)
 			hue+=360.0;
 	}
-	color->hue=round(hue);
-	color->saturation=round(saturation);
-	color->vvalue=round(vvalue);
-	return;	
-}*/
+	*H = round(hue);
+	*S = round(saturation);
+	*V = round(vvalue);
+}
 
 //direction_to_color: Set the current color by mapping a direction vector (x,y), using
 //                    the color mapping method 'method'. If method==1, map the vector direction
