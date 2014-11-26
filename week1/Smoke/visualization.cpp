@@ -402,12 +402,8 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	float y_dif = y_end - y_start;
 	float arrow_length = sqrt(x_dif * x_dif + y_dif * y_dif);
 	float angle;
-	if (y_dif < 0 && x_dif < 0) {
+	if (y_dif < 0) {
 		angle = M_PI - atan(x_dif/y_dif);
-	} else if (y_dif < 0) {
-		angle = M_PI - atan(x_dif/y_dif);
-	} else if (x_dif < 0) {
-		angle = -atan(x_dif/y_dif);
 	} else {
 		angle = -atan(x_dif/y_dif);
 	}
