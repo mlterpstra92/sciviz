@@ -12,13 +12,48 @@ void Visualization::visualize(Model* model)
 {
     fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
-
+    fftw_real* values;
+   	int dim = model->DIM * 2 * (model->DIM /2+1);
+    std::vector<fftw_real> tempVals(dim);
+    fftw_real min, max;
     if (drawMatter)
     {	
     	// Scalar values
-        draw_smoke(wn, hn, model);
+    	switch (dataset_idx)
+    	{
+    	case FLUID_DENSITY:
+    		values = model->rho;
+    		min = model->min_rho;
+    		max = model->max_rho;
+
+    		break;
+    	case FLUID_VELOCITY:
+    		// Calculate magnitudes
+    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+    		for (int i = 0; i < dim; i++)
+    		{
+    			values[i] = ((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
+
+    		}    			
+    		min = model->min_velo;
+    		max = model->max_velo;
+
+    		break;
+    	case FORCE_FIELD:
+    		// Calculate magnitudes    
+    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));		
+	    	for (int i = 0; i < dim; i++)
+	    	{
+	    		values[i] = ((fftw_real)sqrt(model->fx[i] * model->fx[i] + model->fy[i] * model->fy[i]));
+	    	}
+	    	min = model->min_force;
+	    	max = model->max_force;
+
+    		break;
+    	}
+        draw_smoke(wn, hn, model->DIM, values, min, max);
         if(!clamping)
-        	draw_color_legend(model->min_rho, model->max_rho);
+        	draw_color_legend(min, max);
         else
         	draw_color_legend(0.0, 1.0);
     }
@@ -265,45 +300,45 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 }
 
 // Draw smoke
-void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
+void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* values, fftw_real min, fftw_real max)
 {
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
  	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
-    for (j = 0; j < model->DIM - 1; j++)            //draw smoke
+    for (j = 0; j < DIM - 1; j++)            //draw smoke
     {
-        for (i = 0; i < model->DIM - 1; i++)
+        for (i = 0; i < DIM - 1; i++)
         {
             double px0 = wn + (fftw_real)i * wn;
             double py0 = hn + (fftw_real)j * hn;
-            int idx0 = (j * model->DIM) + i;
+            int idx0 = (j * DIM) + i;
 
             double px1 = wn + (fftw_real)i * wn;
             double py1 = hn + (fftw_real)(j + 1) * hn;
-            int idx1 = ((j + 1) * model->DIM) + i;
+            int idx1 = ((j + 1) * DIM) + i;
 
             double px2 = wn + (fftw_real)(i + 1) * wn;
             double py2 = hn + (fftw_real)(j + 1) * hn;
-            int idx2 = ((j + 1) * model->DIM) + (i + 1);
+            int idx2 = ((j + 1) * DIM) + (i + 1);
 
             double px3 = wn + (fftw_real)(i + 1) * wn;
             double py3 = hn + (fftw_real)j * hn;
-            int idx3 = (j * model->DIM) + (i + 1);
+            int idx3 = (j * DIM) + (i + 1);
 
             if (clamping == 1)
             {  // Clamp
-                vy0 = clamp(model->rho[idx0]);
-                vy1 = clamp(model->rho[idx1]);
-                vy2 = clamp(model->rho[idx2]);
-                vy3 = clamp(model->rho[idx3]);
+                vy0 = clamp(values[idx0]);
+                vy1 = clamp(values[idx1]);
+                vy2 = clamp(values[idx2]);
+                vy3 = clamp(values[idx3]);
             }
             else
             {  // Scale
-                vy0 = scale(model->rho[idx0], model->min_rho, model->max_rho);
-                vy1 = scale(model->rho[idx1], model->min_rho, model->max_rho);
-                vy2 = scale(model->rho[idx2], model->min_rho, model->max_rho);
-                vy3 = scale(model->rho[idx3], model->min_rho, model->max_rho);
+                vy0 = scale(values[idx0], min, max);
+                vy1 = scale(values[idx1], min, max);
+                vy2 = scale(values[idx2], min, max);
+                vy3 = scale(values[idx3], min, max);
             }
             set_colormap(vy0);    glVertex2f(px0, py0);
             set_colormap(vy1);    glVertex2f(px1, py1);
@@ -314,6 +349,8 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, Model* model)
             set_colormap(vy3);    glVertex2f(px3, py3);
         }
     }
+    if (dataset_idx != FLUID_DENSITY)
+    	free(values);
     glEnd();
 }
 

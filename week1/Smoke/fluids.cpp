@@ -170,6 +170,13 @@ void create_GUI()
 
     GLUI_Spinner* viscosity_spinner = new GLUI_Spinner(generalRollout, "Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
+    // Radio button for Scale / Clamp
+    GLUI_Panel* scale_clamp_panel = new GLUI_Panel(generalRollout, "Dataset manipulation");
+    GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
+    glui->add_radiobutton_to_group( scale_clamp, "Scale");
+    glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+
+    // SMOKE ROLLOUT
     GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false); 
     new GLUI_Checkbox(smokeRollout, "Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
   
@@ -189,13 +196,6 @@ void create_GUI()
 
     GLUI_Spinner* saturation_spinner = new GLUI_Spinner(smokeRollout, "Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
     saturation_spinner->set_float_limits(0.0f, 1.0f);
-
-    // Radio button for Scale / Clamp
-    GLUI_Panel* scale_clamp_panel = new GLUI_Panel(smokeRollout, "Dataset manipulation");
-    GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
-    glui->add_radiobutton_to_group( scale_clamp, "Scale");
-    glui->add_radiobutton_to_group( scale_clamp, "Clamp");
-
 
     GLUI_Rollout* glyphRollout = glui->add_rollout("Glyph", false);
 

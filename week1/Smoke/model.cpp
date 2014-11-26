@@ -49,7 +49,7 @@ void Model::FFT(int direction, void* vx)
 //solve: Solve (compute) one step of the fluid flow simulation
 void Model::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw_real* vy0, fftw_real visc, fftw_real dt)
 {
-    fftw_real x, y, x0, y0, f, r, U[2], V[2], s, t;
+    fftw_real x, y, x0, y0, f, r, U[2], V[2], s, t, magnitude;
     int i, j, i0, j0, i1, j1;
 
     for (i=0;i<n*n;i++)
@@ -117,7 +117,23 @@ void Model::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw_real
     {
         for (j=0;j<n;j++)
         {
-            vx[i+n*j] = f*vx0[i+(n+2)*j]; vy[i+n*j] = f*vy0[i+(n+2)*j];
+            vx[i+n*j] = f*vx0[i+(n+2)*j]; 
+            vy[i+n*j] = f*vy0[i+(n+2)*j];
+            // Calculate the min and max magnitude of all velocities per timestep
+            magnitude = sqrt(vx[i+n*j] * vx[i+n*j] + vy[i+n*j] * vy[i+n*j]);
+            if (i == 0 && j == 0)
+            {
+                min_velo = FLT_MAX;
+                max_velo = -FLT_MAX;
+            }
+            else if (magnitude < min_velo)
+            {
+                min_velo = magnitude;
+            }
+            else if (magnitude > max_velo)
+            {
+                max_velo = magnitude;
+            }
         }
     }
 }
@@ -157,6 +173,7 @@ void Model::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, fftw_real *rho, 
             j0 = (n+(j0%n))%n;
             j1 = (j0+1)%n;
             tmp = (1-s)*((1-t)*rho0[i0+n*j0]+t*rho0[i0+n*j1])+s*((1-t)*rho0[i1+n*j0]+t*rho0[i1+n*j1]);
+            // Calculate min and max rho values per timestep
             if (i == 0 && j == 0)
             {
                 min_rho = FLT_MAX;
@@ -180,6 +197,7 @@ void Model::diffuse_matter(int n, fftw_real *vx, fftw_real *vy, fftw_real *rho, 
 void Model::set_forces(const int DIM)
 {
     int i;
+    fftw_real magnitude;
     for (i = 0; i < DIM * DIM; i++)
     {
         rho0[i]  = 0.995 * rho[i];
@@ -187,6 +205,21 @@ void Model::set_forces(const int DIM)
         fy[i] *= 0.85;
         vx0[i]    = fx[i];
         vy0[i]    = fy[i];
+        // Calculate the min and max magnitude of all force fields per timestep
+        magnitude = sqrt(fx[i] * fx[i] + fy[i] * fy[i]);
+        if (i == 0)
+        {
+            min_force = FLT_MAX;
+            max_force = -FLT_MAX;
+        }
+        else if (magnitude < min_force)
+        {
+            min_force = magnitude;
+        }
+        else if (magnitude > max_force)
+        {
+            max_force = magnitude;
+        }
     }
 }
 

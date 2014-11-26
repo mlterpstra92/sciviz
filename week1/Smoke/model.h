@@ -18,6 +18,8 @@ public:
     fftw_real *fx, *fy;             //(fx,fy)   = user-controlled simulation forces, steered with the mouse
     fftw_real *rho, *rho0;          //smoke density at the current (rho) and previous (rho0) moment
     fftw_real min_rho, max_rho;     // Min and max values of the 2d rho matrix
+    fftw_real min_velo, max_velo;   // Min and max magnitudes of the velocities
+    fftw_real min_force, max_force; // Min and max magnitudes of the forces
     rfftwnd_plan plan_rc, plan_cr;  //simulation domain discretization
 
     //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------

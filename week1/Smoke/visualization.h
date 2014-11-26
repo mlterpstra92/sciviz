@@ -50,7 +50,7 @@ public:
     void draw_color_legend(float minRho, float maxRho);
 
     //draw smoke
-    void draw_smoke(fftw_real wn, fftw_real hn, Model* model);
+    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* values, fftw_real min, fftw_real max);
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, Model* model);
