@@ -27,11 +27,16 @@ public:
     float hue;
     int dataset_idx;
     int clamping;
+    int glyph_location_idx;
+    int num_x_glyphs, num_y_glyphs;
+    int glyph_shape;
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
     enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
+    enum{UNIFORM, RANDOM, JITTER};
+    enum{LINES, ARROWS};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1){
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1), glyph_shape(LINES){
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -54,6 +59,8 @@ public:
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, Model* model);
+
+    void draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width);
 
     //direction_to_color: Set the current color by mapping a direction vector (x,y), using
     //                    the color mapping method 'method'. If method==1, map the vector direction

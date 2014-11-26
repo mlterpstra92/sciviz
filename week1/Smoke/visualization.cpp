@@ -356,15 +356,57 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 {	
-	int i, j, idx;
-	glBegin(GL_LINES);				//draw velocities
-	for (i = 0; i < model->DIM; i++)
-	    for (j = 0; j < model->DIM; j++)
-	    {
-		  idx = (j * model->DIM) + i;
-		  direction_to_color(model->vx[idx],model->vy[idx],color_dir);
-		  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-		  glVertex2f((wn + (fftw_real)i * wn) + vec_length * model->vx[idx], (hn + (fftw_real)j * hn) + vec_length * model->vy[idx]);
-	    }
-	glEnd();
+	fftw_real* direction_x = model->vx;
+	fftw_real* direction_y = model->vy;
+
+	glLineWidth (2);
+
+	if (glyph_shape == LINES) {
+		int i, j, idx;
+		glBegin(GL_LINES);				//draw velocities
+		for (i = 0; i < model->DIM; i++)
+		    for (j = 0; j < model->DIM; j++)
+		    {
+			  idx = (j * model->DIM) + i;
+			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+			  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
+			  glVertex2f((wn + (fftw_real)i * wn) + vec_length * direction_x[idx], (hn + (fftw_real)j * hn) + vec_length * direction_y[idx]);
+		    }
+		glEnd();
+	} else if (glyph_shape == ARROWS) {
+		int i, j, idx;
+		glBegin(GL_LINES);				//draw velocities
+		for (i = 0; i < model->DIM; i++)
+		    for (j = 0; j < model->DIM; j++)
+		    {
+			  idx = (j * model->DIM) + i;
+			  int x_start = wn + (fftw_real)i * wn;
+			  int y_start = hn + (fftw_real)j * hn;
+			  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
+			  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
+			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+			  draw_arrow(x_start, y_start, x_end, y_end, vec_length / 200);
+		    }
+		glEnd();
+	}
+	
+}
+
+void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width)
+{
+	glVertex2f(x_start, y_start);
+	glVertex2f(x_end, y_end);
+
+	float x_head_dir = x_end - x_start;
+	float y_head_dir = y_end - y_start;
+	float dif_length = sqrt(x_head_dir*x_head_dir + y_head_dir * y_head_dir);
+	// Normalize the vector
+	x_head_dir /= dif_length;
+	y_head_dir /= dif_length;
+
+	glVertex2f(x_end, y_end);
+	glVertex2f(x_start + 0.8*(x_end - x_start) + head_width * x_head_dir, y_start + 0.8*(y_end - y_start) - head_width * y_head_dir);
+
+	glVertex2f(x_end, y_end);
+	glVertex2f(x_start + 0.8*(x_end - x_start) - head_width * x_head_dir, y_start + 0.8*(y_end - y_start) + head_width * y_head_dir);
 }
