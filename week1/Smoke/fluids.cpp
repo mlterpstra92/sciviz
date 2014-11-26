@@ -120,22 +120,18 @@ void glui_callback(int control)
 {
     switch(control)
     {
-        case DRAW_HEDGEHOGS_ID:
-            if (vis.drawHedgehogs == 0)
-                vis.drawMatter = 1;
-            break;
-
-        case DRAW_MATTER_ID:
-            if (vis.drawMatter == 0)
-                vis.drawHedgehogs = 1;
-            break;
-
         case HEDGEHOG_SPINNER_ID:
             vis.vec_length = vis.vec_base_length * vis.vec_scale;
             break;
 
         case VISCOSITY_SPINNER_ID:
             model.visc = model.base_visc * model.visc_scale_factor;
+
+        case MIN_CLAMP_ID:
+        case MAX_CLAMP_ID:
+            minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
+            maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+            break;
 
         default:
             break;
@@ -150,10 +146,14 @@ void create_GUI()
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
     GLUI_Rollout* generalRollout = glui->add_rollout("General", true);
-    GLUI_Listbox *dataset_list = new GLUI_Listbox(generalRollout, "Dataset", &(vis.dataset_idx), DATASET_ID, glui_callback);
-    dataset_list->add_item(0, "Rho");
-    dataset_list->add_item(1, "Fluid velocity magnitude");
-    dataset_list->add_item(2, "Force field magnitude");
+    GLUI_Listbox *scalar_list = new GLUI_Listbox(generalRollout, "Scalar dataset", &(vis.scalar_dataset_idx), DATASET_ID, glui_callback);
+    scalar_list->add_item(0, "Rho");
+    scalar_list->add_item(1, "||Fluid velocity||");
+    scalar_list->add_item(2, "||Force field||");
+
+    GLUI_Listbox *vector_list = new GLUI_Listbox(generalRollout, "Vector dataset", &(vis.vector_dataset_idx), DATASET_ID, glui_callback);
+    vector_list->add_item(1, "Fluid velocity");
+    vector_list->add_item(2, "Force field");
 
 
     // Add several checkboxes
@@ -170,6 +170,14 @@ void create_GUI()
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+
+    vis.min_clamp_value = 0.0f;
+    vis.max_clamp_value = 1.0f;
+    minClamp = new GLUI_Spinner(generalRollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_clamp_value), MIN_CLAMP_ID, glui_callback);
+    maxClamp = new GLUI_Spinner(generalRollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_clamp_value), MAX_CLAMP_ID, glui_callback);
+    minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
+    maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+
 
     // SMOKE ROLLOUT
     GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false); 
@@ -193,9 +201,9 @@ void create_GUI()
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
     GLUI_Rollout* glyphRollout = glui->add_rollout("Glyph", false);
-    new GLUI_Checkbox(glyphRollout, "Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
+    new GLUI_Checkbox(glyphRollout, "Draw glyphes", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     new GLUI_Checkbox(glyphRollout, "Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
-    GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
+    GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Vector scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
     hedgehog_spinner->set_float_limits(0.0f, 10.0f);
 
     GLUI_Listbox *glyph_location_list = new GLUI_Listbox(glyphRollout, "Glyph location", &(vis.glyph_location_idx), GLYPH_LOCATION_ID, glui_callback);
@@ -203,6 +211,8 @@ void create_GUI()
     glyph_location_list->add_item(1, "Random");
     glyph_location_list->add_item(2, "Jitter");
 
+    vis.num_x_glyphs = model.DIM;
+    vis.num_y_glyphs = model.DIM;
     new GLUI_Spinner(glyphRollout, "X samples", GLUI_SPINNER_INT, &(vis.num_x_glyphs), X_GLYPH_SPINNER, glui_callback);
     new GLUI_Spinner(glyphRollout, "Y samples", GLUI_SPINNER_INT, &(vis.num_y_glyphs), Y_GLYPH_SPINNER, glui_callback);
 
@@ -219,7 +229,7 @@ int main(int argc, char **argv)
     printStart();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(800,500);
+    glutInitWindowSize(1024,768);
 
     window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);

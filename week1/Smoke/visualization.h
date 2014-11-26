@@ -25,11 +25,13 @@ public:
     int limitColors;
     float saturation;
     float hue;
-    int dataset_idx;
+    int scalar_dataset_idx;
+    int vector_dataset_idx;
     int clamping;
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
+    float min_clamp_value, max_clamp_value;
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
     enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
     enum{UNIFORM, RANDOM, JITTER};

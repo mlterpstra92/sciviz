@@ -20,7 +20,7 @@ void Visualization::visualize(Model* model)
     if (drawMatter)
     {	
     	// Scalar values
-    	switch (dataset_idx)
+    	switch (scalar_dataset_idx)
     	{
     	case FLUID_DENSITY:
     		values = model->rho;
@@ -56,7 +56,7 @@ void Visualization::visualize(Model* model)
         if(!clamping)
         	draw_color_legend(min, max);
         else
-        	draw_color_legend(0.0, 1.0);
+        	draw_color_legend(min_clamp_value, max_clamp_value);
     }
     if (drawHedgehogs)
     {
@@ -86,9 +86,9 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 //clamp: Clamp all values between 0 and 1
 float Visualization::clamp(float x)
 {
-    if (x >= 1.0) {
+    if (x >= max_clamp_value) {
         return 1.0;
-    } else if (x < 0.0) {
+    } else if (x < min_clamp_value) {
         return 0.0;
     } else {
         return x;
@@ -254,7 +254,7 @@ void Visualization::display_text(float x, float y, char* const string)
 }
 
 // Draw color legend
-void Visualization::draw_color_legend(float minRho, float maxRho)
+void Visualization::draw_color_legend(float min, float max)
 {
 	int tx, ty, tw, th;
 	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
@@ -278,7 +278,7 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 	int numbersToDraw = numColors > 10 ? 10 : numColors;
 	for (int i = 0; i < numbersToDraw; ++i)
 	{
-		float value = ((float)i / numbersToDraw) * (maxRho - minRho) + minRho;
+		float value = ((float)i / numbersToDraw) * (max - min) + min;
 		char* strVal = NULL;
 		asprintf(&strVal, "%0.2f", value);
 
@@ -291,7 +291,7 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 		glEnd();
 	}
 	char* maxStr = NULL;
-	asprintf(&maxStr, "%0.2f", maxRho);
+	asprintf(&maxStr, "%0.2f", max);
 
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 	glBegin(GL_LINES);
@@ -350,7 +350,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             set_colormap(vy3);    glVertex2f(px3, py3);
         }
     }
-    if (dataset_idx != FLUID_DENSITY)
+    if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
     glEnd();
 }
@@ -360,34 +360,36 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 	fftw_real* direction_x = model->vx;
 	fftw_real* direction_y = model->vy;
 
-	if (glyph_shape == LINES) {
-		int i, j, idx;
+	glLineWidth (2);
+
+	int i, j, idx;
+	switch(glyph_shape){
+	case LINES:
 		glBegin(GL_LINES);				//draw velocities
-		for (i = 0; i < model->DIM; i++)
-		    for (j = 0; j < model->DIM; j++)
+		for (i = 0; i < num_x_glyphs; i++)
+		    for (j = 0; j < num_y_glyphs; j++)
 		    {
 			  idx = (j * model->DIM) + i;
-			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+			  direction_to_color(direction_x[idx],direction_y[idx], color_dir);
 			  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
 			  glVertex2f((wn + (fftw_real)i * wn) + vec_length * direction_x[idx], (hn + (fftw_real)j * hn) + vec_length * direction_y[idx]);
 		    }
 		glEnd();
-	} else if (glyph_shape == ARROWS) {
-		int i, j, idx;
-					//draw velocities
-		for (i = 0; i < model->DIM; i++)
-		    for (j = 0; j < model->DIM; j++)
-			{
-				idx = (j * model->DIM) + i;
-				int x_start = wn + (fftw_real)i * wn;
-				int y_start = hn + (fftw_real)j * hn;
-				int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
-				int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
-				direction_to_color(direction_x[idx],direction_y[idx],color_dir);
-				draw_arrow(x_start, y_start, x_end, y_end, 4);
-			}
+		break;
+	case ARROWS:
+		for (i = 0; i < num_x_glyphs; i++)
+		    for (j = 0; j < num_y_glyphs; j++)
+		    {
+			  idx = (j * model->DIM) + i;
+			  int x_start = wn + (fftw_real)i * wn;
+			  int y_start = hn + (fftw_real)j * hn;
+			  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
+			  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
+			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+			  draw_arrow(x_start, y_start, x_end, y_end, 4);
+		    }
+		break;
 	}
-	
 }
 
 void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width)
