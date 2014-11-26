@@ -404,7 +404,17 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	float x_dif = x_end - x_start;
 	float y_dif = y_end - y_start;
 	float arrow_length = sqrt(x_dif * x_dif + y_dif * y_dif);
-	float angle = atan(x_dif / y_dif);
+	float angle;
+	if (y_dif < 0 && x_dif < 0) {
+		angle = M_PI - atan(x_dif/y_dif);
+	} else if (y_dif < 0) {
+		angle = M_PI - atan(x_dif/y_dif);
+	} else if (x_dif < 0) {
+		angle = -atan(x_dif/y_dif);
+	} else {
+		angle = -atan(x_dif/y_dif);
+	}
+	// Convert angle from radians to degrees
 	angle *= 180/M_PI;
 
 	// Translate and rotate to the arrow's origin and its angle
@@ -426,6 +436,7 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	}
 	glEnd();
 
+	// Pop the matrix (i.e. restore the previous matrix on the stack)
 	glPopMatrix();
 
 }
