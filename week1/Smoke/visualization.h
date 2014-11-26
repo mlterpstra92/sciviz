@@ -25,6 +25,7 @@ public:
     int limitColors;
     float saturation;
     float hue;
+    int dataset_idx;
     int clamping;
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
     enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
@@ -59,14 +60,6 @@ public:
     //                    using a rainbow colormap. If method==0, simply use the white color
     void direction_to_color(float x, float y, int method);
 
-    //Select next color profile
-    void nextColor(){
-        color_map_idx++;
-        if (color_map_idx > COLOR_BIPOLAR)
-        {
-            color_map_idx = COLOR_BLACKWHITE;
-        }
-    }
     float clamp(float x);
     float scale(float x, fftw_real min, fftw_real max);
 };

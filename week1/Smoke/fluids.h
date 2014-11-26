@@ -14,7 +14,8 @@ enum {
 	  SATURATION_SPINNER_ID, 
 	  HUE_SPINNER_ID,
 	  SCALE_CLAMP_ID,
-	  COLOR_MAP_ID
+	  COLOR_MAP_ID,
+	  DATASET_ID
 };
 
 #endif

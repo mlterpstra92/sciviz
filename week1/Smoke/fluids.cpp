@@ -150,6 +150,11 @@ void create_GUI()
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
     GLUI_Rollout* generalRollout = glui->add_rollout("General", true);
+    GLUI_Listbox *dataset_list = new GLUI_Listbox(generalRollout, "Dataset", &(vis.dataset_idx), DATASET_ID, glui_callback);
+    dataset_list->add_item(0, "Rho");
+    dataset_list->add_item(1, "Fluid velocity magnitude");
+    dataset_list->add_item(2, "Force field magnitude");
+
 
     // Add several checkboxes
     new GLUI_Checkbox(generalRollout, "Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
