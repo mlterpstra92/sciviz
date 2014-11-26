@@ -1,5 +1,8 @@
 # GNU (everywhere)
-CPP = g++ -std=c++11 -g -Wall
+# Debug
+# CPP = g++ -std=c++11 -g -Wall
+# Optimizing
+CPP = g++ -std=c++11 -O3 -ffast-math -g -Wall
 LIBS        = -lglui -lglut -lGLU -lGL -lrfftw -lfftw -lm
 EXECUTABLE = smoke
 

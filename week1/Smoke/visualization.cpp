@@ -370,32 +370,29 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	glLineWidth (2);
 
 	int i, j, idx;
-	switch(glyph_shape){
-	case LINES:
-		glBegin(GL_LINES);				//draw velocities
-		for (i = 0; i < num_x_glyphs; i++)
-		    for (j = 0; j < num_y_glyphs; j++)
-		    {
-			  idx = (j * DIM) + i;
-			  direction_to_color(direction_x[idx],direction_y[idx], color_dir);
-			  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
-			  glVertex2f((wn + (fftw_real)i * wn) + vec_length * direction_x[idx], (hn + (fftw_real)j * hn) + vec_length * direction_y[idx]);
-		    }
-		glEnd();
-		break;
-	case ARROWS:
-		for (i = 0; i < num_x_glyphs; i++)
-		    for (j = 0; j < num_y_glyphs; j++)
-		    {
-			  idx = (j * DIM) + i;
-			  int x_start = wn + (fftw_real)i * wn;
-			  int y_start = hn + (fftw_real)j * hn;
-			  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
-			  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
-			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
-			  draw_arrow(x_start, y_start, x_end, y_end, 4);
-		    }
-		break;
+	for (i = 0; i < num_x_glyphs; i++)
+	{
+		for (j = 0; j < num_y_glyphs; j++)
+		{
+		  idx = (j * DIM) + i;
+		  int x_start = wn + (fftw_real)i * wn;
+		  int y_start = hn + (fftw_real)j * hn;
+		  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
+		  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
+		  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+		  switch(glyph_shape)
+		  {
+		  case LINES:
+		  	glBegin(GL_LINES);
+		  	glVertex2f(x_start, y_start);
+		  	glVertex2f(x_end, y_end);
+		  	glEnd();
+		  	break;
+		  case ARROWS:
+		  	draw_arrow(x_start, y_start, x_end, y_end, 4);
+		  	break;
+		  }
+		}
 	}
 }
 
