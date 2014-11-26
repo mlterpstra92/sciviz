@@ -152,14 +152,8 @@ void create_GUI()
 
     // Add several checkboxes
     glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
-    glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
     glui->add_checkbox("Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
-    // Add listbox with color maps
-    GLUI_Listbox *color_map_list = glui->add_listbox("Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
-    color_map_list->add_item(0, "Black/White");
-    color_map_list->add_item(1, "Rainbow");
-    color_map_list->add_item(2, "Bipolar");
 
     // Add spinners
     GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
@@ -170,22 +164,31 @@ void create_GUI()
 
     GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
+    GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false);   
 
-    glui->add_checkbox("Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
-    GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
+    // Add listbox with color maps
+    GLUI_Listbox *color_map_list = new GLUI_Listbox(smokeRollout, "Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
+    color_map_list->add_item(0, "Black/White");
+    color_map_list->add_item(1, "Rainbow");
+    color_map_list->add_item(2, "Bipolar");
+
+    new GLUI_Checkbox(smokeRollout, "Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
+    GLUI_Spinner* numColors_spinner = new GLUI_Spinner(smokeRollout, "Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
 
-    GLUI_Spinner* hue_spinner = glui->add_spinner("Hue", GLUI_SPINNER_FLOAT, &(vis.hue), HUE_SPINNER_ID, glui_callback);
+    GLUI_Spinner* hue_spinner = new GLUI_Spinner(smokeRollout, "Hue", GLUI_SPINNER_FLOAT, &(vis.hue), HUE_SPINNER_ID, glui_callback);
     hue_spinner->set_float_limits(0.0f, 1.0f);
 
-    GLUI_Spinner* saturation_spinner = glui->add_spinner("Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
+    GLUI_Spinner* saturation_spinner = new GLUI_Spinner(smokeRollout, "Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
     // Radio button for Scale / Clamp
-    GLUI_Panel* scale_clamp_panel = glui->add_panel("Dataset manipulation");
+    GLUI_Panel* scale_clamp_panel = new GLUI_Panel(smokeRollout, "Dataset manipulation");
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+
+    new GLUI_Checkbox(smokeRollout, "Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
 }
 
 //main: The main program

@@ -211,7 +211,7 @@ void Visualization::display_text(float x, float y, char* const string)
     glRasterPos3f( x, y, 0.0 );
 
     for( ch = string; *ch; ch++ ) {
-        glutBitmapCharacter( GLUT_BITMAP_HELVETICA_18, (int)*ch );
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, (int)*ch );
     }
 }
 
