@@ -60,7 +60,7 @@ public:
     void draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* values, fftw_real min, fftw_real max);
 
     //draw velocities
-    void draw_velocities(fftw_real wn, fftw_real hn, Model* model);
+    void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y);
 
     void draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width);
 

@@ -12,13 +12,12 @@ void Visualization::visualize(Model* model)
 {
     fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
-    fftw_real* values;
    	int dim = model->DIM * 2 * (model->DIM /2+1);
-    std::vector<fftw_real> tempVals(dim);
-    fftw_real min, max;
-    glLineWidth(2);
+
     if (drawMatter)
     {	
+    	fftw_real* values;
+    	fftw_real min, max;
     	// Scalar values
     	switch (scalar_dataset_idx)
     	{
@@ -26,7 +25,6 @@ void Visualization::visualize(Model* model)
     		values = model->rho;
     		min = model->min_rho;
     		max = model->max_rho;
-
     		break;
     	case FLUID_VELOCITY:
     		// Calculate magnitudes
@@ -34,7 +32,6 @@ void Visualization::visualize(Model* model)
     		for (int i = 0; i < dim; i++)
     		{
     			values[i] = ((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
-
     		}    			
     		min = model->min_velo;
     		max = model->max_velo;
@@ -61,7 +58,20 @@ void Visualization::visualize(Model* model)
     if (drawHedgehogs)
     {
     	// Vector values
-        draw_velocities(wn, hn, model);
+    	fftw_real* direction_x;
+    	fftw_real* direction_y;
+		switch (vector_dataset_idx)
+    	{
+    	case FLUID_VELOCITY:
+    		direction_x = model->vx;
+    		direction_y = model->vy;
+    		break;
+    	case FORCE_FIELD:
+    		direction_x = model->fx;
+    		direction_y = model->fy;
+    		break;
+    	}
+        draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
     }
 }
 
@@ -355,11 +365,8 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
     glEnd();
 }
 
-void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
+void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
 {	
-	fftw_real* direction_x = model->vx;
-	fftw_real* direction_y = model->vy;
-
 	glLineWidth (2);
 
 	int i, j, idx;
@@ -369,7 +376,7 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 		for (i = 0; i < num_x_glyphs; i++)
 		    for (j = 0; j < num_y_glyphs; j++)
 		    {
-			  idx = (j * model->DIM) + i;
+			  idx = (j * DIM) + i;
 			  direction_to_color(direction_x[idx],direction_y[idx], color_dir);
 			  glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
 			  glVertex2f((wn + (fftw_real)i * wn) + vec_length * direction_x[idx], (hn + (fftw_real)j * hn) + vec_length * direction_y[idx]);
@@ -380,7 +387,7 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 		for (i = 0; i < num_x_glyphs; i++)
 		    for (j = 0; j < num_y_glyphs; j++)
 		    {
-			  idx = (j * model->DIM) + i;
+			  idx = (j * DIM) + i;
 			  int x_start = wn + (fftw_real)i * wn;
 			  int y_start = hn + (fftw_real)j * hn;
 			  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];

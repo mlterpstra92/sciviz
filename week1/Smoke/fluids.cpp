@@ -177,6 +177,7 @@ void create_GUI()
     maxClamp = new GLUI_Spinner(generalRollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_clamp_value), MAX_CLAMP_ID, glui_callback);
     minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
     maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+    maxClamp->set_speed(0.1);
 
 
     // SMOKE ROLLOUT
@@ -229,7 +230,7 @@ int main(int argc, char **argv)
     printStart();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(1024,768);
+    glutInitWindowSize(1200,768);
 
     window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
@@ -242,6 +243,7 @@ int main(int argc, char **argv)
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glHint (GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    glLineWidth(2);
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;
