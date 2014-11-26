@@ -16,6 +16,7 @@ void Visualization::visualize(Model* model)
    	int dim = model->DIM * 2 * (model->DIM /2+1);
     std::vector<fftw_real> tempVals(dim);
     fftw_real min, max;
+    glLineWidth(2);
     if (drawMatter)
     {	
     	// Scalar values
@@ -359,8 +360,6 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 	fftw_real* direction_x = model->vx;
 	fftw_real* direction_y = model->vy;
 
-	glLineWidth (2);
-
 	if (glyph_shape == LINES) {
 		int i, j, idx;
 		glBegin(GL_LINES);				//draw velocities
@@ -375,38 +374,49 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model)
 		glEnd();
 	} else if (glyph_shape == ARROWS) {
 		int i, j, idx;
-		glBegin(GL_LINES);				//draw velocities
+					//draw velocities
 		for (i = 0; i < model->DIM; i++)
 		    for (j = 0; j < model->DIM; j++)
-		    {
-			  idx = (j * model->DIM) + i;
-			  int x_start = wn + (fftw_real)i * wn;
-			  int y_start = hn + (fftw_real)j * hn;
-			  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
-			  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
-			  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
-			  draw_arrow(x_start, y_start, x_end, y_end, vec_length / 200);
-		    }
-		glEnd();
+			{
+				idx = (j * model->DIM) + i;
+				int x_start = wn + (fftw_real)i * wn;
+				int y_start = hn + (fftw_real)j * hn;
+				int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
+				int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
+				direction_to_color(direction_x[idx],direction_y[idx],color_dir);
+				draw_arrow(x_start, y_start, x_end, y_end, 4);
+			}
 	}
 	
 }
 
 void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width)
 {
-	glVertex2f(x_start, y_start);
-	glVertex2f(x_end, y_end);
+	float x_dif = x_end - x_start;
+	float y_dif = y_end - y_start;
+	float arrow_length = sqrt(x_dif * x_dif + y_dif * y_dif);
+	float angle = atan(x_dif / y_dif);
+	angle *= 180/M_PI;
 
-	float x_head_dir = x_end - x_start;
-	float y_head_dir = y_end - y_start;
-	float dif_length = sqrt(x_head_dir*x_head_dir + y_head_dir * y_head_dir);
-	// Normalize the vector
-	x_head_dir /= dif_length;
-	y_head_dir /= dif_length;
+	// Translate and rotate to the arrow's origin and its angle
+	glPushMatrix();
+	glTranslatef(x_start, y_start, 0.0f);
+	glRotatef(angle, 0.0, 0.0, 1.0);
 
-	glVertex2f(x_end, y_end);
-	glVertex2f(x_start + 0.8*(x_end - x_start) + head_width * x_head_dir, y_start + 0.8*(y_end - y_start) - head_width * y_head_dir);
+	// We can now draw the arrow w.r.t. the origin
+	glBegin(GL_LINES);	
+	{
+		glVertex2f(0, 0);
+		glVertex2f(0, arrow_length);
 
-	glVertex2f(x_end, y_end);
-	glVertex2f(x_start + 0.8*(x_end - x_start) - head_width * x_head_dir, y_start + 0.8*(y_end - y_start) + head_width * y_head_dir);
+		glVertex2f(0, arrow_length);
+		glVertex2f(head_width, arrow_length - head_width);
+
+		glVertex2f(0, arrow_length);
+		glVertex2f(-head_width, arrow_length - head_width);
+	}
+	glEnd();
+
+	glPopMatrix();
+
 }
