@@ -26,10 +26,12 @@ public:
     float saturation;
     float hue;
     int clamping;
+    int glyph_type;
+    enum{GLYPH_HEDGEHOGS, GLYPH_ARROWS};
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1){
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1), glyph_type(GLYPH_ARROWS){
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -52,6 +54,8 @@ public:
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, Model* model);
+
+    void draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width);
 
     //direction_to_color: Set the current color by mapping a direction vector (x,y), using
     //                    the color mapping method 'method'. If method==1, map the vector direction
