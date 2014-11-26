@@ -25,13 +25,18 @@ public:
     int limitColors;
     float saturation;
     float hue;
+    int dataset_idx;
     int clamping;
-    int glyph_type;
-    enum{GLYPH_HEDGEHOGS, GLYPH_ARROWS};
+    int glyph_location_idx;
+    int num_x_glyphs, num_y_glyphs;
+    int glyph_shape;
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
+    enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
+    enum{UNIFORM, RANDOM, JITTER};
+    enum{LINES, ARROWS};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1), glyph_type(GLYPH_ARROWS){
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1), glyph_shape(LINES){
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -62,14 +67,6 @@ public:
     //                    using a rainbow colormap. If method==0, simply use the white color
     void direction_to_color(float x, float y, int method);
 
-    //Select next color profile
-    void nextColor(){
-        color_map_idx++;
-        if (color_map_idx > COLOR_BIPOLAR)
-        {
-            color_map_idx = COLOR_BLACKWHITE;
-        }
-    }
     float clamp(float x);
     float scale(float x, fftw_real min, fftw_real max);
 };

@@ -149,44 +149,69 @@ void create_GUI()
     // Function to create all glui GUI parts
     GLUI *glui = GLUI_Master.create_glui_subwindow(window, GLUI_SUBWINDOW_RIGHT);
     glui->set_main_gfx_window(window);
+    GLUI_Rollout* generalRollout = glui->add_rollout("General", true);
+    GLUI_Listbox *dataset_list = new GLUI_Listbox(generalRollout, "Dataset", &(vis.dataset_idx), DATASET_ID, glui_callback);
+    dataset_list->add_item(0, "Rho");
+    dataset_list->add_item(1, "Fluid velocity magnitude");
+    dataset_list->add_item(2, "Force field magnitude");
+
 
     // Add several checkboxes
-    glui->add_checkbox("Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
-    glui->add_checkbox("Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
-    glui->add_checkbox("Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
-    glui->add_checkbox("Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
+    new GLUI_Checkbox(generalRollout, "Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
+
+    // Add spinners
+    GLUI_Spinner* timestep_spinner = new GLUI_Spinner(generalRollout, "Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
+    timestep_spinner->set_float_limits(0.0f, 1.0f);
+
+    GLUI_Spinner* viscosity_spinner = new GLUI_Spinner(generalRollout, "Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
+    viscosity_spinner->set_float_limits(-1.0f, 100.0f);
+    GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false); 
+    new GLUI_Checkbox(smokeRollout, "Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
+  
+
     // Add listbox with color maps
-    GLUI_Listbox *color_map_list = glui->add_listbox("Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
+    GLUI_Listbox *color_map_list = new GLUI_Listbox(smokeRollout, "Color map", &(vis.color_map_idx), COLOR_MAP_ID, glui_callback);
     color_map_list->add_item(0, "Black/White");
     color_map_list->add_item(1, "Rainbow");
     color_map_list->add_item(2, "Bipolar");
 
-    // Add spinners
-    GLUI_Spinner* timestep_spinner = glui->add_spinner("Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
-    timestep_spinner->set_float_limits(0.0f, 1.0f);
-
-    GLUI_Spinner* hedgehog_spinner = glui->add_spinner("Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
-    hedgehog_spinner->set_float_limits(0.0f, 10.0f);
-
-    GLUI_Spinner* viscosity_spinner = glui->add_spinner("Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
-    viscosity_spinner->set_float_limits(-1.0f, 100.0f);
-
-    glui->add_checkbox("Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
-    GLUI_Spinner* numColors_spinner = glui->add_spinner("Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
+    new GLUI_Checkbox(smokeRollout, "Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
+    GLUI_Spinner* numColors_spinner = new GLUI_Spinner(smokeRollout, "Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
     numColors_spinner->set_int_limits(2, 256);
 
-    GLUI_Spinner* hue_spinner = glui->add_spinner("Hue", GLUI_SPINNER_FLOAT, &(vis.hue), HUE_SPINNER_ID, glui_callback);
+    GLUI_Spinner* hue_spinner = new GLUI_Spinner(smokeRollout, "Hue", GLUI_SPINNER_FLOAT, &(vis.hue), HUE_SPINNER_ID, glui_callback);
     hue_spinner->set_float_limits(0.0f, 1.0f);
 
-    GLUI_Spinner* saturation_spinner = glui->add_spinner("Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
+    GLUI_Spinner* saturation_spinner = new GLUI_Spinner(smokeRollout, "Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
     // Radio button for Scale / Clamp
-    GLUI_Panel* scale_clamp_panel = glui->add_panel("Dataset manipulation");
+    GLUI_Panel* scale_clamp_panel = new GLUI_Panel(smokeRollout, "Dataset manipulation");
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+
+
+    GLUI_Rollout* glyphRollout = glui->add_rollout("Glyph", false);
+    new GLUI_Checkbox(glyphRollout, "Draw hedgehogs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
+    new GLUI_Checkbox(glyphRollout, "Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
+    GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Hedgehog scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
+    hedgehog_spinner->set_float_limits(0.0f, 10.0f);
+
+    GLUI_Listbox *glyph_location_list = new GLUI_Listbox(glyphRollout, "Glyph location", &(vis.glyph_location_idx), GLYPH_LOCATION_ID, glui_callback);
+    glyph_location_list->add_item(0, "Uniform");
+    glyph_location_list->add_item(1, "Random");
+    glyph_location_list->add_item(2, "Jitter");
+
+    new GLUI_Spinner(glyphRollout, "X samples", GLUI_SPINNER_INT, &(vis.num_x_glyphs), X_GLYPH_SPINNER, glui_callback);
+    new GLUI_Spinner(glyphRollout, "Y samples", GLUI_SPINNER_INT, &(vis.num_y_glyphs), Y_GLYPH_SPINNER, glui_callback);
+
+    GLUI_Listbox *glyph_shape_list = new GLUI_Listbox(glyphRollout, "Glyph shape", &(vis.glyph_shape), GLYPH_SHAPE_ID, glui_callback);
+    glyph_shape_list->add_item(0, "Lines");
+    glyph_shape_list->add_item(1, "Arrows");
+
 }
+
 
 //main: The main program
 int main(int argc, char **argv)
