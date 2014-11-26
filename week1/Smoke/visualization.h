@@ -27,6 +27,7 @@ public:
     float hue;
     int clamping;
     enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
+    enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(1){

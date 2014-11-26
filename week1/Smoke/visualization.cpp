@@ -14,7 +14,8 @@ void Visualization::visualize(Model* model)
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
 
     if (drawMatter)
-    {
+    {	
+    	// Scalar values
         draw_smoke(wn, hn, model);
         if(!clamping)
         	draw_color_legend(model->min_rho, model->max_rho);
@@ -23,6 +24,7 @@ void Visualization::visualize(Model* model)
     }
     if (drawHedgehogs)
     {
+    	// Vector values
         draw_velocities(wn, hn, model);
     }
 }
@@ -64,23 +66,23 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
 }
 
 //set_colormap: Sets three different types of colormaps
-void Visualization::set_colormap(float vy)
+void Visualization::set_colormap(float value)
 {
 	// Create a color band when the limit Colors button is checked.
 	if (limitColors == 1)
 	{
-		vy *= numColors - 1;
-		vy = round(vy); // Round vy, otherwise only the max gets a different color
-		vy /= numColors  - 1;
+		value *= numColors - 1;
+		value = round(value); // Round value, otherwise only the max gets a different color
+		value /= numColors  - 1;
 	}
 	float R,G,B,H,S,V;
 	// Different Color maps
 	if (color_map_idx==COLOR_BLACKWHITE)
-		R = G = B = vy;
+		R = G = B = value;
 	else if (color_map_idx==COLOR_RAINBOW)
-		rainbow(vy,&R,&G,&B);
+		rainbow(value,&R,&G,&B);
 	else if (color_map_idx == COLOR_BIPOLAR)
-		bipolar(vy,&R,&G,&B);
+		bipolar(value,&R,&G,&B);
 
 	// Save calculations when Hue AND Saturation are set to 1
 	if (hue != 1.0 || saturation != 1.0)
