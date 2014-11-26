@@ -1,5 +1,6 @@
 #ifndef FLUIDS_H
 #define FLUIDS_H
+GLUI_Spinner* minClamp, *maxClamp;
 enum {
 	  ANIMATE_ID, 
 	  DRAW_HEDGEHOGS_ID, 
@@ -19,7 +20,9 @@ enum {
 	  GLYPH_LOCATION_ID,
 	  X_GLYPH_SPINNER,
 	  Y_GLYPH_SPINNER,
-	  GLYPH_SHAPE_ID
+	  GLYPH_SHAPE_ID,
+	  MIN_CLAMP_ID,
+	  MAX_CLAMP_ID
 };
 
 #endif

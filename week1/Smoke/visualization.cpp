@@ -55,7 +55,7 @@ void Visualization::visualize(Model* model)
         if(!clamping)
         	draw_color_legend(min, max);
         else
-        	draw_color_legend(0.0, 1.0);
+        	draw_color_legend(min_clamp_value, max_clamp_value);
     }
     if (drawHedgehogs)
     {
@@ -85,9 +85,9 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 //clamp: Clamp all values between 0 and 1
 float Visualization::clamp(float x)
 {
-    if (x >= 1.0) {
+    if (x >= max_clamp_value) {
         return 1.0;
-    } else if (x < 0.0) {
+    } else if (x < min_clamp_value) {
         return 0.0;
     } else {
         return x;
@@ -253,7 +253,7 @@ void Visualization::display_text(float x, float y, char* const string)
 }
 
 // Draw color legend
-void Visualization::draw_color_legend(float minRho, float maxRho)
+void Visualization::draw_color_legend(float min, float max)
 {
 	int tx, ty, tw, th;
 	GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
@@ -277,7 +277,7 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 	int numbersToDraw = numColors > 10 ? 10 : numColors;
 	for (int i = 0; i < numbersToDraw; ++i)
 	{
-		float value = ((float)i / numbersToDraw) * (maxRho - minRho) + minRho;
+		float value = ((float)i / numbersToDraw) * (max - min) + min;
 		char* strVal = NULL;
 		asprintf(&strVal, "%0.2f", value);
 
@@ -290,7 +290,7 @@ void Visualization::draw_color_legend(float minRho, float maxRho)
 		glEnd();
 	}
 	char* maxStr = NULL;
-	asprintf(&maxStr, "%0.2f", maxRho);
+	asprintf(&maxStr, "%0.2f", max);
 
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 	glBegin(GL_LINES);
