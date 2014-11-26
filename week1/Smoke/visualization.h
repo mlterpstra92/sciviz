@@ -25,7 +25,8 @@ public:
     int limitColors;
     float saturation;
     float hue;
-    int dataset_idx;
+    int scalar_dataset_idx;
+    int vector_dataset_idx;
     int clamping;
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;

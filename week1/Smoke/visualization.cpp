@@ -19,7 +19,7 @@ void Visualization::visualize(Model* model)
     if (drawMatter)
     {	
     	// Scalar values
-    	switch (dataset_idx)
+    	switch (scalar_dataset_idx)
     	{
     	case FLUID_DENSITY:
     		values = model->rho;
@@ -349,7 +349,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             set_colormap(vy3);    glVertex2f(px3, py3);
         }
     }
-    if (dataset_idx != FLUID_DENSITY)
+    if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
     glEnd();
 }
