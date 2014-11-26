@@ -137,6 +137,12 @@ void glui_callback(int control)
         case VISCOSITY_SPINNER_ID:
             model.visc = model.base_visc * model.visc_scale_factor;
 
+        case MIN_CLAMP_ID:
+        case MAX_CLAMP_ID:
+            minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
+            maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+            break;
+
         default:
             break;
     }
@@ -170,6 +176,14 @@ void create_GUI()
     GLUI_RadioGroup* scale_clamp = glui->add_radiogroup_to_panel(scale_clamp_panel, &(vis.clamping), SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
+
+    vis.min_clamp_value = 0.0f;
+    vis.max_clamp_value = 1.0f;
+    minClamp = new GLUI_Spinner(generalRollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_clamp_value), MIN_CLAMP_ID, glui_callback);
+    maxClamp = new GLUI_Spinner(generalRollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_clamp_value), MAX_CLAMP_ID, glui_callback);
+    minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
+    maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+
 
     // SMOKE ROLLOUT
     GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false); 
