@@ -21,11 +21,6 @@ void Visualization::visualize(Model* model)
     	// Scalar values
     	switch (scalar_dataset_idx)
     	{
-    	case FLUID_DENSITY:
-    		values = model->rho;
-    		min = model->min_rho;
-    		max = model->max_rho;
-    		break;
     	case FLUID_VELOCITY:
     		// Calculate magnitudes
     		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
@@ -48,6 +43,11 @@ void Visualization::visualize(Model* model)
 	    	max = model->max_force;
 
     		break;
+    	case FLUID_DENSITY:
+    	default:
+    		values = model->rho;
+    		min = model->min_rho;
+    		max = model->max_rho;
     	}
         draw_smoke(wn, hn, model->DIM, values, min, max);
         if(!clamping)
@@ -62,14 +62,14 @@ void Visualization::visualize(Model* model)
     	fftw_real* direction_y;
 		switch (vector_dataset_idx)
     	{
-    	case FLUID_VELOCITY:
-    		direction_x = model->vx;
-    		direction_y = model->vy;
-    		break;
     	case FORCE_FIELD:
     		direction_x = model->fx;
     		direction_y = model->fy;
     		break;
+    	case FLUID_VELOCITY:
+    	default:
+    		direction_x = model->vx;
+    		direction_y = model->vy;
     	}
         draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
     }
@@ -121,7 +121,7 @@ void Visualization::set_colormap(float value)
 		value = round(value); // Round value, otherwise only the max gets a different color
 		value /= numColors  - 1;
 	}
-	float R,G,B,H,S,V;
+	float R = 0, G = 0, B = 0, H = 0, S = 0, V = 0;
 	// Different Color maps
 	if (color_map_idx==COLOR_BLACKWHITE)
 		R = G = B = value;
@@ -290,7 +290,8 @@ void Visualization::draw_color_legend(float min, float max)
 	{
 		float value = ((float)i / numbersToDraw) * (max - min) + min;
 		char* strVal = NULL;
-		asprintf(&strVal, "%0.2f", value);
+		if (asprintf(&strVal, "%0.2f", value) == -1)
+			cout << "Error printing to allocated sting.";
 
 		display_text(tw * 0.9 - 50, (th / numbersToDraw) * i, strVal);
 
@@ -301,7 +302,8 @@ void Visualization::draw_color_legend(float min, float max)
 		glEnd();
 	}
 	char* maxStr = NULL;
-	asprintf(&maxStr, "%0.2f", max);
+	if (asprintf(&maxStr, "%0.2f", max) == -1)
+		cout << "Error printing to allocated string.";
 
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 	glBegin(GL_LINES);

@@ -5,7 +5,10 @@
 #include <GL/glut.h>            //the GLUT graphics library
 #include "model.h"
 #include <string>
+#include <iostream>
 #include "GL/glui.h"
+
+using namespace std;
 
 class Visualization {
 private:
