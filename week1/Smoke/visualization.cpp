@@ -123,13 +123,18 @@ void Visualization::set_colormap(float value)
 	}
 	float R,G,B,H,S,V;
 	// Different Color maps
-	if (color_map_idx==COLOR_BLACKWHITE)
+	switch(color_map_idx)
+	{
+	case COLOR_BLACKWHITE:
 		R = G = B = value;
-	else if (color_map_idx==COLOR_RAINBOW)
-		rainbow(value,&R,&G,&B);
-	else if (color_map_idx == COLOR_BIPOLAR)
-		bipolar(value,&R,&G,&B);
-
+		break;
+	case COLOR_RAINBOW:
+		rainbow(value, &R, &G, &B);
+		break;
+	case COLOR_BIPOLAR:
+		bipolar(value, &R, &G, &B);
+		break;
+	}
 	// Save calculations when Hue AND Saturation are set to 1
 	if (hue != 1.0 || saturation != 1.0)
 	{   
@@ -360,38 +365,59 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             set_colormap(vy3);    glVertex2f(px3, py3);
         }
     }
+    glEnd();
     if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
-    glEnd();
 }
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
 {	
-	glLineWidth (2);
-
 	int i, j, idx;
+
+	float x_scale_factor = ((float)DIM / num_x_glyphs);
+	float y_scale_factor = ((float)DIM / num_y_glyphs);
 	for (i = 0; i < num_x_glyphs; i++)
 	{
 		for (j = 0; j < num_y_glyphs; j++)
 		{
-		  idx = (j * DIM) + i;
-		  int x_start = wn + (fftw_real)i * wn;
-		  int y_start = hn + (fftw_real)j * hn;
-		  int x_end = (wn + (fftw_real)i * wn) + vec_length * direction_x[idx];
-		  int y_end = (hn + (fftw_real)j * hn) + vec_length * direction_y[idx];
-		  direction_to_color(direction_x[idx],direction_y[idx],color_dir);
-		  switch(glyph_shape)
-		  {
-		  case LINES:
-		  	glBegin(GL_LINES);
-		  	glVertex2f(x_start, y_start);
-		  	glVertex2f(x_end, y_end);
-		  	glEnd();
-		  	break;
-		  case ARROWS:
-		  	draw_arrow(x_start, y_start, x_end, y_end, 4);
-		  	break;
-		  }
+			float x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
+			float y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
+
+			int floor_x_index = i * x_scale_factor;
+			int ceil_x_index = floor_x_index + 1;
+			int floor_y_index = j * y_scale_factor;
+			int ceil_y_index = floor_y_index + 1;
+
+			float alpha = (x_start - (wn + (fftw_real)floor_x_index * wn)) / ((float)wn);
+			float beta = (y_start - (hn + (fftw_real)floor_y_index * hn)) / ((float)hn);
+			float anti_alpha = 1.0 - alpha;
+			float anti_beta = 1.0 - beta;
+
+			float value_x = (anti_alpha * anti_beta * direction_x[floor_y_index * DIM + floor_x_index] + 
+				             alpha      * beta      * direction_x[ceil_y_index * DIM + ceil_x_index] + 
+				             anti_alpha * beta      * direction_x[floor_y_index * DIM + ceil_x_index] + 
+				             alpha      * anti_beta * direction_x[ceil_y_index * DIM + floor_x_index]);
+
+			float value_y = (anti_alpha * anti_beta * direction_y[floor_y_index * DIM + floor_x_index] + 
+				             alpha      * beta      * direction_y[ceil_y_index * DIM + ceil_x_index] + 
+				             anti_alpha * beta      * direction_y[floor_y_index * DIM + ceil_x_index] + 
+				             alpha      * anti_beta * direction_y[ceil_y_index * DIM + floor_x_index]);
+
+			float x_end = x_start + vec_length * value_x;
+			float y_end = y_start + vec_length * value_y;
+			direction_to_color(value_x, value_y, color_dir);
+			switch(glyph_shape)
+			{
+			case LINES:
+				glBegin(GL_LINES);
+				glVertex2f(x_start, y_start);
+				glVertex2f(x_end, y_end);
+				glEnd();
+				break;
+			case ARROWS:
+				draw_arrow(x_start, y_start, x_end, y_end, 4);
+				break;
+			}
 		}
 	}
 }

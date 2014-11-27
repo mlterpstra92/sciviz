@@ -202,7 +202,7 @@ void create_GUI()
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
     GLUI_Rollout* glyphRollout = glui->add_rollout("Glyph", false);
-    new GLUI_Checkbox(glyphRollout, "Draw glyphes", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
+    new GLUI_Checkbox(glyphRollout, "Draw glyphs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     new GLUI_Checkbox(glyphRollout, "Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
     GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Vector scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
     hedgehog_spinner->set_float_limits(0.0f, 10.0f);
@@ -214,8 +214,10 @@ void create_GUI()
 
     vis.num_x_glyphs = model.DIM;
     vis.num_y_glyphs = model.DIM;
-    new GLUI_Spinner(glyphRollout, "X samples", GLUI_SPINNER_INT, &(vis.num_x_glyphs), X_GLYPH_SPINNER, glui_callback);
-    new GLUI_Spinner(glyphRollout, "Y samples", GLUI_SPINNER_INT, &(vis.num_y_glyphs), Y_GLYPH_SPINNER, glui_callback);
+    GLUI_Spinner* xsamples = new GLUI_Spinner(glyphRollout, "X samples", GLUI_SPINNER_INT, &(vis.num_x_glyphs), X_GLYPH_SPINNER, glui_callback);
+    xsamples->set_int_limits(0, 200);
+    GLUI_Spinner* ysamples = new GLUI_Spinner(glyphRollout, "Y samples", GLUI_SPINNER_INT, &(vis.num_y_glyphs), Y_GLYPH_SPINNER, glui_callback);
+    ysamples->set_int_limits(0, 200);
 
     GLUI_Listbox *glyph_shape_list = new GLUI_Listbox(glyphRollout, "Glyph shape", &(vis.glyph_shape), GLYPH_SHAPE_ID, glui_callback);
     glyph_shape_list->add_item(0, "Lines");
