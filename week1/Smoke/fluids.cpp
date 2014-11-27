@@ -222,6 +222,7 @@ void create_GUI()
     GLUI_Listbox *glyph_shape_list = new GLUI_Listbox(glyphRollout, "Glyph shape", &(vis.glyph_shape), GLYPH_SHAPE_ID, glui_callback);
     glyph_shape_list->add_item(0, "Lines");
     glyph_shape_list->add_item(1, "Arrows");
+    glyph_shape_list->add_item(2, "Triangles");
 
 }
 
