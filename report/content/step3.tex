@@ -1,7 +1,8 @@
 %!TEX root = ../report.tex
-\begin{description}
- \item [GLUI groups] ~\\Because the graphical interface was getting cluttered with lots of options, we decided to group certain operations together with a rollout. This makes it easier to see the options an user is interested in. Currently the groups are general operations, color map operations and glyph operations.
- \item[Vector dataset] ~\\Visualizing vector data is necessary. You can choose between visualizing the fluid velocity and the force field. The given code to manipulate the orientation, length and color is currently good enough so we chose not to change it. 
- \item[Glyph location] ~\\
+\section*{Step 3}
+ \subsection*{GLUI grouping}
+ Because the graphical interface was getting cluttered with lots of options, we decided to group certain operations together with a rollout. This makes it easier to see the options an user is interested in. Currently the groups are general operations, color map operations and glyph operations.
+ \subsection*{Vector dataset}
+ Visualizing vector data is necessary. You can choose between visualizing the fluid velocity and the force field. The given code to manipulate the orientation, length and color is currently good enough so we chose not to change it. 
+ \subsection*{Glyph location}
  The only way to currently draw glyphs is uniformly at \texttt{DIM}$\times$\texttt{DIM} points. We implemented the option to independently scale the number of $x$- and $y$-samples. 
-\end{description}
