@@ -181,7 +181,7 @@ void create_GUI()
 
 
     // SMOKE ROLLOUT
-    GLUI_Rollout* smokeRollout = glui->add_rollout("Smoke", false); 
+    GLUI_Rollout* smokeRollout = glui->add_rollout("Color map", false); 
     new GLUI_Checkbox(smokeRollout, "Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
   
 
@@ -201,10 +201,10 @@ void create_GUI()
     GLUI_Spinner* saturation_spinner = new GLUI_Spinner(smokeRollout, "Saturation", GLUI_SPINNER_FLOAT, &(vis.saturation), SATURATION_SPINNER_ID, glui_callback);
     saturation_spinner->set_float_limits(0.0f, 1.0f);
 
-    GLUI_Rollout* glyphRollout = glui->add_rollout("Glyph", false);
+    GLUI_Rollout* glyphRollout = glui->add_rollout("Vectors", false);
     new GLUI_Checkbox(glyphRollout, "Draw glyphs", &(vis.drawHedgehogs), DRAW_HEDGEHOGS_ID, glui_callback);
     new GLUI_Checkbox(glyphRollout, "Direction coloring", &(vis.color_dir), DIRECTION_COLOR_ID, glui_callback);
-    GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Vector scale multiplier", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
+    GLUI_Spinner* hedgehog_spinner = new GLUI_Spinner(glyphRollout, "Vector scale factor", GLUI_SPINNER_FLOAT, &(vis.vec_scale), HEDGEHOG_SPINNER_ID, glui_callback);
     hedgehog_spinner->set_float_limits(0.0f, 10.0f);
 
     GLUI_Listbox *glyph_location_list = new GLUI_Listbox(glyphRollout, "Glyph location", &(vis.glyph_location_idx), GLYPH_LOCATION_ID, glui_callback);
