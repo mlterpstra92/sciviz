@@ -472,7 +472,22 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 
 void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end)
 {
-	/*float x_dif = x_end - x_start;
+	float x_dif = x_end - x_start;
 	float y_dif = y_end - y_start;
-	float angle = calc_angle(x_dif, y_dif);*/
+	float triangle_height = sqrt(x_dif * x_dif + y_dif * y_dif);
+	float angle = calc_angle(x_dif, y_dif);
+	
+	glPushMatrix();
+	glTranslatef(x_start, y_start, 0.0f);
+	glRotatef(angle, 0.0, 0.0, 1.0);
+
+	glBegin(GL_TRIANGLES);
+	{
+		glVertex2f(-triangle_height / 4, 0);
+		glVertex2f(triangle_height / 4, 0);
+		glVertex2f(0, triangle_height);
+	}
+	glEnd();
+
+	glPopMatrix();
 }
