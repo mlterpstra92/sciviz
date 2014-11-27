@@ -391,16 +391,15 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 		  case ARROWS:
 		  	draw_arrow(x_start, y_start, x_end, y_end, 4);
 		  	break;
+		  case TRIANGLES:
+		  	draw_triangle(x_start, y_start, x_end, y_end);
 		  }
 		}
 	}
 }
-
-void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width)
+// Calculates angle from x_start, y_start, x_end and y_end in degrees
+float Visualization::calc_angle(float x_dif, float y_dif)
 {
-	float x_dif = x_end - x_start;
-	float y_dif = y_end - y_start;
-	float arrow_length = sqrt(x_dif * x_dif + y_dif * y_dif);
 	float angle;
 	if (y_dif < 0) {
 		angle = M_PI - atan(x_dif/y_dif);
@@ -409,7 +408,15 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	}
 	// Convert angle from radians to degrees
 	angle *= 180/M_PI;
+	return angle;
+}
 
+void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, float head_width)
+{
+	float x_dif = x_end - x_start;
+	float y_dif = y_end - y_start;
+	float arrow_length = sqrt(x_dif * x_dif + y_dif * y_dif);
+	float angle = calc_angle(x_dif, y_dif);
 	// Translate and rotate to the arrow's origin and its angle
 	glPushMatrix();
 	glTranslatef(x_start, y_start, 0.0f);
@@ -432,4 +439,11 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	// Pop the matrix (i.e. restore the previous matrix on the stack)
 	glPopMatrix();
 
+}
+
+void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end)
+{
+	float x_dif = x_end - x_start;
+	float y_dif = y_end - y_start;
+	float angle = calc_angle(x_dif, y_dif);
 }
