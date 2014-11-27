@@ -180,7 +180,7 @@ void create_GUI()
     maxClamp->set_speed(0.1);
 
 
-    // SMOKE ROLLOUT
+    // COLOR MAP ROLLOUT
     GLUI_Rollout* smokeRollout = glui->add_rollout("Color map", false); 
     new GLUI_Checkbox(smokeRollout, "Draw matter", &(vis.drawMatter), DRAW_MATTER_ID, glui_callback);
   
