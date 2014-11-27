@@ -1,10 +1,29 @@
 %!TEX root = ../report.tex
 \section*{Step 2}
-\begin{itemize}
-	\item Made UI for color map
-	\item Implemented the `bipolar' color map
-	\item Implemented color legend
-	\item Made the color mapping to be applicable to all scalar datasets
-	\item Implemented scaling and clamping of color map
-	\item Added ability to limit the number of colors of the color map, and change this number.
-\end{itemize}
+	\subsection*{New color map}
+		Implemented the `bipolar' color map.
+		Also, the ability to switch between color maps is added in the UI, using a drop-down menu.
+	\subsection*{Color legend}
+		The legend for the color map has been implemented.
+		On the side of the GLUT subwindow, the reference color map is drawn with the values corresponding to the colors next to it.
+	\subsection*{More datasets for color map}
+		We provided the means to choose the dataset on which the color mapping is applied to.
+		The function \texttt{draw\_smoke} receives a pointer to an array containing the values of the dataset that needs to be visualized.
+		There are three different datasets that this pointer can reference:
+		\begin{itemize}
+			\item Force magnitude
+			\item Velocity magnitude
+			\item Fluid density
+		\end{itemize}
+		In case of magnitude visualization, the magnitude of a vector \(a\) is determined by the following equation:
+		\[\| a \|\ = \sqrt{a_x^2 + a_y^2}\]
+		In case of fluid density, the existing reference to \texttt{rho} in the model can be used.
+	\subsection*{Scaling \& clamping}
+		Implemented scaling and clamping of color map.
+		The user can now choose whether the color map should be scaled to the minimum and maximum of the visualized dataset, or whether the colors should be clamped in a user-specified interval.
+	\subsection*{Limit number of colors}
+		The ability to limit the number of colors used in the color map has been implemented.
+		The color map also only uses these colors.
+	\subsection*{HSV color space}
+		We also added the feature to change the hue and saturation.
+		For this, we used the conversion function from RGB to HSV and vice versa, as described in \cite{telea2014data}.
