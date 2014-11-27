@@ -12,8 +12,8 @@ using namespace std;
 
 class Visualization {
 private:
-    void rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V);
-    void hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V);
+    void rgbToHSV(float R,float G,float B, float& H, float& S, float& V);
+    void hsvToRGB(float& R,float& G,float& B, float H, float S, float V);
 public:    
     //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
     int color_dir;              //use direction color-coding or not

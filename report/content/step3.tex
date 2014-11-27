@@ -5,4 +5,6 @@
  \subsection*{Vector dataset}
  Visualizing vector data is necessary. You can choose between visualizing the fluid velocity and the force field. The given code to manipulate the orientation, length and color is currently good enough so we chose not to change it. 
  \subsection*{Glyph location}
- The only way to currently draw glyphs is uniformly at \texttt{DIM}$\times$\texttt{DIM} points. We implemented the option to independently scale the number of $x$- and $y$-samples. 
+ The only way to currently draw glyphs is uniformly at \texttt{DIM}$\times$\texttt{DIM} points. We implemented the option to independently scale the number of $x$- and $y$-samples. To interpolate the value we chose to do bilinear interpolation because we believe this will yield the best value while the performance remains reasonable. Other options as jitter placement or random placement are currently not implemented and pending. 
+ \subsection*{Glyph shapes}
+ We have also implemented two glyph shapes in addition to the default lines or "hedgehogs". We chose to implement arrows (which consist of three separate lines but move as one shape) and triangles. We feel that these shapes can best add extra insight in the data. For the triangle we thought about the thickness of the shape: the base has the smallest side of the triangle to better indicate where the triangle is pointing in comparison to, for example, an equilateral triangle. For the length we did not take any countermeasures as we feel this is the responsibility of the user to make the glyphs a normal length. 
