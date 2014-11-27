@@ -155,10 +155,10 @@ void Visualization::set_colormap(float value)
 void Visualization::hsvToRGB(float& R,float& G,float& B, float H, float S, float V)
 {
 	int hueCase = (int)(H*6);
-	float frac = 6*H - hueCase;
-	float lx = V * (1 - S);
-	float ly = V * (1 - S * frac);
-	float lz = V * (1 - S*(1 - frac));
+	float frac = 6.0*H - hueCase;
+	float lx = V * (1.0 - S);
+	float ly = V * (1.0 - S * frac);
+	float lz = V * (1.0 - S*(1.0 - frac));
 	switch(hueCase)
 	{
 		case 0:
@@ -179,17 +179,17 @@ void Visualization::rgbToHSV(float R,float G,float B, float& H, float& S, float&
 
 	float d = M - m;
 	V = M;
-	S = (M > 0.00001) ? d / M : 0;
-	if(S == 0) H = 0;
+	S = (M > 0.00001) ? d / M : 0.0;
+	if(S == 0.0) H = 0.0;
 	else{
 		if(R == M)
 			H = (G - B) / d;
 		else if(G == M)
-			H = 2 + (B - R) / d;
+			H = 2.0 + (B - R) / d;
 		else 
-			H = 4 + (R - G) / d;
-		H /= 6;
-		if(H < 0) H += 1;
+			H = 4.0 + (R - G) / d;
+		H /= 6.0;
+		if(H < 0.0) H += 1.0;
 	}
 }
 
