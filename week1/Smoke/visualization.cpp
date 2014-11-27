@@ -374,7 +374,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
 {	
-	int i, j, idx;
+	int i, j;
 
 	float x_scale_factor = ((float)DIM / num_x_glyphs);
 	float y_scale_factor = ((float)DIM / num_y_glyphs);
@@ -386,9 +386,9 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			float y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
 
 			int floor_x_index = i * x_scale_factor;
-			int ceil_x_index = floor_x_index + 1;
+			int ceil_x_index = (floor_x_index + 1) % DIM;
 			int floor_y_index = j * y_scale_factor;
-			int ceil_y_index = floor_y_index + 1;
+			int ceil_y_index = (floor_y_index + 1) % DIM;
 
 			float alpha = (x_start - (wn + (fftw_real)floor_x_index * wn)) / ((float)wn);
 			float beta = (y_start - (hn + (fftw_real)floor_y_index * hn)) / ((float)hn);
@@ -472,7 +472,7 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 
 void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end)
 {
-	float x_dif = x_end - x_start;
+	/*float x_dif = x_end - x_start;
 	float y_dif = y_end - y_start;
-	float angle = calc_angle(x_dif, y_dif);
+	float angle = calc_angle(x_dif, y_dif);*/
 }
