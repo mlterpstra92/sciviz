@@ -88,9 +88,9 @@ void Visualization::rainbow(float value,float* R,float* G,float* B)
 //diverge: Implements a color pallete that diverges
 void Visualization::bipolar(float value,float* R,float* G,float* B)
 {
-	*R = value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2);
+	*R = value ;
 	*G = 0;
-	*B = 1 - (value * fmax(0.0, (3-fabs(value-1)-fabs(value-2))/2));
+	*B = 1 - value;
 }
 
 //clamp: Clamp all values between 0 and 1
@@ -136,100 +136,61 @@ void Visualization::set_colormap(float value)
 		break;
 	}
 	// Save calculations when Hue AND Saturation are set to 1
-	if (hue != 1.0 || saturation != 1.0)
+	if (hue != 360 || saturation != 1.0)
 	{   
-		rgbToHSV(&R, &G, &B, &H, &S, &V);
-		H *= hue;
+		rgbToHSV(R, G, B, H, S, V);
+		H -= hue;
+		// Poor man's mod because fmod works weird
+		if (H < 0.0f)
+			H += 1.0f;
+		if (H > 1.0f)
+			H -= 1.0f;
 		S *= saturation;
-		hsvToRGB(&R, &G, &B, &H, &S, &V);
+		hsvToRGB(R, G, B, H, S, V);
 	}
 	glColor3f(R,G,B);
 }
 
 // calc RGB values of from HSV values
-void Visualization::hsvToRGB(float* R,float* G,float* B, float* H, float* S, float* V)
+void Visualization::hsvToRGB(float& R,float& G,float& B, float H, float S, float V)
 {
-	if ((*S) == 0.0)
+	int hueCase = (int)(H*6);
+	float frac = 6.0*H - hueCase;
+	float lx = V * (1.0 - S);
+	float ly = V * (1.0 - S * frac);
+	float lz = V * (1.0 - S*(1.0 - frac));
+	switch(hueCase)
 	{
-		*R = *G = *B = *V;
-	}
-	else
-	{
-		int Hi = (int)floor((*H) / 60.0);
-		float f = ((*H) / 60.0) - Hi; 
-		float p = (*V)*(1.0 - (*S));
-		float q = (*V)*(1.0 - f*(*S));
-		float t = (*V)*(1.0 - ((1.0 - f)*(*S)));
-
-		switch(Hi)
-		{
-			case 0:
-				*R = (*V);
-				*G = t;
-				*B = p;
-				break;
-			case 1:
-				*R = q;
-				*G = (*V);
-				*B = p;
-				break;
-			case 2:
-				*R = p;
-				*G = (*V);
-				*B = t;
-				break;
-			case 3:
-				*R = p;
-				*G = q;
-				*B = (*V);
-				break;
-			case 4:
-				*R = t;
-				*G = p;
-				*B = (*V);
-				break;
-			case 5:
-				*R = (*V);
-				*G = p;
-				*B = q;
-				break;
-		}
+		case 0:
+		case 6: R = V; G = lz; B = lx; break;
+		case 1: R = ly; G = V; B = lx; break;
+		case 2: R = lx; G = V; B = lz; break;
+		case 3: R = lx; G = ly; B = V; break;
+		case 4: R = lz; G = lx; B = V; break;
+		case 5: R = V; G = lx; B = ly; break;
 	}
 }
  
 // calc HSV values of rgbhsvColor from RGB values
-void Visualization::rgbToHSV(float* R,float* G,float* B, float* H, float* S, float* V)
+void Visualization::rgbToHSV(float R,float G,float B, float& H, float& S, float& V)
 {	
-	float maxValue=MAX(MAX(*R, *G), *B);
-	float minValue=MIN(MIN(*R, *G), *B);
+	float M = MAX(MAX(R, G), B);
+	float m = MIN(MIN(R, G), B);
 
-	float delta = maxValue - minValue;
-
-	if (delta == 0.0)
-		(*H) = 0.0;
-	else {
-		if ((*R) == maxValue){
-			*H = round(60.0 * ((((*G) - (*B))/delta)));
-		}
-		else if((*G) == maxValue){
-			*H = round(60.0 * ((((*B) - (*R))/delta) + 2));
-		}
-		else {
-			*H = round(60.0 * ((((*R) - (*G))/delta) + 4));
-		}
-
-		if((*H) < 0.0)
-			*H += 360.0;
-		if((*H) >= 360.0)
-			*H -= 360.0;
+	float d = M - m;
+	V = M;
+	S = (M > 0.00001) ? d / M : 0.0;
+	if(S == 0.0) H = 0.0;
+	else{
+		if(R == M)
+			H = (G - B) / d;
+		else if(G == M)
+			H = 2.0 + (B - R) / d;
+		else 
+			H = 4.0 + (R - G) / d;
+		H /= 6.0;
+		if(H < 0.0) H += 1.0;
 	}
-
-	if (maxValue == 0.0)
-		*S = 0.0;
-	else
-		*S = delta / maxValue;
-
-	*V = maxValue;
 }
 
 //direction_to_color: Set the current color by mapping a direction vector (x,y), using
