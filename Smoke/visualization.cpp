@@ -111,8 +111,47 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
     return (x - min) / (max - min);;
 }
 
+void Visualization::create_textures(){
+	int old_colormap_idx = color_map_idx;
+	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
+
+	for(int i=COLOR_BLACKWHITE;i<=COLOR_BIPOLAR;++i)
+	{													//Generate all three textures:
+		glBindTexture(GL_TEXTURE_1D,texture_id[i]);		//Make i-th texture active (for setting it)
+		float textureImage[3*numColors];
+
+		color_map_idx = (COLORMAP_TYPE)i;								//Activate the i-th colormap
+
+		for(int j=0;j<numColors;++j)							//Generate all 'size' RGB texels for the current texture:
+		{
+			float v = float(j)/(numColors-1);				//Compute a scalar value in [0,1]
+			float R,G,B;
+			switch(color_map_idx){
+			case COLOR_BLACKWHITE:
+				R = G = B = v;
+				break;
+			case COLOR_RAINBOW:
+				rainbow(v, &R, &G, &B);
+				break;
+			case COLOR_BIPOLAR:
+				bipolar(v, &R, &G, &B);
+				break;				
+			}
+
+			textureImage[3*j]   = R;					//Store the color for this scalar value in the texture
+			textureImage[3*j+1] = G;
+			textureImage[3*j+2] = B;
+		}	
+		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, numColors, 0, GL_RGB, GL_FLOAT, textureImage);
+														//The texture is ready - pass it to OpenGL
+	}	
+	
+	color_map_idx = old_colormap_idx;					//Reset the currently-active colormap to the default (first one)
+}
+
 //set_colormap: Sets three different types of colormaps
-void Visualization::set_colormap(float value)
+void Visualization::set_colormap(float value, float& R, float& G, float& B)
 {
 	// Create a color band when the limit Colors button is checked.
 	if (limitColors == 1)
@@ -121,7 +160,7 @@ void Visualization::set_colormap(float value)
 		value = round(value); // Round value, otherwise only the max gets a different color
 		value /= numColors  - 1;
 	}
-	float R = 0, G = 0, B = 0, H = 0, S = 0, V = 0;
+	float H = 0, S = 0, V = 0;
 	// Different Color maps
 	switch(color_map_idx)
 	{
@@ -148,7 +187,6 @@ void Visualization::set_colormap(float value)
 		S *= saturation;
 		hsvToRGB(R, G, B, H, S, V);
 	}
-	glColor3f(R,G,B);
 }
 
 // calc RGB values of from HSV values
@@ -243,7 +281,9 @@ void Visualization::draw_color_legend(float min, float max)
 	
 	for (int i = 0; i < numColors; ++i)
 	{
-		set_colormap((float)(i * stepSize + ((float)(i + 1) / numColors) * stepSize) / th);
+		float R, G, B;
+		set_colormap((float)(i * stepSize + ((float)(i + 1) / numColors) * stepSize) / th, R, G, B);
+		glColor3f(R, G, B);
 		glVertex2f(tw * 0.9, i * stepSize);
 		glVertex2f(tw, i * stepSize);
 		glVertex2f(tw * 0.9, (i + 1) * stepSize);
@@ -284,7 +324,6 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
  	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glBegin(GL_TRIANGLES);
     for (j = 0; j < DIM - 1; j++)            //draw smoke
     {
         for (i = 0; i < DIM - 1; i++)
@@ -319,19 +358,55 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
                 vy2 = scale(values[idx2], min, max);
                 vy3 = scale(values[idx3], min, max);
             }
-            set_colormap(vy0);    glVertex2f(px0, py0);
-            set_colormap(vy1);    glVertex2f(px1, py1);
-            set_colormap(vy2);    glVertex2f(px2, py2);
+            if (!useTextures)
+            {
+            	float R, G, B;
 
-            set_colormap(vy0);    glVertex2f(px0, py0);
-            set_colormap(vy2);    glVertex2f(px2, py2);
-            set_colormap(vy3);    glVertex2f(px3, py3);
+    			glBegin(GL_TRIANGLES);
+	            set_colormap(vy0, R, G, B); glColor3f(R, G, B);   glVertex2f(px0, py0);
+	            set_colormap(vy1, R, G, B); glColor3f(R, G, B);   glVertex2f(px1, py1);
+	            set_colormap(vy2, R, G, B); glColor3f(R, G, B);   glVertex2f(px2, py2);
+
+	            set_colormap(vy0, R, G, B); glColor3f(R, G, B);   glVertex2f(px0, py0);
+	            set_colormap(vy2, R, G, B); glColor3f(R, G, B);   glVertex2f(px2, py2);
+	            set_colormap(vy3, R, G, B); glColor3f(R, G, B);   glVertex2f(px3, py3);
+	            glEnd();
+        	}
+        	else
+        	{        			
+        		glEnable(GL_TEXTURE_1D);							//3.   Activate OpenGL's 1D texture mapping. Use the 1D-texture corresponding 
+        															//     to the currently-active colormap.
+        		glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
+        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+        		glBegin(GL_TRIANGLES);
+        		glTexCoord1f(vy0);
+        		glVertex2f(px0, py0);
+        		glTexCoord1f(vy1);
+        		glVertex2f(px1, py1);
+        		glTexCoord1f(vy2);
+        		glVertex2f(px2, py2);
+
+        		glTexCoord1f(vy0);
+        		glVertex2f(px0, py0);
+        		glTexCoord1f(vy2);
+        		glVertex2f(px2, py2);
+        		glTexCoord1f(vy3);
+        		glVertex2f(px3, py3);
+        		glEnd();
+        		
+        		glDisable(GL_TEXTURE_1D);							//6.   Done with using 1D textures
+        	}
         }
     }
-    glEnd();
     if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
 }
+
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
 {	
