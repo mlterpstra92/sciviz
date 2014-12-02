@@ -105,6 +105,12 @@ float Visualization::clamp(float x)
     }
 }
 
+void Visualization::zebra(float value, float* R,float* G,float* B)
+{
+	int val = ((int)(value * numColors)) & 1;
+	*R = *G = *B = val;
+}
+
 //Scale all values between the overall min and max values
 float Visualization::scale(float x, fftw_real min, fftw_real max)
 {
@@ -116,7 +122,7 @@ void Visualization::create_textures(){
 	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
 
-	for(int i=COLOR_BLACKWHITE;i<=COLOR_BIPOLAR;++i)
+	for(int i=COLOR_BLACKWHITE;i<=COLOR_ZEBRA;++i)
 	{													//Generate all three textures:
 		glBindTexture(GL_TEXTURE_1D,texture_id[i]);		//Make i-th texture active (for setting it)
 		float textureImage[3*numColors];
@@ -126,7 +132,7 @@ void Visualization::create_textures(){
 		for(int j=0;j<numColors;++j)							//Generate all 'size' RGB texels for the current texture:
 		{
 			float v = float(j)/(numColors-1);				//Compute a scalar value in [0,1]
-			float R,G,B;
+			float R,G,B,H,S,V;
 			switch(color_map_idx){
 			case COLOR_BLACKWHITE:
 				R = G = B = v;
@@ -136,18 +142,33 @@ void Visualization::create_textures(){
 				break;
 			case COLOR_BIPOLAR:
 				bipolar(v, &R, &G, &B);
-				break;				
+				break;		
+			case COLOR_ZEBRA:
+				zebra(v, &R, &G, &B);
+				break;		
 			}
 
-			textureImage[3*j]   = R;					//Store the color for this scalar value in the texture
+			if (hue != 1.0 || saturation != 1.0)
+			{   
+				rgbToHSV(R, G, B, H, S, V);
+				H -= hue;
+				// Poor man's mod because fmod works weird
+				if (H < 0.0f)
+					H += 1.0f;
+				if (H > 1.0f)
+					H -= 1.0f;
+				S *= saturation;
+				hsvToRGB(R, G, B, H, S, V);
+			}
+
+			textureImage[3*j]   = R;
 			textureImage[3*j+1] = G;
 			textureImage[3*j+2] = B;
 		}	
 		glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, numColors, 0, GL_RGB, GL_FLOAT, textureImage);
-														//The texture is ready - pass it to OpenGL
 	}	
 	
-	color_map_idx = old_colormap_idx;					//Reset the currently-active colormap to the default (first one)
+	color_map_idx = old_colormap_idx;
 }
 
 //set_colormap: Sets three different types of colormaps
@@ -173,9 +194,12 @@ void Visualization::set_colormap(float value, float& R, float& G, float& B)
 	case COLOR_BIPOLAR:
 		bipolar(value, &R, &G, &B);
 		break;
+	case COLOR_ZEBRA:
+		zebra(value, &R, &G, &B);
+		break;
 	}
 	// Save calculations when Hue AND Saturation are set to 1
-	if (hue != 360 || saturation != 1.0)
+	if (hue != 1.0 || saturation != 1.0)
 	{   
 		rgbToHSV(R, G, B, H, S, V);
 		H -= hue;
@@ -374,8 +398,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
         	}
         	else
         	{        			
-        		glEnable(GL_TEXTURE_1D);							//3.   Activate OpenGL's 1D texture mapping. Use the 1D-texture corresponding 
-        															//     to the currently-active colormap.
+        		glEnable(GL_TEXTURE_1D);
         		glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
         		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -399,7 +422,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
         		glVertex2f(px3, py3);
         		glEnd();
         		
-        		glDisable(GL_TEXTURE_1D);							//6.   Done with using 1D textures
+        		glDisable(GL_TEXTURE_1D);
         	}
         }
     }

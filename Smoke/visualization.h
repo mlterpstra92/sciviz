@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 #include "GL/glui.h"
-#define NUM_COLORMAPS 3
+#define NUM_COLORMAPS 4
 
 using namespace std;
 
@@ -38,7 +38,7 @@ public:
     int useTextures;
     float min_clamp_value, max_clamp_value;
     unsigned int texture_id[NUM_COLORMAPS];
-    enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR};
+    enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
     enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
     enum{UNIFORM, RANDOM, JITTER};
     enum{LINES, ARROWS, TRIANGLES};
@@ -54,6 +54,9 @@ public:
 
     //diverging: Implements a color palette that diverges
     void bipolar(float value, float* R, float* G, float* B);
+
+    //Intervalling over a color
+    void zebra(float value, float* R,float* G,float* B);
 
     //set_colormap: Sets three different types of colormaps
     void set_colormap(float value, float& R, float& G, float& B);

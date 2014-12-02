@@ -170,13 +170,22 @@ void glui_callback(int control)
             maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
             break;
 
+        case HUE_SPINNER_ID:
+        case SATURATION_SPINNER_ID:
+            if(vis.useTextures)
+                vis.create_textures();
+            break;
+
         case LIMIT_COLORS_ID:
         case NUM_COLOR_SPINNER_ID:
-            oldNum = vis.numColors;
-            if(!vis.limitColors)
-                vis.numColors = 256;
-            vis.create_textures();
-            vis.numColors = oldNum;
+            if(vis.useTextures)
+            {
+                oldNum = vis.numColors;
+                if(!vis.limitColors)
+                    vis.numColors = 256;
+                vis.create_textures();
+                vis.numColors = oldNum;
+            }
             break;
 
         default:
@@ -237,6 +246,7 @@ void create_GUI()
     color_map_list->add_item(0, "Black/White");
     color_map_list->add_item(1, "Rainbow");
     color_map_list->add_item(2, "Bipolar");
+    color_map_list->add_item(3, "Zebra");
 
     new GLUI_Checkbox(smokeRollout, "Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
     GLUI_Spinner* numColors_spinner = new GLUI_Spinner(smokeRollout, "Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
