@@ -382,48 +382,52 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
                 vy2 = scale(values[idx2], min, max);
                 vy3 = scale(values[idx3], min, max);
             }
-            if (!useTextures)
-            {
-            	float R, G, B;
+            if(useTextures){
+				glEnable(GL_TEXTURE_1D);
+				glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
+				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+			}
 
-    			glBegin(GL_TRIANGLES);
-	            set_colormap(vy0, R, G, B); glColor3f(R, G, B);   glVertex2f(px0, py0);
-	            set_colormap(vy1, R, G, B); glColor3f(R, G, B);   glVertex2f(px1, py1);
-	            set_colormap(vy2, R, G, B); glColor3f(R, G, B);   glVertex2f(px2, py2);
+			float R, G, B;
+			glBegin(GL_TRIANGLES);
 
-	            set_colormap(vy0, R, G, B); glColor3f(R, G, B);   glVertex2f(px0, py0);
-	            set_colormap(vy2, R, G, B); glColor3f(R, G, B);   glVertex2f(px2, py2);
-	            set_colormap(vy3, R, G, B); glColor3f(R, G, B);   glVertex2f(px3, py3);
-	            glEnd();
-        	}
-        	else
-        	{        			
-        		glEnable(GL_TEXTURE_1D);
-        		glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
-        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+			if(useTextures)
+				glTexCoord1f(vy0);
+			else{set_colormap(vy0, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px0, py0);
 
-        		glBegin(GL_TRIANGLES);
-        		glTexCoord1f(vy0);
-        		glVertex2f(px0, py0);
-        		glTexCoord1f(vy1);
-        		glVertex2f(px1, py1);
-        		glTexCoord1f(vy2);
-        		glVertex2f(px2, py2);
+			if(useTextures)
+				glTexCoord1f(vy1);
+			else{set_colormap(vy1, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px1, py1);
 
-        		glTexCoord1f(vy0);
-        		glVertex2f(px0, py0);
-        		glTexCoord1f(vy2);
-        		glVertex2f(px2, py2);
-        		glTexCoord1f(vy3);
-        		glVertex2f(px3, py3);
-        		glEnd();
-        		
-        		glDisable(GL_TEXTURE_1D);
-        	}
+			if(useTextures)
+				glTexCoord1f(vy2);
+			else{set_colormap(vy2, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px2, py2);
+
+			if(useTextures)
+				glTexCoord1f(vy0);
+			else{set_colormap(vy0, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px0, py0);
+
+			if(useTextures)
+				glTexCoord1f(vy2);
+			else{set_colormap(vy2, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px2, py2);
+
+			if(useTextures)
+				glTexCoord1f(vy3);
+			else{set_colormap(vy3, R, G, B); glColor3f(R, G, B);}
+			glVertex2f(px3, py3);
+			
+            glEnd();
+            if(useTextures)
+            	glDisable(GL_TEXTURE_1D);
         }
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
