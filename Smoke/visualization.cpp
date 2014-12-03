@@ -3,10 +3,6 @@
 #include "GL/glui.h"
 #include <iostream>
 
-#define MAX(a, b) (a) > (b) ? (a) : (b)
-#define MIN(a, b) (a) < (b) ? (a) : (b)
-
-
 //visualize: This is the main visualization function
 void Visualization::visualize(Model* model)
 {
@@ -146,6 +142,9 @@ void Visualization::create_textures(){
 			case COLOR_ZEBRA:
 				zebra(v, &R, &G, &B);
 				break;		
+			default:
+				R = G = B = 0;
+				break;
 			}
 
 			if (hue != 1.0 || saturation != 1.0)
@@ -236,8 +235,8 @@ void Visualization::hsvToRGB(float& R,float& G,float& B, float H, float S, float
 // calc HSV values of rgbhsvColor from RGB values
 void Visualization::rgbToHSV(float R,float G,float B, float& H, float& S, float& V)
 {	
-	float M = MAX(MAX(R, G), B);
-	float m = MIN(MIN(R, G), B);
+	float M = std::max(std::max(R, G), B);
+	float m = std::min(std::min(R, G), B);
 
 	float d = M - m;
 	V = M;
