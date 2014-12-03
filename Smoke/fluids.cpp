@@ -204,7 +204,8 @@ void create_GUI()
     scalar_list->add_item(0, "Rho");
     scalar_list->add_item(1, "||Fluid velocity||");
     scalar_list->add_item(2, "||Force field||");
-    scalar_list->add_item(3, "div V");
+    scalar_list->add_item(3, "div Velocity");
+    scalar_list->add_item(4, "div Force");
 
     GLUI_Listbox *vector_list = new GLUI_Listbox(generalRollout, "Vector dataset", &(vis.vector_dataset_idx), DATASET_ID, glui_callback);
     vector_list->add_item(1, "Fluid velocity");

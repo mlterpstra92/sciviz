@@ -39,6 +39,8 @@ void Visualization::visualize(Model* model)
 	    	max = model->max_force;
 
     		break;
+    	case DIVERGENCE_FORCE:
+    	case DIVERGENCE_VELOCITY:
     	case FLUID_DENSITY:
     	default:
     		values = model->rho;
@@ -428,7 +430,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 			}
         }
     }
-    if (scalar_dataset_idx != FLUID_DENSITY && scalar_dataset_idx != DIVERGENCE)
+    if (scalar_dataset_idx != FLUID_DENSITY && scalar_dataset_idx != DIVERGENCE_FORCE && scalar_dataset_idx != DIVERGENCE_VELOCITY)
     	free(values);
 }
 
