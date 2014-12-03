@@ -500,40 +500,38 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	}
 }
 
-void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* grad, Model* model)
+void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
 {
+	int idx;
 	for (int i = 0; i < model->DIM; ++i)
 	{
 		for (int j = 0; j < model->DIM; ++j)
 		{
-			fftw_real prev_x;
-			if (i > 0)
-				prev_x = f_x[i - 1 + j * model->DIM];
-			else
-				prev_x = f_x[model->DIM + j * model->DIM];
-			fftw_real current_x = f_x[i + j * model->DIM];
+			fftw_real prev_x, prev_y, next_x, next_y;
+			idx = i + j * model->DIM;
+			// Calculate previous and next for derivative
 
-			fftw_real prev_y;
-			if (j > 0)
-				prev_y = f_y[i + (j - 1) * model->DIM];
-			else
-				prev_y = f_y[i + model->DIM * model->DIM];
-			fftw_real current_y = f_y[i + j * model->DIM];
+			prev_x = f_x[((i - 1 + model->DIM) % model->DIM) + j * model->DIM];
+			next_x = f_x[((i + 1) % model->DIM) + j * model->DIM];
+
+			prev_y = f_y[i + ((j - 1 + model->DIM) % model->DIM) * model->DIM];
+			next_y = f_y[i + ((j + 1) % model->DIM) * model->DIM];
 			
-			grad[i + j * model->DIM] = current_x - prev_x + current_y - prev_y;
+			diff[idx] = next_x - prev_x + next_y - prev_y;
+			// Calculate min and max values
 			if (i == 0 && j == 0)
 			{
 				// Reset min and max for divergence
-				model->min_div = grad[i + j * model->DIM];
-				model->max_div = model->min_div;
+				model->min_div = diff[idx];
+				model->max_div = diff[idx];
 			}
 			else
 			{
-				if (grad[i + j * model->DIM] > model->max_div) {
-					model->max_div = grad[i + j * model->DIM];
+				if (diff[idx] > model->max_div) {
+					model->max_div = diff[idx];
 				}
-				if (grad[i + j * model->DIM] < model->min_div) {
-					model->min_div = grad[i + j * model->DIM];
+				if (diff[idx] < model->min_div) {
+					model->min_div = diff[idx];
 				}
 			}
 		}
