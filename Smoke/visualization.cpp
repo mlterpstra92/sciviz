@@ -440,7 +440,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 			}
         }
     }
-    if (scalar_dataset_idx != FLUID_DENSITY && scalar_dataset_idx != DIVERGENCE_FORCE && scalar_dataset_idx != DIVERGENCE_VELOCITY)
+    if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
 }
 
@@ -503,37 +503,25 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
 {
 	int idx;
+	fftw_real prev_x, prev_y, next_x, next_y;
+	model->max_div = -FLT_MAX;
+	model->min_div = FLT_MAX;
 	for (int i = 0; i < model->DIM; ++i)
 	{
 		for (int j = 0; j < model->DIM; ++j)
 		{
-			fftw_real prev_x, prev_y, next_x, next_y;
 			idx = i + j * model->DIM;
+			
 			// Calculate previous and next for derivative
-
 			prev_x = f_x[((i - 1 + model->DIM) % model->DIM) + j * model->DIM];
 			next_x = f_x[((i + 1) % model->DIM) + j * model->DIM];
 
 			prev_y = f_y[i + ((j - 1 + model->DIM) % model->DIM) * model->DIM];
 			next_y = f_y[i + ((j + 1) % model->DIM) * model->DIM];
 			
-			diff[idx] = next_x - prev_x + next_y - prev_y;
-			// Calculate min and max values
-			if (i == 0 && j == 0)
-			{
-				// Reset min and max for divergence
-				model->min_div = diff[idx];
-				model->max_div = diff[idx];
-			}
-			else
-			{
-				if (diff[idx] > model->max_div) {
-					model->max_div = diff[idx];
-				}
-				if (diff[idx] < model->min_div) {
-					model->min_div = diff[idx];
-				}
-			}
+			diff[idx] = next_x - prev_x + next_y - prev_y;				
+			model->max_div = std::max(diff[idx], model->max_div);
+			model->min_div = std::min(diff[idx], model->min_div);
 		}
 	}
 }
