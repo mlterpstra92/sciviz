@@ -40,7 +40,17 @@ void Visualization::visualize(Model* model)
 
     		break;
     	case DIVERGENCE_FORCE:
+    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+    		divergence(model->fx, model->fy, values, model);
+    		min = model->min_div;
+    		max = model->max_div;
+    		break;
     	case DIVERGENCE_VELOCITY:
+    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+    		divergence(model->vx, model->vy, values, model);
+    		min = model->min_div;
+    		max = model->max_div;
+    		break;
     	case FLUID_DENSITY:
     	default:
     		values = model->rho;
@@ -489,6 +499,47 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 		}
 	}
 }
+
+void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* grad, Model* model)
+{
+	for (int i = 0; i < model->DIM; ++i)
+	{
+		for (int j = 0; j < model->DIM; ++j)
+		{
+			fftw_real prev_x;
+			if (i > 0)
+				prev_x = f_x[i - 1 + j * model->DIM];
+			else
+				prev_x = f_x[model->DIM + j * model->DIM];
+			fftw_real current_x = f_x[i + j * model->DIM];
+
+			fftw_real prev_y;
+			if (j > 0)
+				prev_y = f_y[i + (j - 1) * model->DIM];
+			else
+				prev_y = f_y[i + model->DIM * model->DIM];
+			fftw_real current_y = f_y[i + j * model->DIM];
+			
+			grad[i + j * model->DIM] = current_x - prev_x + current_y - prev_y;
+			if (i == 0 && j == 0)
+			{
+				// Reset min and max for divergence
+				model->min_div = grad[i + j * model->DIM];
+				model->max_div = model->min_div;
+			}
+			else
+			{
+				if (grad[i + j * model->DIM] > model->max_div) {
+					model->max_div = grad[i + j * model->DIM];
+				}
+				if (grad[i + j * model->DIM] < model->min_div) {
+					model->min_div = grad[i + j * model->DIM];
+				}
+			}
+		}
+	}
+}
+
 // Calculates angle from x_start, y_start, x_end and y_end in degrees
 float Visualization::calc_angle(float x_dif, float y_dif)
 {
