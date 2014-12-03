@@ -395,39 +395,38 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 			float R, G, B;
 			glBegin(GL_TRIANGLES);
 
-			if(useTextures)
+			if(useTextures) {
 				glTexCoord1f(vy0);
-			else{set_colormap(vy0, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px0, py0);
-
-			if(useTextures)
+				glVertex2f(px0, py0);
 				glTexCoord1f(vy1);
-			else{set_colormap(vy1, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px1, py1);
-
-			if(useTextures)
+				glVertex2f(px1, py1);
 				glTexCoord1f(vy2);
-			else{set_colormap(vy2, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px2, py2);
-
-			if(useTextures)
+				glVertex2f(px2, py2);
 				glTexCoord1f(vy0);
-			else{set_colormap(vy0, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px0, py0);
-
-			if(useTextures)
+				glVertex2f(px0, py0);
 				glTexCoord1f(vy2);
-			else{set_colormap(vy2, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px2, py2);
-
-			if(useTextures)
+				glVertex2f(px2, py2);
 				glTexCoord1f(vy3);
-			else{set_colormap(vy3, R, G, B); glColor3f(R, G, B);}
-			glVertex2f(px3, py3);
-			
-            glEnd();
-            if(useTextures)
-            	glDisable(GL_TEXTURE_1D);
+				glVertex2f(px3, py3);
+				
+				glEnd();
+				glDisable(GL_TEXTURE_1D);
+			} else {
+				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px0, py0);
+				set_colormap(vy1, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px1, py1);
+				set_colormap(vy2, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px2, py2);
+				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px0, py0);
+				set_colormap(vy2, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px2, py2);1
+				set_colormap(vy3, R, G, B); glColor3f(R, G, B);
+				glVertex2f(px3, py3);
+
+				glEnd();
+			}
         }
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
