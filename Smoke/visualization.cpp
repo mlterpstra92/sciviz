@@ -420,7 +420,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
 				glVertex2f(px0, py0);
 				set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px2, py2);1
+				glVertex2f(px2, py2);
 				set_colormap(vy3, R, G, B); glColor3f(R, G, B);
 				glVertex2f(px3, py3);
 
