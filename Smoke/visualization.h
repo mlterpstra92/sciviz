@@ -39,9 +39,9 @@ public:
     float min_clamp_value, max_clamp_value;
     unsigned int texture_id[NUM_COLORMAPS];
     enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
-    enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
-    enum{UNIFORM, RANDOM, JITTER};
-    enum{LINES, ARROWS, TRIANGLES};
+    enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE};
+    enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
+    enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES){
