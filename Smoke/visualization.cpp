@@ -428,7 +428,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 			}
         }
     }
-    if (scalar_dataset_idx != FLUID_DENSITY)
+    if (scalar_dataset_idx != FLUID_DENSITY && scalar_dataset_idx != DIVERGENCE)
     	free(values);
 }
 
