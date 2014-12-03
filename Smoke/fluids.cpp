@@ -154,6 +154,7 @@ void do_one_step(void)
 // some controls generate a callback when they are changed
 void glui_callback(int control)
 {
+    int oldNum = vis.numColors;
     switch(control)
     {
         case HEDGEHOG_SPINNER_ID:
@@ -167,6 +168,24 @@ void glui_callback(int control)
         case MAX_CLAMP_ID:
             minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
             maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
+            break;
+
+        case HUE_SPINNER_ID:
+        case SATURATION_SPINNER_ID:
+            if(vis.useTextures)
+                vis.create_textures();
+            break;
+
+        case LIMIT_COLORS_ID:
+        case NUM_COLOR_SPINNER_ID:
+            if(vis.useTextures)
+            {
+                oldNum = vis.numColors;
+                if(!vis.limitColors)
+                    vis.numColors = 256;
+                vis.create_textures();
+                vis.numColors = oldNum;
+            }
             break;
 
         default:
@@ -194,6 +213,7 @@ void create_GUI()
 
     // Add several checkboxes
     new GLUI_Checkbox(generalRollout, "Frozen", &(vis.frozen), ANIMATE_ID, glui_callback);
+    new GLUI_Checkbox(generalRollout, "Textures", &(vis.useTextures), TEXTURE_ID, glui_callback);
 
     // Add spinners
     GLUI_Spinner* timestep_spinner = new GLUI_Spinner(generalRollout, "Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
@@ -226,6 +246,7 @@ void create_GUI()
     color_map_list->add_item(0, "Black/White");
     color_map_list->add_item(1, "Rainbow");
     color_map_list->add_item(2, "Bipolar");
+    color_map_list->add_item(3, "Zebra");
 
     new GLUI_Checkbox(smokeRollout, "Limit colors", &(vis.limitColors), LIMIT_COLORS_ID, glui_callback);
     GLUI_Spinner* numColors_spinner = new GLUI_Spinner(smokeRollout, "Number of colors", GLUI_SPINNER_INT, &(vis.numColors), NUM_COLOR_SPINNER_ID, glui_callback);
@@ -272,6 +293,7 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(1200,768);
+    
 
     window = glutCreateWindow("Real-time smoke simulation and visualization");
     glutDisplayFunc(display);
@@ -285,6 +307,7 @@ int main(int argc, char **argv)
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glHint (GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
     glLineWidth(2);
+    vis.create_textures();
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
     return 0;

@@ -22,7 +22,8 @@ enum {
 	  Y_GLYPH_SPINNER,
 	  GLYPH_SHAPE_ID,
 	  MIN_CLAMP_ID,
-	  MAX_CLAMP_ID
+	  MAX_CLAMP_ID,
+	  TEXTURE_ID
 };
 
 #endif

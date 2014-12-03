@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include "GL/glui.h"
+#define NUM_COLORMAPS 4
 
 using namespace std;
 
@@ -34,14 +35,16 @@ public:
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
+    int useTextures;
     float min_clamp_value, max_clamp_value;
-    enum{COLOR_BLACKWHITE, COLOR_RAINBOW, COLOR_BIPOLAR};
+    unsigned int texture_id[NUM_COLORMAPS];
+    enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
     enum{FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD};
     enum{UNIFORM, RANDOM, JITTER};
     enum{LINES, ARROWS, TRIANGLES};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES){
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(1),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES){
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -52,8 +55,11 @@ public:
     //diverging: Implements a color palette that diverges
     void bipolar(float value, float* R, float* G, float* B);
 
+    //Intervalling over a color
+    void zebra(float value, float* R,float* G,float* B);
+
     //set_colormap: Sets three different types of colormaps
-    void set_colormap(float vy);
+    void set_colormap(float value, float& R, float& G, float& B);
 
     void display_text(float x, float y, char* const string);
     // Draw color legend
@@ -71,10 +77,13 @@ public:
 
     void draw_triangle(int x_start, int y_start, int x_end, int y_end);
 
+    void draw_textured_smoke(float px0, float px1, float px2, float px3, float py0, float py1, float py2, float py3, float vy0, float vy1, float vy2, float vy3);
     //direction_to_color: Set the current color by mapping a direction vector (x,y), using
     //                    the color mapping method 'method'. If method==1, map the vector direction
     //                    using a rainbow colormap. If method==0, simply use the white color
     void direction_to_color(float x, float y, int method);
+
+    void create_textures();
 
     float clamp(float x);
     float scale(float x, fftw_real min, fftw_real max);
