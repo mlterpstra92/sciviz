@@ -107,7 +107,7 @@ float Visualization::clamp(float x)
 
 void Visualization::zebra(float value, float* R,float* G,float* B)
 {
-	int val = ((int)(value * numColors)) & 1;
+	int val = std::min((int)(value * numColors), numColors - 1) & 1;
 	*R = *G = *B = val;
 }
 
@@ -122,7 +122,7 @@ void Visualization::create_textures(){
 	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
 
-	for(int i=COLOR_BLACKWHITE;i<=COLOR_ZEBRA;++i)
+	for(int i=0;i<=NUM_COLORMAPS;++i)
 	{													//Generate all three textures:
 		glBindTexture(GL_TEXTURE_1D,texture_id[i]);		//Make i-th texture active (for setting it)
 		float textureImage[3*numColors];
