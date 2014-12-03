@@ -172,20 +172,19 @@ void glui_callback(int control)
 
         case HUE_SPINNER_ID:
         case SATURATION_SPINNER_ID:
+
             if(vis.useTextures)
                 vis.create_textures();
             break;
 
         case LIMIT_COLORS_ID:
         case NUM_COLOR_SPINNER_ID:
-            if(vis.useTextures)
-            {
-                oldNum = vis.numColors;
-                if(!vis.limitColors)
-                    vis.numColors = 256;
-                vis.create_textures();
-                vis.numColors = oldNum;
-            }
+            oldNum = vis.numColors;
+            if(!vis.limitColors)
+                vis.numColors = 256;
+            vis.create_textures();
+            vis.numColors = oldNum;
+            
             break;
 
         default:
