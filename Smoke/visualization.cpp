@@ -4,6 +4,7 @@
 #include <iostream>
 #define SETBIT(a, n) (a) |= (1 << (n))
 #define UNSETBIT(a, n) (a) &= ~(1 << (n))
+#define CHECKBIT(a, n) (a) & (1 << n)
 
 //visualize: This is the main visualization function
 void Visualization::visualize(Model* model)
