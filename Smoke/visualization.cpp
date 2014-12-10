@@ -130,6 +130,7 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
 }
 
 void Visualization::create_textures(){
+	std::cout << "here" << std::endl;
 	int old_colormap_idx = color_map_idx;
 	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
@@ -137,6 +138,12 @@ void Visualization::create_textures(){
 	for(int i=0;i<=NUM_COLORMAPS;++i)
 	{													//Generate all three textures:
 		glBindTexture(GL_TEXTURE_1D,texture_id[i]);		//Make i-th texture active (for setting it)
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
 		float textureImage[3*numColors];
 
 		color_map_idx = (COLORMAP_TYPE)i;								//Activate the i-th colormap
@@ -362,6 +369,11 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 {
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
+
+    if(useTextures){
+		glEnable(GL_TEXTURE_1D);
+		glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
+	}
  	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     for (j = 0; j < DIM - 1; j++)            //draw smoke
     {
@@ -397,15 +409,6 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
                 vy2 = scale(values[idx2], min, max);
                 vy3 = scale(values[idx3], min, max);
             }
-            if(useTextures){
-				glEnable(GL_TEXTURE_1D);
-				glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
-				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-			}
 
 			float R, G, B;
 			glBegin(GL_TRIANGLES);
@@ -425,7 +428,6 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 				glVertex2f(px3, py3);
 				
 				glEnd();
-				glDisable(GL_TEXTURE_1D);
 			} else {
 				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
 				glVertex2f(px0, py0);
@@ -446,6 +448,8 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
     	free(values);
+    if (useTextures)
+		glDisable(GL_TEXTURE_1D);	
 }
 
 
@@ -520,7 +524,7 @@ void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, 
 		for (int j = 0; j < model->DIM; ++j)
 		{
 			idx = i + j * model->DIM;
-			
+			 
 			// Calculate previous and next for derivative
 			prev_x = f_x[((i - 1 + model->DIM) % model->DIM) + j * model->DIM];
 			next_x = f_x[((i + 1) % model->DIM) + j * model->DIM];
