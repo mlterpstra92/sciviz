@@ -12,7 +12,7 @@ void Visualization::visualize(Model* model)
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
    	int dim = model->DIM * 2 * (model->DIM /2+1);
 
-    if (drawMatter)
+    if (drawMatter || drawIsolines)
     {	
     	fftw_real* values;
     	fftw_real min, max;
@@ -82,10 +82,6 @@ void Visualization::visualize(Model* model)
     		direction_y = model->vy;
     	}
         draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
-    }
-    if (drawIsolines)
-    {
-    	draw_isolines();
     }
 }
 
@@ -396,55 +392,132 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             double py3 = hn + (fftw_real)j * hn;
             int idx3 = (j * DIM) + (i + 1);
 
-            if (clamping == 1)
-            {  // Clamp
-                vy0 = clamp(values[idx0]);
-                vy1 = clamp(values[idx1]);
-                vy2 = clamp(values[idx2]);
-                vy3 = clamp(values[idx3]);
+			if (drawIsolines)
+            {
+            	double lambda_1, lambda_2;
+            	uint8_t code = 0;
+            	if (values[idx0] > isoline_value)
+            		SETBIT(code, 3);
+            	if (values[idx1] > isoline_value)
+            		SETBIT(code, 2);
+            	if (values[idx2] > isoline_value)
+            		SETBIT(code, 1);
+            	if (values[idx3] > isoline_value)
+            		SETBIT(code, 0);
+            	glBegin(GL_LINES);
+            	glColor3f(1.0,1.0,1.0);
+            	glLineWidth(4.0);
+            	switch (code)
+            	{
+        		case 1:
+            		// lambda_1 = interpolate(px3, values[idx3], px2, values[idx2], isoline_value);
+            		// lambda_2 = interpolate(py3, values[idx3], py0, values[idx0], isoline_value);
+            		glVertex2f(px3 + (wn / 2), py3);
+            		glVertex2f(px3, py3 + hn / 2);
+            		break;
+        		case 2:
+            		// lambda_1 = interpolate(values[idx3], values[idx2], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		// glVertex2f(px3 + lambda_1 * wn, py3);
+            		// glVertex2f(px2, py2 + lambda_2 * hn);
+            		break;
+        		case 3:
+            		// lambda_1 = interpolate(values[idx3], values[idx0], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		// glVertex2f(px3, py3 + lambda_1 * hn);
+            		// glVertex2f(px2, py2 + lambda_2 * hn);
+            		break;
+        		case 4:
+            		// lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		// glVertex2f(px0 + lambda_1 * wn, py1);
+            		// glVertex2f(px2, py2 + lambda_2 * hn);
+            		break;
+        		case 5:
+
+            		break;
+        		case 6:
+            		
+            		break;
+        		case 7:
+            		
+            		break;
+        		case 8:
+            		
+            		break;
+        		case 9:
+            		
+            		break;
+        		case 10:
+            		
+            		break;
+        		case 11:
+            		
+            		break;
+        		case 12:
+            		
+            		break;
+        		case 13:
+            		
+            		break;
+        		case 14:
+            		
+            		break;
+        		default:
+        			break;
+            		// Case 0, 15
+            	}
+            	glEnd();
             }
-            else
-            {  // Scale
-                vy0 = scale(values[idx0], min, max);
-                vy1 = scale(values[idx1], min, max);
-                vy2 = scale(values[idx2], min, max);
-                vy3 = scale(values[idx3], min, max);
+
+            if (drawMatter)
+            {
+	            if (clamping == 1)
+	            {  // Clamp
+	                vy0 = clamp(values[idx0]);
+	                vy1 = clamp(values[idx1]);
+	                vy2 = clamp(values[idx2]);
+	                vy3 = clamp(values[idx3]);
+	            }
+	            else
+	            {  // Scale
+	                vy0 = scale(values[idx0], min, max);
+	                vy1 = scale(values[idx1], min, max);
+	                vy2 = scale(values[idx2], min, max);
+	                vy3 = scale(values[idx3], min, max);
+	            }
+
+				glBegin(GL_TRIANGLES);
+				if(useTextures) {
+					glTexCoord1f(vy0);
+					glVertex2f(px0, py0);
+					glTexCoord1f(vy1);
+					glVertex2f(px1, py1);
+					glTexCoord1f(vy2);
+					glVertex2f(px2, py2);
+					glTexCoord1f(vy0);
+					glVertex2f(px0, py0);
+					glTexCoord1f(vy2);
+					glVertex2f(px2, py2);
+					glTexCoord1f(vy3);
+					glVertex2f(px3, py3);
+				} else {
+					float R, G, B;
+					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px0, py0);
+					set_colormap(vy1, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px1, py1);
+					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px2, py2);
+					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px0, py0);
+					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px2, py2);
+					set_colormap(vy3, R, G, B); glColor3f(R, G, B);
+					glVertex2f(px3, py3);
+				}
+				glEnd();
             }
-
-			float R, G, B;
-			glBegin(GL_TRIANGLES);
-
-			if(useTextures) {
-				glTexCoord1f(vy0);
-				glVertex2f(px0, py0);
-				glTexCoord1f(vy1);
-				glVertex2f(px1, py1);
-				glTexCoord1f(vy2);
-				glVertex2f(px2, py2);
-				glTexCoord1f(vy0);
-				glVertex2f(px0, py0);
-				glTexCoord1f(vy2);
-				glVertex2f(px2, py2);
-				glTexCoord1f(vy3);
-				glVertex2f(px3, py3);
-				
-				glEnd();
-			} else {
-				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px0, py0);
-				set_colormap(vy1, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px1, py1);
-				set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px2, py2);
-				set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px0, py0);
-				set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px2, py2);
-				set_colormap(vy3, R, G, B); glColor3f(R, G, B);
-				glVertex2f(px3, py3);
-
-				glEnd();
-			}
         }
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
@@ -453,6 +526,11 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 		glDisable(GL_TEXTURE_1D);	
 }
 
+double Visualization::interpolate(double pos1, double v1, double pos2, double v2, double iso)
+{
+	double lambda = (v1 - iso) / (v1 - v2);
+	return pos1 + lambda * (pos2 - pos1);
+}
 
 void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
 {	
