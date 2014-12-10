@@ -93,6 +93,7 @@ public:
 
     float clamp(float x);
     float scale(float x, fftw_real min, fftw_real max);
+    double interpolate(double pos1, double v1, double pos2, double v2, double iso);
 };
 
 #endif
