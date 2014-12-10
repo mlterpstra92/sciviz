@@ -2,6 +2,8 @@
 #include "model.h"
 #include "GL/glui.h"
 #include <iostream>
+#define SETBIT(a, n) (a) |= (1 << (n))
+#define UNSETBIT(a, n) (a) &= ~(1 << (n))
 
 //visualize: This is the main visualization function
 void Visualization::visualize(Model* model)
