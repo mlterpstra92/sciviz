@@ -534,7 +534,7 @@ void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, 
 			prev_y = f_y[i + ((j - 1 + model->DIM) % model->DIM) * model->DIM];
 			next_y = f_y[i + ((j + 1) % model->DIM) * model->DIM];
 			
-			diff[idx] = next_x - prev_x + next_y - prev_y;				
+			diff[idx] = next_x - prev_x + next_y - prev_y;
 			model->max_div = std::max(diff[idx], model->max_div);
 			model->min_div = std::min(diff[idx], model->min_div);
 		}
