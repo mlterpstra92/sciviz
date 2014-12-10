@@ -373,6 +373,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 		glBindTexture(GL_TEXTURE_1D,texture_id[color_map_idx]);	
 	}
  	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+ 	
     for (j = 0; j < DIM - 1; j++)            //draw smoke
     {
         for (i = 0; i < DIM - 1; i++)
@@ -392,84 +393,6 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             double px3 = wn + (fftw_real)(i + 1) * wn;
             double py3 = hn + (fftw_real)j * hn;
             int idx3 = (j * DIM) + (i + 1);
-
-			if (drawIsolines)
-            {
-            	double lambda_1, lambda_2;
-            	uint8_t code = 0;
-            	if (values[idx0] > isoline_value)
-            		SETBIT(code, 3);
-            	if (values[idx1] > isoline_value)
-            		SETBIT(code, 2);
-            	if (values[idx2] > isoline_value)
-            		SETBIT(code, 1);
-            	if (values[idx3] > isoline_value)
-            		SETBIT(code, 0);
-            	glBegin(GL_LINES);
-            	glColor3f(1.0,1.0,1.0);
-            	glLineWidth(4.0);
-            	switch (code)
-            	{
-        		case 1:
-            		// lambda_1 = interpolate(px3, values[idx3], px2, values[idx2], isoline_value);
-            		// lambda_2 = interpolate(py3, values[idx3], py0, values[idx0], isoline_value);
-            		glVertex2f(px3 + (wn / 2), py3);
-            		glVertex2f(px3, py3 + hn / 2);
-            		break;
-        		case 2:
-            		// lambda_1 = interpolate(values[idx3], values[idx2], isoline_value);
-            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
-            		// glVertex2f(px3 + lambda_1 * wn, py3);
-            		// glVertex2f(px2, py2 + lambda_2 * hn);
-            		break;
-        		case 3:
-            		// lambda_1 = interpolate(values[idx3], values[idx0], isoline_value);
-            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
-            		// glVertex2f(px3, py3 + lambda_1 * hn);
-            		// glVertex2f(px2, py2 + lambda_2 * hn);
-            		break;
-        		case 4:
-            		// lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
-            		// glVertex2f(px0 + lambda_1 * wn, py1);
-            		// glVertex2f(px2, py2 + lambda_2 * hn);
-            		break;
-        		case 5:
-
-            		break;
-        		case 6:
-            		
-            		break;
-        		case 7:
-            		
-            		break;
-        		case 8:
-            		
-            		break;
-        		case 9:
-            		
-            		break;
-        		case 10:
-            		
-            		break;
-        		case 11:
-            		
-            		break;
-        		case 12:
-            		
-            		break;
-        		case 13:
-            		
-            		break;
-        		case 14:
-            		
-            		break;
-        		default:
-        			break;
-            		// Case 0, 15
-            	}
-            	glEnd();
-            }
 
             if (drawMatter)
             {
@@ -519,6 +442,86 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 				}
 				glEnd();
             }
+			if (drawIsolines)
+            {
+            	double lambda_1, lambda_2;
+            	uint8_t code = 0;
+            	if (values[idx0] > isoline_value)
+            		SETBIT(code, 3);
+            	if (values[idx1] > isoline_value)
+            		SETBIT(code, 2);
+            	if (values[idx2] > isoline_value)
+            		SETBIT(code, 1);
+            	if (values[idx3] > isoline_value)
+            		SETBIT(code, 0);
+            	glBegin(GL_LINES);
+            	glColor3f(0.0,1.0,0.0);
+            	glLineWidth(4.0);
+            	switch (code)
+            	{
+        		case 1:
+            		// lambda_1 = interpolate(px3, values[idx3], px2, values[idx2], isoline_value);
+            		// lambda_2 = interpolate(py3, values[idx3], py0, values[idx0], isoline_value);
+            		glVertex2f(px3 + (wn / 2), py3);
+            		glVertex2f(px3, py3 + hn / 2);
+            		break;
+        		case 2:
+            		// lambda_1 = interpolate(values[idx3], values[idx2], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		// glVertex2f(px3 + lambda_1 * wn, py3);
+            		// glVertex2f(px2, py2 + lambda_2 * hn);
+        			glVertex2f(px3 + (wn / 2.0), py2);
+        		    glVertex2f(px2, py1 - (hn / 2.0));
+            		break;
+        		case 3:
+            		// lambda_1 = interpolate(values[idx3], values[idx0], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		 glVertex2f(px3, py3 + lambda_1 * hn);
+            		 glVertex2f(px2, py2 + lambda_2 * hn);
+            		break;
+        		case 4:
+            		// lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+            		// lambda_2 = interpolate(values[idx2], values[idx1], isoline_value);
+            		 glVertex2f(px0 + lambda_1 * wn, py1);
+            		 glVertex2f(px2, py2 + lambda_2 * hn);
+            		break;
+        		case 5:
+
+            		break;
+        		case 6:
+            		
+            		break;
+        		case 7:
+            		
+            		break;
+        		case 8:
+            		
+            		break;
+        		case 9:
+            		
+            		break;
+        		case 10:
+            		
+            		break;
+        		case 11:
+            		
+            		break;
+        		case 12:
+            		
+            		break;
+        		case 13:
+            		
+            		break;
+        		case 14:
+            		
+            		break;
+        		default:
+        			break;
+            		// Case 0, 15
+            	}
+            	glEnd();
+            }
+
         }
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
