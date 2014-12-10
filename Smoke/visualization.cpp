@@ -126,7 +126,6 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
 }
 
 void Visualization::create_textures(){
-	std::cout << "here" << std::endl;
 	int old_colormap_idx = color_map_idx;
 	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
