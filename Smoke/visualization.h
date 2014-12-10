@@ -35,6 +35,8 @@ public:
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
+    int drawIsolines;
+    float isoline_value;
     int useTextures;
     float min_clamp_value, max_clamp_value;
     unsigned int texture_id[NUM_COLORMAPS];

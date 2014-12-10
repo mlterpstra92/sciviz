@@ -23,7 +23,9 @@ enum {
 	  GLYPH_SHAPE_ID,
 	  MIN_CLAMP_ID,
 	  MAX_CLAMP_ID,
-	  TEXTURE_ID
+	  TEXTURE_ID,
+	  DRAW_ISOLINES_ID,
+	  ISOLINES_VALUE_ID
 };
 
 #endif

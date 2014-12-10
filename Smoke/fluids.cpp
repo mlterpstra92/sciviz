@@ -282,6 +282,11 @@ void create_GUI()
     glyph_shape_list->add_item(1, "Arrows");
     glyph_shape_list->add_item(2, "Triangles");
 
+    GLUI_Rollout *scalar_ops_rollout = glui->add_rollout("Scalars", false);
+    new GLUI_Checkbox(scalar_ops_rollout, "Isolines", &(vis.drawIsolines), DRAW_ISOLINES_ID, glui_callback);
+    new GLUI_Spinner(scalar_ops_rollout, "Isoline value", GLUI_SPINNER_FLOAT, &(vis.isoline_value), ISOLINES_VALUE_ID, glui_callback);
+
+
 }
 
 
