@@ -81,6 +81,10 @@ void Visualization::visualize(Model* model)
     	}
         draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
     }
+    if (drawIsolines)
+    {
+    	draw_isolines();
+    }
 }
 
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
@@ -498,6 +502,11 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			}
 		}
 	}
+}
+
+void Visualization::draw_isolines()
+{
+	
 }
 
 void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
