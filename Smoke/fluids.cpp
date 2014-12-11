@@ -10,7 +10,7 @@
 #include "model.h"              //Simulation part of the application
 #include "visualization.h"      //Visualization part of the application
 
-const int DIM = 20;             //size of simulation grid
+const int DIM = 50;             //size of simulation grid
 Model model(DIM);
 Visualization vis(0, 0, 0, 1000.0f);
 
