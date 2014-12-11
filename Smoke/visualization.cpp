@@ -444,6 +444,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             }
 			if (drawIsolines)
             {
+            	float R, G, B;
             	double lambda_1, lambda_2, lambda_3, lambda_4, mean;
             	uint8_t code = 0;
             	if (values[idx1] > isoline_value)
@@ -455,8 +456,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             	if (values[idx0] > isoline_value)
             		SETBIT(code, 0);
             	glBegin(GL_LINES);
-            	glColor3f(0.0,1.0,0.0);
-            	glLineWidth(4.0);
+            	set_colormap(isoline_value, R, G, B); glColor3f(R, G, B);
             	switch (code)
             	{
         		case 1:
