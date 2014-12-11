@@ -444,113 +444,122 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             }
 			if (drawIsolines)
             {
-            	float R, G, B;
-            	double lambda_1, lambda_2, lambda_3, lambda_4, mean;
-            	uint8_t code = 0;
-            	if (values[idx1] > isoline_value)
-            		SETBIT(code, 3);
-            	if (values[idx2] > isoline_value)
-            		SETBIT(code, 2);
-            	if (values[idx3] > isoline_value)
-            		SETBIT(code, 1);
-            	if (values[idx0] > isoline_value)
-            		SETBIT(code, 0);
-            	set_colormap(isoline_value, R, G, B); 
-            	glColor3f(R, G, B);
-            	glBegin(GL_LINES);
-            	switch (code)
-            	{
-        		case 1:
-        		case 14:
-            		lambda_1 = interpolate(values[idx0], values[idx3], isoline_value);
-            		lambda_2 = interpolate(values[idx0], values[idx1], isoline_value);
-            		glVertex2f(px0 + lambda_1 * wn, py0);
-            		glVertex2f(px0, py0 + lambda_2 * hn);
-            		break;
-        		case 2:
-        		case 13:
-        			lambda_1 = interpolate(values[idx0], values[idx3], isoline_value);
-            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
-            		glVertex2f(px0 + lambda_1 * wn, py0);
-            		glVertex2f(px3, py3 + lambda_2 * hn);
-            		break;
-        		case 3:
-        		case 12:
-            		lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
-            		glVertex2f(px0, py0 + lambda_1 * hn);
-            		glVertex2f(px3, py3 + lambda_2 * hn);
-            		break;
-        		case 4:
-        		case 11:
-            		lambda_1 = interpolate(values[idx1], values[idx2], isoline_value);
-            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
-            		glVertex2f(px1 + lambda_1 * wn, py1);
-            		glVertex2f(px3, py3 + lambda_2 * hn);
-            		break;
-            	case 5:
-            		// KLOPT DIT?
-        			mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
-        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
-        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
-            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
-        			if (mean > isoline_value)
-        			{
+        		if (!multipleIsolines)
+        		{
+        			num_isoline_value = 1;
+        			lower_isoline_value = isoline_value;
+        			upper_isoline_value = isoline_value;
+        		}
+        		for (int iso_idx = 0; iso_idx < num_isoline_value; ++iso_idx)
+        		{
+        			float isoline_value = lower_isoline_value + ((double) iso_idx / num_isoline_value) * (upper_isoline_value - lower_isoline_value);
+        			float R, G, B;
+	            	double lambda_1, lambda_2, lambda_3, lambda_4, mean;
+	            	uint8_t code = 0;
+	            	if (values[idx1] > isoline_value)
+	            		SETBIT(code, 3);
+	            	if (values[idx2] > isoline_value)
+	            		SETBIT(code, 2);
+	            	if (values[idx3] > isoline_value)
+	            		SETBIT(code, 1);
+	            	if (values[idx0] > isoline_value)
+	            		SETBIT(code, 0);
+	            	glBegin(GL_LINES);
+	            	set_colormap(isoline_value, R, G, B);
+	            	glColor3f(R, G, B);
+	            	switch (code)
+	            	{
+	        		case 1:
+	        		case 14:
+	            		lambda_1 = interpolate(values[idx0], values[idx3], isoline_value);
+	            		lambda_2 = interpolate(values[idx0], values[idx1], isoline_value);
+	            		glVertex2f(px0 + lambda_1 * wn, py0);
+	            		glVertex2f(px0, py0 + lambda_2 * hn);
+	            		break;
+	        		case 2:
+	        		case 13:
+	        			lambda_1 = interpolate(values[idx0], values[idx3], isoline_value);
+	            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
+	            		glVertex2f(px0 + lambda_1 * wn, py0);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
+	            		break;
+	        		case 3:
+	        		case 12:
+	            		lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+	            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
+	            		glVertex2f(px0, py0 + lambda_1 * hn);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
+	            		break;
+	        		case 4:
+	        		case 11:
+	            		lambda_1 = interpolate(values[idx1], values[idx2], isoline_value);
+	            		lambda_2 = interpolate(values[idx3], values[idx2], isoline_value);
+	            		glVertex2f(px1 + lambda_1 * wn, py1);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
+	            		break;
+	            	case 5:
+	            		// KLOPT DIT?
+	        			mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
+	        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+	        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
+	        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
+	            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
+	        			if (mean > isoline_value)
+	        			{
+		            		glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+	        			} else
+	        			{
+	        				glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+	        			}
+	            		break;
+	        		case 6:
+	        		case 9:
+	            		lambda_1 = interpolate(values[idx1], values[idx2], isoline_value);
+	            		lambda_2 = interpolate(values[idx0], values[idx3], isoline_value);
+	            		glVertex2f(px1 + lambda_1 * wn, py1);
+	            		glVertex2f(px0 + lambda_2 * wn, py0);
+	            		break;
+	        		case 7:
+	        		case 8:
+	            		lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+	            		lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
 	            		glVertex2f(px0, py0 + lambda_1 * hn);
 	            		glVertex2f(px1 + lambda_2 * wn, py1);
-	            		glVertex2f(px3, py3 + lambda_3 * hn);
-	            		glVertex2f(px0 + lambda_4 * wn, py0);
-        			} else
-        			{
-        				glVertex2f(px0, py0 + lambda_1 * hn);
-	            		glVertex2f(px0 + lambda_4 * wn, py0);
-	            		glVertex2f(px3, py3 + lambda_3 * hn);
-	            		glVertex2f(px1 + lambda_2 * wn, py1);
-        			}
-            		break;
-        		case 6:
-        		case 9:
-            		lambda_1 = interpolate(values[idx1], values[idx2], isoline_value);
-            		lambda_2 = interpolate(values[idx0], values[idx3], isoline_value);
-            		glVertex2f(px1 + lambda_1 * wn, py1);
-            		glVertex2f(px0 + lambda_2 * wn, py0);
-            		break;
-        		case 7:
-        		case 8:
-            		lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-            		lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
-            		glVertex2f(px0, py0 + lambda_1 * hn);
-            		glVertex2f(px1 + lambda_2 * wn, py1);
-            		break;
-            	case 10:
-            		// KLOPT DIT?
-            		mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
-        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
-        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
-            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
-            		if (mean <= isoline_value)
-        			{
-	            		glVertex2f(px0, py0 + lambda_1 * hn);
-	            		glVertex2f(px1 + lambda_2 * wn, py1);
-	            		glVertex2f(px3, py3 + lambda_3 * hn);
-	            		glVertex2f(px0 + lambda_4 * wn, py0);
-        			} else
-        			{
-        				glVertex2f(px0, py0 + lambda_1 * hn);
-	            		glVertex2f(px0 + lambda_4 * wn, py0);
-	            		glVertex2f(px3, py3 + lambda_3 * hn);
-	            		glVertex2f(px1 + lambda_2 * wn, py1);
-        			}
-            		break;
-        		default:
-        			break;
-            		// Case 0, 15
+	            		break;
+	            	case 10:
+	            		// KLOPT DIT?
+	            		mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
+	        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
+	        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
+	        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
+	            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
+	            		if (mean <= isoline_value)
+	        			{
+		            		glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+	        			} else
+	        			{
+	        				glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+	        			}
+	            		break;
+	        		default:
+	        			break;
+	            		// Case 0, 15
+	            	}
+	            	glEnd();
             	}
-            	glEnd();
             }
-
         }
     }
     if (scalar_dataset_idx != FLUID_DENSITY)
