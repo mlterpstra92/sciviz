@@ -633,11 +633,6 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	}
 }
 
-void Visualization::draw_isolines()
-{
-	
-}
-
 void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
 {
 	int idx;
