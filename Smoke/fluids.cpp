@@ -163,6 +163,7 @@ void glui_callback(int control)
 
         case VISCOSITY_SPINNER_ID:
             model.visc = model.base_visc * model.visc_scale_factor;
+            break;
 
         case MIN_CLAMP_ID:
         case MAX_CLAMP_ID:
@@ -172,7 +173,6 @@ void glui_callback(int control)
 
         case HUE_SPINNER_ID:
         case SATURATION_SPINNER_ID:
-
             if(vis.useTextures)
                 vis.create_textures();
             break;
@@ -182,8 +182,6 @@ void glui_callback(int control)
             lower_iso_spinner->set_float_limits(0.0f, upper_iso_spinner->get_float_val());
             upper_iso_spinner->set_float_limits(lower_iso_spinner->get_float_val(), 5.0f);
             break;
-
-
 
         case DRAW_ISOLINES_ID:
             vis.multipleIsolines = 0;
@@ -195,11 +193,11 @@ void glui_callback(int control)
             if(!vis.limitColors)
                 vis.numColors = 256;
             vis.create_textures();
-            vis.numColors = oldNum;
-            
+            vis.numColors = oldNum;  
             break;
 
         default:
+            // Do no special actions
             break;
     }
     GLUI_Master.sync_live_all();
