@@ -455,8 +455,9 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             		SETBIT(code, 1);
             	if (values[idx0] > isoline_value)
             		SETBIT(code, 0);
+            	set_colormap(isoline_value, R, G, B); 
+            	glColor3f(R, G, B);
             	glBegin(GL_LINES);
-            	set_colormap(isoline_value, R, G, B); glColor3f(R, G, B);
             	switch (code)
             	{
         		case 1:
