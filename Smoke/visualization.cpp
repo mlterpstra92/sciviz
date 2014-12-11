@@ -588,8 +588,19 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	{
 		for (j = 0; j < num_y_glyphs; j++)
 		{
-			float x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
-			float y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
+			float x_start, y_start, x_end, y_end;
+			switch(glyph_location_idx)
+			{
+			case JITTER:
+				x_start = (wn + (fftw_real)i * wn) * x_scale_factor + jitter_displacement[i*num_x_glyphs + j] * jitter_value;
+				y_start = (hn + (fftw_real)j * hn) * y_scale_factor + jitter_displacement[j*num_y_glyphs + i] * jitter_value;
+				break;
+			case UNIFORM:
+			default:
+				x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
+				y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
+				break;
+			}
 
 			int floor_x_index = i * x_scale_factor;
 			int ceil_x_index = (floor_x_index + 1) % DIM;
@@ -611,8 +622,18 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 				             anti_alpha * beta      * direction_y[floor_y_index * DIM + ceil_x_index] + 
 				             alpha      * anti_beta * direction_y[ceil_y_index * DIM + floor_x_index]);
 
-			float x_end = x_start + vec_length * value_x;
-			float y_end = y_start + vec_length * value_y;
+			switch(glyph_location_idx)
+			{
+			case JITTER:
+				//x_end = x_start + vec_length * value_x - jitter_displacement[i*num_x_glyphs + j] * jitter_value;;
+				//y_end = y_start + vec_length * value_y - jitter_displacement[j*num_x_glyphs + i] * jitter_value;;
+				//break;
+			case UNIFORM:
+			default:
+				x_end = x_start + vec_length * value_x;
+				y_end = y_start + vec_length * value_y;
+				break;
+			}
 			direction_to_color(value_x, value_y, color_dir);
 			switch(glyph_shape)
 			{

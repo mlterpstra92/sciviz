@@ -279,6 +279,8 @@ void create_GUI()
     glyph_location_list->add_item(0, "Uniform");
     glyph_location_list->add_item(1, "Random");
     glyph_location_list->add_item(2, "Jitter");
+    GLUI_Spinner* jitter_spinner = new GLUI_Spinner(glyphRollout, "Jitter", GLUI_SPINNER_INT, &(vis.jitter_value), GLYPH_JITTER_AMOUNT, glui_callback);
+    jitter_spinner->set_int_limits(0, 500);
 
     vis.num_x_glyphs = model.DIM;
     vis.num_y_glyphs = model.DIM;

@@ -33,6 +33,7 @@ public:
     int vector_dataset_idx;
     int clamping;
     int glyph_location_idx;
+    int jitter_value;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
     int drawIsolines;
@@ -46,12 +47,21 @@ public:
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
     enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
+    std::vector<float> jitter_displacement;
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
     Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(1), isoline_value(0.06) {
         vec_length = vec_base_length * vec_scale;
+        for (int i = 0; i < 200*200; ++i)
+            jitter_displacement.push_back(RandomFloat(-1, 1));
     }
 
+    float RandomFloat(float a, float b) {
+        float random = ((float) rand()) / (float) RAND_MAX;
+        float diff = b - a;
+        float r = random * diff;
+        return a + r;
+    }
     void visualize(Model* model);
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
