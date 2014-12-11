@@ -177,6 +177,14 @@ void glui_callback(int control)
                 vis.create_textures();
             break;
 
+        case LOWER_ISOLINES_VALUE_ID:
+        case UPPER_ISOLINES_VALUE_ID:
+            lower_iso_spinner->set_float_limits(0.0f, upper_iso_spinner->get_float_val());
+            upper_iso_spinner->set_float_limits(lower_iso_spinner->get_float_val(), 5.0f);
+            break;
+
+
+
         case DRAW_ISOLINES_ID:
             vis.multipleIsolines = 0;
             break;
@@ -291,9 +299,9 @@ void create_GUI()
     GLUI_Spinner* iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Isoline value", GLUI_SPINNER_FLOAT, &(vis.isoline_value), ISOLINES_VALUE_ID, glui_callback);
     iso_spinner->set_float_limits(0, 5);
     new GLUI_Checkbox(scalar_ops_rollout, "Multiple isolines", &(vis.multipleIsolines), MULTIPLE_ISOLINES_ID, glui_callback);
-    GLUI_Spinner* lower_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Lower Isoline limit", GLUI_SPINNER_FLOAT, &(vis.lower_isoline_value), LOWER_ISOLINES_VALUE_ID, glui_callback);
+    lower_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Lower Isoline limit", GLUI_SPINNER_FLOAT, &(vis.lower_isoline_value), LOWER_ISOLINES_VALUE_ID, glui_callback);
     lower_iso_spinner->set_float_limits(0, 5);
-    GLUI_Spinner* upper_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Upper Isoline limit", GLUI_SPINNER_FLOAT, &(vis.upper_isoline_value), UPPER_ISOLINES_VALUE_ID, glui_callback);
+    upper_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Upper Isoline limit", GLUI_SPINNER_FLOAT, &(vis.upper_isoline_value), UPPER_ISOLINES_VALUE_ID, glui_callback);
     upper_iso_spinner->set_float_limits(0, 5);
     GLUI_Spinner* num_lines_spinner = new GLUI_Spinner(scalar_ops_rollout, "No. of isolines", GLUI_SPINNER_INT, &(vis.num_isoline_value), NUM_ISOLINES_VALUE_ID, glui_callback);
     num_lines_spinner->set_int_limits(1, 20);

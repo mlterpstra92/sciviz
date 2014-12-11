@@ -1,6 +1,6 @@
 #ifndef FLUIDS_H
 #define FLUIDS_H
-GLUI_Spinner* minClamp, *maxClamp;
+GLUI_Spinner* minClamp, *maxClamp, *lower_iso_spinner, *upper_iso_spinner;
 enum {
 	  ANIMATE_ID, 
 	  DRAW_HEDGEHOGS_ID, 
