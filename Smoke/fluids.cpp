@@ -62,8 +62,7 @@ const float depth = 1000.0f;
 const float dist = 0.5f * depth;
 const float offX = 0.0f;
 const float offY = 0.0f;
-const float rotX = -50.0f;
-const float rotY = 0.0f;
+
 //display: Handle window redrawing events. Simply delegates to visualize().
 void display(void)
 {
@@ -72,12 +71,20 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
     gluLookAt(0.0, 0.0, dist + depth, 
               0.0, 0.0, 0.0, 
               0.0, 1.0, 0.0);
-    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, dist - depth);
-    glRotatef(rotX, 1.0f, 0.0f, 0.0f);
-    glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+    // Translate the GL origin to the simulation middle
+    // glTranslatef(0.5 * tw + offX, 0.5 * th + offY, 0);
+    // Now rotate along the axis w.r.t. this origin
+    glTranslatef(0.0f, 0.0f, dist - depth);
+    glRotatef(-vis.x_rot, 1.0f, 0.0f, 0.0f);
+    glRotatef(-vis.y_rot, 0.0f, 1.0f, 0.0f);
+    glRotatef(-vis.z_rot, 0.0f, 0.0f, 1.0f);
+    // Translate to the middle of the simulation coordinates.
+    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, 0.0f);
+
     vis.visualize(&model);
     glFlush();
     calcFPS(1000, "Real-time smoke simulation and visualization");
@@ -93,7 +100,7 @@ void reshape(int w, int h)
     glViewport(tx, ty, tw, th);
     //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
     //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
-    gluPerspective(30.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
+    gluPerspective(25.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
     model.winWidth = tw;
     model.winHeight = th;
 }
@@ -253,8 +260,6 @@ void create_GUI()
     glui->add_radiobutton_to_group( scale_clamp, "Scale");
     glui->add_radiobutton_to_group( scale_clamp, "Clamp");
 
-    vis.min_clamp_value = 0.0f;
-    vis.max_clamp_value = 1.0f;
     minClamp = new GLUI_Spinner(generalRollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_clamp_value), MIN_CLAMP_ID, glui_callback);
     maxClamp = new GLUI_Spinner(generalRollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_clamp_value), MAX_CLAMP_ID, glui_callback);
     minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
@@ -337,6 +342,18 @@ void create_GUI()
     glui->add_radiobutton_to_group( height_scale_clamp, "Clamp");
     minClamp = new GLUI_Spinner(heightplot_rollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_height_clamp_value), MIN_HEIGHT_CLAMP_ID, glui_callback);
     maxClamp = new GLUI_Spinner(heightplot_rollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_height_clamp_value), MAX_HEIGHT_CLAMP_ID, glui_callback);
+
+    // x rotation spinner
+    GLUI_Spinner* x_rot_spinner = new GLUI_Spinner(heightplot_rollout, "x rotation", GLUI_SPINNER_FLOAT, &(vis.x_rot), X_ROT_ID, glui_callback);
+    x_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // y rotation spinner
+    GLUI_Spinner* y_rot_spinner = new GLUI_Spinner(heightplot_rollout, "y rotation", GLUI_SPINNER_FLOAT, &(vis.y_rot), Y_ROT_ID, glui_callback);
+    y_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // z rotation spinner
+    GLUI_Spinner* z_rot_spinner = new GLUI_Spinner(heightplot_rollout, "z rotation", GLUI_SPINNER_FLOAT, &(vis.z_rot), Z_ROT_ID, glui_callback);
+    z_rot_spinner->set_float_limits(0.0f, 360.0f);
 }
 
 
