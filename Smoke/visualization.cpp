@@ -394,23 +394,23 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             double py3 = hn + (fftw_real)j * hn;
             int idx3 = (j * DIM) + (i + 1);
 
+            if (clamping == 1)
+            {  // Clamp
+                vy0 = clamp(values[idx0]);
+                vy1 = clamp(values[idx1]);
+                vy2 = clamp(values[idx2]);
+                vy3 = clamp(values[idx3]);
+            }
+            else
+            {  // Scale
+                vy0 = scale(values[idx0], min, max);
+                vy1 = scale(values[idx1], min, max);
+                vy2 = scale(values[idx2], min, max);
+                vy3 = scale(values[idx3], min, max);
+            }
+
             if (drawMatter)
             {
-	            if (clamping == 1)
-	            {  // Clamp
-	                vy0 = clamp(values[idx0]);
-	                vy1 = clamp(values[idx1]);
-	                vy2 = clamp(values[idx2]);
-	                vy3 = clamp(values[idx3]);
-	            }
-	            else
-	            {  // Scale
-	                vy0 = scale(values[idx0], min, max);
-	                vy1 = scale(values[idx1], min, max);
-	                vy2 = scale(values[idx2], min, max);
-	                vy3 = scale(values[idx3], min, max);
-	            }
-
 				glBegin(GL_TRIANGLES);
 				if(useTextures) {
 					glTexCoord1f(vy0);
@@ -453,16 +453,21 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
         		for (int iso_idx = 0; iso_idx < num_isoline_value; ++iso_idx)
         		{
         			float isoline_value = lower_isoline_value + ((double) iso_idx / num_isoline_value) * (upper_isoline_value - lower_isoline_value);
+        			if (clamping)
+        				isoline_value = clamp(isoline_value);
+        			else
+        				isoline_value = scale(isoline_value, min, max);
+
         			float R, G, B;
 	            	double lambda_1, lambda_2, lambda_3, lambda_4, mean;
 	            	uint8_t code = 0;
-	            	if (values[idx1] > isoline_value)
+	            	if (vy1 > isoline_value)
 	            		SETBIT(code, 3);
-	            	if (values[idx2] > isoline_value)
+	            	if (vy2 > isoline_value)
 	            		SETBIT(code, 2);
-	            	if (values[idx3] > isoline_value)
+	            	if (vy3 > isoline_value)
 	            		SETBIT(code, 1);
-	            	if (values[idx0] > isoline_value)
+	            	if (vy0 > isoline_value)
 	            		SETBIT(code, 0);
 	            	glBegin(GL_LINES);
 	            	if (useTextures)
@@ -504,11 +509,11 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	            		break;
 	            	case 5:
 	            		// KLOPT DIT?
-	        			mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
-	        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-	        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
-	        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
-	            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
+	        			mean = (vy0 + vy1 + vy2 + vy3) / 4;
+	        			lambda_1 = interpolate(vy0, vy1, isoline_value);
+	        			lambda_2 = interpolate(vy1, vy2, isoline_value);
+	        			lambda_3 = interpolate(vy3, vy2, isoline_value);
+	            		lambda_4 = interpolate(vy0, vy3, isoline_value);
 	        			if (mean > isoline_value)
 	        			{
 		            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
@@ -535,15 +540,15 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	            		lambda_1 = interpolate(vy0, vy1, isoline_value);
 	            		lambda_2 = interpolate(vy1, vy2, isoline_value);
 	            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
-	            		glVertex3f(px1 + lambda_2 * wn, py1, 0);3
+	            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
 	            		break;
 	            	case 10:
 	            		// KLOPT DIT?
-	            		mean = (values[idx0] + values[idx1] + values[idx2] + values[idx3]) / 4;
-	        			lambda_1 = interpolate(values[idx0], values[idx1], isoline_value);
-	        			lambda_2 = interpolate(values[idx1], values[idx2], isoline_value);
-	        			lambda_3 = interpolate(values[idx3], values[idx2], isoline_value);
-	            		lambda_4 = interpolate(values[idx0], values[idx3], isoline_value);
+	            		mean = (vy0 + vy1 + vy2 + vy3) / 4;
+	        			lambda_1 = interpolate(vy0, vy1, isoline_value);
+	        			lambda_2 = interpolate(vy1, vy2, isoline_value);
+	        			lambda_3 = interpolate(vy3, vy2, isoline_value);
+	            		lambda_4 = interpolate(vy0, vy3, isoline_value);
 	            		if (mean <= isoline_value)
 	        			{
 		            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
