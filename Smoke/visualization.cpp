@@ -85,7 +85,7 @@ void Visualization::visualize(Model* model)
         draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
     }
 }
-
+//-----------COLOR MAPS ----------//
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void Visualization::rainbow(float value,float* R,float* G,float* B)
 {
@@ -104,18 +104,6 @@ void Visualization::bipolar(float value,float* R,float* G,float* B)
 	*B = 1 - value;
 }
 
-//clamp: Clamp all values between 0 and 1
-float Visualization::clamp(float x)
-{
-    if (x >= max_clamp_value) {
-        return 1.0;
-    } else if (x < min_clamp_value) {
-        return 0.0;
-    } else {
-        return x;
-    }
-}
-
 void Visualization::zebra(float value, float* R,float* G,float* B)
 {
 	int val = std::min((int)(value * numColors), numColors - 1) & 1;
@@ -126,6 +114,18 @@ void Visualization::zebra(float value, float* R,float* G,float* B)
 float Visualization::scale(float x, fftw_real min, fftw_real max)
 {
     return (x - min) / (max - min);;
+}
+
+//clamp: Clamp all values between 0 and 1
+float Visualization::clamp(float x)
+{
+    if (x >= max_clamp_value) {
+        return 1.0;
+    } else if (x < min_clamp_value) {
+        return 0.0;
+    } else {
+        return x;
+    }
 }
 
 void Visualization::create_textures(){
@@ -465,7 +465,13 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	            	if (values[idx0] > isoline_value)
 	            		SETBIT(code, 0);
 	            	glBegin(GL_LINES);
-	            	set_colormap(isoline_value, R, G, B); glColor3f(R, G, B);
+	            	if (useTextures)
+	            		glTexCoord1f(isoline_value);
+	            	else
+	            	{
+		            	set_colormap(isoline_value, R, G, B);
+		            	glColor3f(R, G, B);
+		            }
 	            	switch (code)
 	            	{
 	        		case 1:
@@ -625,11 +631,6 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			}
 		}
 	}
-}
-
-void Visualization::draw_isolines()
-{
-	
 }
 
 void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
