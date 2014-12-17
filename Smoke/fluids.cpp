@@ -58,19 +58,31 @@ void calcFPS(int theTimeInterval = 1000, std::string theWindowTitle = "NONE")
         fpsFrameCount++;
 }
 
+const float depth = 1000.0f;
+const float dist = 0.5f * depth;
+const float offX = 0.0f;
+const float offY = 0.0f;
+const float rotX = 15.0f;
+const float rotY = 0.0f;
 //display: Handle window redrawing events. Simply delegates to visualize().
 void display(void)
 {
+    int tx, ty, tw, th;
+    GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0, 0, 0, 0, 0,0.0, 0.0, 0, 1.0);
+    gluLookAt(0.0, 0.0, dist + depth, 
+              0.0, 0.0, 0.0, 
+              0.0, 1.0, 0.0);
+    glRotatef(rotX, 1.0f, 0.0f, 0.0f);
+    glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, dist - depth);
     vis.visualize(&model);
     glFlush();
     calcFPS(1000, "Real-time smoke simulation and visualization");
     glutSwapBuffers();
 }
-
 //reshape: Handle window resizing (reshaping) events
 void reshape(int w, int h)
 {
@@ -79,7 +91,9 @@ void reshape(int w, int h)
     glLoadIdentity();
     GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
     glViewport(tx, ty, tw, th);
-    gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
+    //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
+    //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
+    gluPerspective(40.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
     model.winWidth = tw;
     model.winHeight = th;
 }
