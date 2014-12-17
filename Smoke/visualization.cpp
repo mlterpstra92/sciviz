@@ -589,18 +589,20 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 		for (j = 0; j < num_y_glyphs; j++)
 		{
 			float x_start, y_start, x_end, y_end;
+			int jitter_x, jitter_y;
 			switch(glyph_location_idx)
 			{
 			case JITTER:
-				x_start = (wn + (fftw_real)i * wn) * x_scale_factor + jitter_displacement[i*num_x_glyphs + j] * jitter_value;
-				y_start = (hn + (fftw_real)j * hn) * y_scale_factor + jitter_displacement[j*num_y_glyphs + i] * jitter_value;
+				jitter_x = jitter_displacement[i*num_x_glyphs + j] * jitter_value;
+				jitter_y = jitter_displacement[j*num_y_glyphs + i] * jitter_value;
 				break;
 			case UNIFORM:
 			default:
-				x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
-				y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
+				jitter_x = jitter_y = 0.0f;
 				break;
 			}
+			x_start = (wn + (fftw_real)i * wn) * x_scale_factor + jitter_x;
+			y_start = (hn + (fftw_real)j * hn) * y_scale_factor + jitter_y;
 
 			int floor_x_index = i * x_scale_factor;
 			int ceil_x_index = (floor_x_index + 1) % DIM;
@@ -613,21 +615,21 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			float anti_beta = 1.0 - beta;
 
 			float value_x = (anti_alpha * anti_beta * direction_x[floor_y_index * DIM + floor_x_index] + 
-				             alpha      * beta      * direction_x[ceil_y_index * DIM + ceil_x_index] + 
-				             anti_alpha * beta      * direction_x[floor_y_index * DIM + ceil_x_index] + 
-				             alpha      * anti_beta * direction_x[ceil_y_index * DIM + floor_x_index]);
+				             alpha      * beta      * direction_x[ceil_y_index  * DIM +  ceil_x_index] + 
+				             anti_alpha * beta      * direction_x[floor_y_index * DIM +  ceil_x_index] + 
+				             alpha      * anti_beta * direction_x[ceil_y_index  * DIM + floor_x_index]);
 
 			float value_y = (anti_alpha * anti_beta * direction_y[floor_y_index * DIM + floor_x_index] + 
-				             alpha      * beta      * direction_y[ceil_y_index * DIM + ceil_x_index] + 
-				             anti_alpha * beta      * direction_y[floor_y_index * DIM + ceil_x_index] + 
-				             alpha      * anti_beta * direction_y[ceil_y_index * DIM + floor_x_index]);
+				             alpha      * beta      * direction_y[ceil_y_index  * DIM +  ceil_x_index] + 
+				             anti_alpha * beta      * direction_y[floor_y_index * DIM +  ceil_x_index] + 
+				             alpha      * anti_beta * direction_y[ceil_y_index  * DIM + floor_x_index]);
 
 			switch(glyph_location_idx)
 			{
 			case JITTER:
-				//x_end = x_start + vec_length * value_x - jitter_displacement[i*num_x_glyphs + j] * jitter_value;;
-				//y_end = y_start + vec_length * value_y - jitter_displacement[j*num_x_glyphs + i] * jitter_value;;
-				//break;
+				x_end = x_start + vec_length * value_x;
+				y_end = y_start + vec_length * value_y;
+				break;
 			case UNIFORM:
 			default:
 				x_end = x_start + vec_length * value_x;
