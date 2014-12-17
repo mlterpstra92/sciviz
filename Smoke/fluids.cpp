@@ -333,5 +333,14 @@ int main(int argc, char **argv)
     vis.create_textures();
 
     glutMainLoop();         //calls do_one_simulation_step, keyboard, display, drag, reshape
+    free(model.rho0);
+    free(model.rho);
+    free(model.fy);
+    free(model.fx);
+    free(model.vy0);
+    free(model.vx0);
+    free(model.vy);
+    free(model.vx);
+
     return 0;
 }

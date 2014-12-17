@@ -13,7 +13,6 @@ void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::ve
 	{
 	case FLUID_VELOCITY:
 		// Calculate magnitudes
-		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
 		for (int i = 0; i < dim; i++)
 		{
 			values.push_back((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
@@ -24,7 +23,6 @@ void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::ve
 		break;
 	case FORCE_FIELD:
 		// Calculate magnitudes    
-		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));		
     	for (int i = 0; i < dim; i++)
     	{
     		values.push_back((fftw_real)sqrt(model->fx[i] * model->fx[i] + model->fy[i] * model->fy[i]));
@@ -34,13 +32,11 @@ void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::ve
 
 		break;
 	case DIVERGENCE_FORCE:
-		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
 		divergence(model->fx, model->fy, values, model);
 		*min = model->min_div;
 		*max = model->max_div;
 		break;
 	case DIVERGENCE_VELOCITY:
-		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
 		divergence(model->vx, model->vy, values, model);
 		*min = model->min_div;
 		*max = model->max_div;
@@ -49,8 +45,7 @@ void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::ve
 	default:
 		for(int i = 0; i < (model->DIM * model->DIM); ++i)
 			values.push_back(model->rho[i]);
-		//values(std::begin(model->rho), std::end(model->rho));
-		//values = model->rho;
+
 		*min = model->min_rho;
 		*max = model->max_rho;
 	}
