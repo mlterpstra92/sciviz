@@ -64,6 +64,7 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    gluLookAt(0, 0, 0, 0, 0,0.0, 0.0, 0, 1.0);
     vis.visualize(&model);
     glFlush();
     calcFPS(1000, "Real-time smoke simulation and visualization");
@@ -313,6 +314,8 @@ void create_GUI()
     height_scalar_list->add_item(3, "div Velocity");
     height_scalar_list->add_item(4, "div Force");
 
+    GLUI_Spinner* height_spinner = new GLUI_Spinner(heightplot_rollout, "Height scale factor", GLUI_SPINNER_FLOAT, &(vis.height_scale), HEIGHT_SPINNER_ID, glui_callback);
+    height_spinner->set_float_limits(0.0f, 10.0f);
 }
 
 

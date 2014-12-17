@@ -8,6 +8,8 @@
 
 void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::vector<fftw_real>& values, fftw_real *min, fftw_real* max)
 {
+	//determineValuesMinMax fills the values vector and determins min and max
+	values.clear();
 	int dim = model->DIM * 2 * (model->DIM /2+1);
 	switch (dataset_idx)
 	{
@@ -59,11 +61,15 @@ void Visualization::visualize(Model* model)
 
     if (drawMatter || drawIsolines)
     {	
-    	std::vector<fftw_real> values;
+    	std::vector<fftw_real> color_map_values;
+    	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
     	fftw_real min, max;
-    	// Scalar values
-    	determineValuesMinMax(model, scalar_dataset_idx, values, &min, &max);
-        draw_smoke(wn, hn, model->DIM, values, min, max);
+    	fftw_real min_height, max_height;
+    	// Scalar color_map_values
+    	determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
+    	if (drawHeightplot)
+    		determineValuesMinMax(model, height_dataset_idx, height_values, &min_height, &max_height);
+        draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max);
         if(!clamping)
         	draw_color_legend(min, max);
         else
@@ -366,10 +372,11 @@ void Visualization::draw_color_legend(float min, float max)
 }
 
 // Draw smoke
-void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> values, fftw_real min, fftw_real max)
+void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min, fftw_real max)
 {
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
+    fftw_real height0, height1, height2, height3;
 
     if(useTextures){
 		glEnable(GL_TEXTURE_1D);
@@ -399,49 +406,53 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
 
             if (clamping == 1)
             {  // Clamp
-                vy0 = clamp(values.at(idx0));
-                vy1 = clamp(values.at(idx1));
-                vy2 = clamp(values.at(idx2));
-                vy3 = clamp(values.at(idx3));
+                vy0 = clamp(color_map_values.at(idx0));
+                vy1 = clamp(color_map_values.at(idx1));
+                vy2 = clamp(color_map_values.at(idx2));
+                vy3 = clamp(color_map_values.at(idx3));
             }
             else
             {  // Scale
-                vy0 = scale(values.at(idx0), min, max);
-                vy1 = scale(values.at(idx1), min, max);
-                vy2 = scale(values.at(idx2), min, max);
-                vy3 = scale(values.at(idx3), min, max);
+                vy0 = scale(color_map_values.at(idx0), min, max);
+                vy1 = scale(color_map_values.at(idx1), min, max);
+                vy2 = scale(color_map_values.at(idx2), min, max);
+                vy3 = scale(color_map_values.at(idx3), min, max);
             }
+           	height0 = height_values.at(idx0) * height_scale;
+           	height1 = height_values.at(idx1) * height_scale;
+           	height2 = height_values.at(idx2) * height_scale;
+           	height3 = height_values.at(idx3) * height_scale;
 
             if (drawMatter)
             {
 				glBegin(GL_TRIANGLES);
 				if(useTextures) {
 					glTexCoord1f(vy0);
-					glVertex2f(px0, py0);
+					glVertex3f(px0, py0, height0);
 					glTexCoord1f(vy1);
-					glVertex2f(px1, py1);
+					glVertex3f(px1, py1, height1);
 					glTexCoord1f(vy2);
-					glVertex2f(px2, py2);
+					glVertex3f(px2, py2, height2);
 					glTexCoord1f(vy0);
-					glVertex2f(px0, py0);
+					glVertex3f(px0, py0, height0);
 					glTexCoord1f(vy2);
-					glVertex2f(px2, py2);
+					glVertex3f(px2, py2, height2);
 					glTexCoord1f(vy3);
-					glVertex2f(px3, py3);
+					glVertex3f(px3, py3, height3);
 				} else {
 					float R, G, B;
 					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px0, py0);
+					glVertex3f(px0, py0, height0);
 					set_colormap(vy1, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px1, py1);
+					glVertex3f(px1, py1, height1);
 					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px2, py2);
+					glVertex3f(px2, py2, height2);
 					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px0, py0);
+					glVertex3f(px0, py0, height0);
 					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px2, py2);
+					glVertex3f(px2, py2, height2);
 					set_colormap(vy3, R, G, B); glColor3f(R, G, B);
-					glVertex2f(px3, py3);
+					glVertex3f(px3, py3, height3);
 				}
 				glEnd();
             }

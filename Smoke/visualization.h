@@ -23,6 +23,7 @@ public:
     float vec_length;           //base length of hedgehogs
     float vec_base_length;
     float vec_scale;            //scale factor
+    float height_scale;         //height scale factor
     int drawMatter;
     int drawHedgehogs;
     int numColors;
@@ -53,7 +54,7 @@ public:
 
     void determineValuesMinMax(Model* model, int dataset_idx, std::vector<fftw_real>& values, fftw_real *min, fftw_real* max);
 
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(1), isoline_value(0.06) {
+    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), height_scale(1.0f), drawMatter(1),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(0), isoline_value(0.06) {
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -75,7 +76,7 @@ public:
     void draw_color_legend(float minRho, float maxRho);
 
     //draw smoke
-    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> values, fftw_real min, fftw_real max);
+    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min, fftw_real max);
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y);
@@ -88,7 +89,6 @@ public:
 
     void draw_triangle(int x_start, int y_start, int x_end, int y_end);
 
-    void draw_textured_smoke(float px0, float px1, float px2, float px3, float py0, float py1, float py2, float py3, float vy0, float vy1, float vy2, float vy3);
     //direction_to_color: Set the current color by mapping a direction vector (x,y), using
     //                    the color mapping method 'method'. If method==1, map the vector direction
     //                    using a rainbow colormap. If method==0, simply use the white color
