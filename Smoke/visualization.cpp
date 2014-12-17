@@ -6,52 +6,55 @@
 #define UNSETBIT(a, n) (a) &= ~(1 << (n))
 #define CHECKBIT(a, n) (a) & (1 << n)
 
-
-void Visualization::determineValuesMinMax(Model* model, int dataset_idx, fftw_real *values, fftw_real *min, fftw_real* max)
+void Visualization::determineValuesMinMax(Model* model, int dataset_idx, std::vector<fftw_real>& values, fftw_real *min, fftw_real* max)
 {
 	int dim = model->DIM * 2 * (model->DIM /2+1);
 	switch (dataset_idx)
+	{
+	case FLUID_VELOCITY:
+		// Calculate magnitudes
+		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+		for (int i = 0; i < dim; i++)
+		{
+			values.push_back((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
+		}    			
+		*min = model->min_velo;
+		*max = model->max_velo;
+
+		break;
+	case FORCE_FIELD:
+		// Calculate magnitudes    
+		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));		
+    	for (int i = 0; i < dim; i++)
     	{
-    	case FLUID_VELOCITY:
-    		// Calculate magnitudes
-    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
-    		for (int i = 0; i < dim; i++)
-    		{
-    			values[i] = ((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
-    		}    			
-    		*min = model->min_velo;
-    		*max = model->max_velo;
-
-    		break;
-    	case FORCE_FIELD:
-    		// Calculate magnitudes    
-    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));		
-	    	for (int i = 0; i < dim; i++)
-	    	{
-	    		values[i] = ((fftw_real)sqrt(model->fx[i] * model->fx[i] + model->fy[i] * model->fy[i]));
-	    	}
-	    	*min = model->min_force;
-	    	*max = model->max_force;
-
-    		break;
-    	case DIVERGENCE_FORCE:
-    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
-    		divergence(model->fx, model->fy, values, model);
-    		*min = model->min_div;
-    		*max = model->max_div;
-    		break;
-    	case DIVERGENCE_VELOCITY:
-    		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
-    		divergence(model->vx, model->vy, values, model);
-    		*min = model->min_div;
-    		*max = model->max_div;
-    		break;
-    	case FLUID_DENSITY:
-    	default:
-    		values = model->rho;
-    		*min = model->min_rho;
-    		*max = model->max_rho;
+    		values.push_back((fftw_real)sqrt(model->fx[i] * model->fx[i] + model->fy[i] * model->fy[i]));
     	}
+    	*min = model->min_force;
+    	*max = model->max_force;
+
+		break;
+	case DIVERGENCE_FORCE:
+		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+		divergence(model->fx, model->fy, values, model);
+		*min = model->min_div;
+		*max = model->max_div;
+		break;
+	case DIVERGENCE_VELOCITY:
+		//values = (fftw_real*)malloc(dim * sizeof(fftw_real));
+		divergence(model->vx, model->vy, values, model);
+		*min = model->min_div;
+		*max = model->max_div;
+		break;
+	case FLUID_DENSITY:
+	default:
+		for(int i = 0; i < (model->DIM * model->DIM); ++i)
+			values.push_back(model->rho[i]);
+		//values(std::begin(model->rho), std::end(model->rho));
+		//values = model->rho;
+		*min = model->min_rho;
+		*max = model->max_rho;
+	}
+
 }
 //visualize: This is the main visualization function
 void Visualization::visualize(Model* model)
@@ -61,12 +64,10 @@ void Visualization::visualize(Model* model)
 
     if (drawMatter || drawIsolines)
     {	
-    	fftw_real *values = nullptr;
-    	fftw_real *values2 = nullptr;
+    	std::vector<fftw_real> values;
     	fftw_real min, max;
     	// Scalar values
     	determineValuesMinMax(model, scalar_dataset_idx, values, &min, &max);
-
         draw_smoke(wn, hn, model->DIM, values, min, max);
         if(!clamping)
         	draw_color_legend(min, max);
@@ -370,7 +371,7 @@ void Visualization::draw_color_legend(float min, float max)
 }
 
 // Draw smoke
-void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* values, fftw_real min, fftw_real max)
+void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> values, fftw_real min, fftw_real max)
 {
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
@@ -403,17 +404,17 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 
             if (clamping == 1)
             {  // Clamp
-                vy0 = clamp(values[idx0]);
-                vy1 = clamp(values[idx1]);
-                vy2 = clamp(values[idx2]);
-                vy3 = clamp(values[idx3]);
+                vy0 = clamp(values.at(idx0));
+                vy1 = clamp(values.at(idx1));
+                vy2 = clamp(values.at(idx2));
+                vy3 = clamp(values.at(idx3));
             }
             else
             {  // Scale
-                vy0 = scale(values[idx0], min, max);
-                vy1 = scale(values[idx1], min, max);
-                vy2 = scale(values[idx2], min, max);
-                vy3 = scale(values[idx3], min, max);
+                vy0 = scale(values.at(idx0), min, max);
+                vy1 = scale(values.at(idx1), min, max);
+                vy2 = scale(values.at(idx2), min, max);
+                vy3 = scale(values.at(idx3), min, max);
             }
 
             if (drawMatter)
@@ -579,8 +580,6 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
             }
         }
     }
-    if (scalar_dataset_idx != FLUID_DENSITY)
-    	free(values);
     if (useTextures)
 		glDisable(GL_TEXTURE_1D);	
 }
@@ -645,18 +644,15 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	}
 }
 
-void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, Model* model)
+void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, std::vector<fftw_real>& diff, Model* model)
 {
-	int idx;
-	fftw_real prev_x, prev_y, next_x, next_y;
+	fftw_real prev_x, prev_y, next_x, next_y, divergence;
 	model->max_div = -FLT_MAX;
 	model->min_div = FLT_MAX;
-	for (int i = 0; i < model->DIM; ++i)
+	for (int j = 0; j < model->DIM; ++j)
 	{
-		for (int j = 0; j < model->DIM; ++j)
-		{
-			idx = i + j * model->DIM;
-			 
+		for (int i = 0; i < model->DIM; ++i)
+		{			 
 			// Calculate previous and next for derivative
 			prev_x = f_x[((i - 1 + model->DIM) % model->DIM) + j * model->DIM];
 			next_x = f_x[((i + 1) % model->DIM) + j * model->DIM];
@@ -664,11 +660,13 @@ void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* diff, 
 			prev_y = f_y[i + ((j - 1 + model->DIM) % model->DIM) * model->DIM];
 			next_y = f_y[i + ((j + 1) % model->DIM) * model->DIM];
 			
-			diff[idx] = next_x - prev_x + next_y - prev_y;
-			model->max_div = std::max(diff[idx], model->max_div);
-			model->min_div = std::min(diff[idx], model->min_div);
+			divergence = next_x - prev_x + next_y - prev_y;
+			diff.push_back(divergence);
+			model->max_div = std::max(divergence, model->max_div);
+			model->min_div = std::min(divergence, model->min_div);
 		}
 	}
+
 }
 
 // Calculates angle from x_start, y_start, x_end and y_end in degrees

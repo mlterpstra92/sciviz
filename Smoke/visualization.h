@@ -49,7 +49,7 @@ public:
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
 
-    void determineValuesMinMax(Model* model, int dataset_idx, fftw_real *values, fftw_real *min, fftw_real* max);
+    void determineValuesMinMax(Model* model, int dataset_idx, std::vector<fftw_real>& values, fftw_real *min, fftw_real* max);
 
     Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(1), isoline_value(0.06) {
         vec_length = vec_base_length * vec_scale;
@@ -73,12 +73,12 @@ public:
     void draw_color_legend(float minRho, float maxRho);
 
     //draw smoke
-    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* values, fftw_real min, fftw_real max);
+    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> values, fftw_real min, fftw_real max);
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y);
 
-    void divergence(fftw_real* f_x, fftw_real* f_y, fftw_real* grad, Model* model);
+    void divergence(fftw_real* f_x, fftw_real* f_y, std::vector<fftw_real>& grad, Model* model);
 
     float calc_angle(float x_dif, float y_dif);
 
