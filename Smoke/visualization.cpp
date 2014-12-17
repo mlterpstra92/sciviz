@@ -452,7 +452,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
         		}
         		for (int iso_idx = 0; iso_idx < num_isoline_value; ++iso_idx)
         		{
-        			isoline_value = lower_isoline_value + ((double) iso_idx / num_isoline_value) * (upper_isoline_value - lower_isoline_value);
+        			float isoline_value = lower_isoline_value + ((double) iso_idx / num_isoline_value) * (upper_isoline_value - lower_isoline_value);
         			float R, G, B;
 	            	double lambda_1, lambda_2, lambda_3, lambda_4, mean;
 	            	uint8_t code = 0;
