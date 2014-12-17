@@ -304,6 +304,14 @@ void create_GUI()
     GLUI_Spinner* num_lines_spinner = new GLUI_Spinner(scalar_ops_rollout, "No. of isolines", GLUI_SPINNER_INT, &(vis.num_isoline_value), NUM_ISOLINES_VALUE_ID, glui_callback);
     num_lines_spinner->set_int_limits(1, 20);
 
+    GLUI_Rollout *heightplot_rollout = glui->add_rollout("Height plot", false);
+    new GLUI_Checkbox(heightplot_rollout, "Height plot", &(vis.drawHeightplot), DRAW_ISOLINES_ID, glui_callback);
+    GLUI_Listbox *height_scalar_list = new GLUI_Listbox(heightplot_rollout, "Height dataset", &(vis.height_dataset_idx), DATASET_ID, glui_callback);
+    height_scalar_list->add_item(0, "Rho");
+    height_scalar_list->add_item(1, "||Fluid velocity||");
+    height_scalar_list->add_item(2, "||Force field||");
+    height_scalar_list->add_item(3, "div Velocity");
+    height_scalar_list->add_item(4, "div Force");
 
 }
 

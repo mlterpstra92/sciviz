@@ -31,11 +31,13 @@ public:
     float hue;
     int scalar_dataset_idx;
     int vector_dataset_idx;
+    int height_dataset_idx;
     int clamping;
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
     int drawIsolines;
+    int drawHeightplot;
     float isoline_value;
     int useTextures;
     float min_clamp_value, max_clamp_value;
