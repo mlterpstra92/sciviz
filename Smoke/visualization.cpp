@@ -64,12 +64,12 @@ void Visualization::visualize(Model* model)
     	std::vector<fftw_real> color_map_values;
     	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
     	fftw_real min, max;
-    	fftw_real min_height, max_height;
+    	fftw_real min_height = 0, max_height = 1;
     	// Scalar color_map_values
     	determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     	if (drawHeightplot)
     		determineValuesMinMax(model, height_dataset_idx, height_values, &min_height, &max_height);
-        draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max);
+        draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max, min_height, max_height);
         if(!clamping)
         	draw_color_legend(min, max);
         else
@@ -372,7 +372,7 @@ void Visualization::draw_color_legend(float min, float max)
 }
 
 // Draw smoke
-void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min, fftw_real max)
+void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min_color, fftw_real max_color, fftw_real min_height, fftw_real max_height)
 {
 	int i, j;
     fftw_real vy0, vy1, vy2, vy3;
@@ -413,15 +413,28 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
             }
             else
             {  // Scale
-                vy0 = scale(color_map_values.at(idx0), min, max);
-                vy1 = scale(color_map_values.at(idx1), min, max);
-                vy2 = scale(color_map_values.at(idx2), min, max);
-                vy3 = scale(color_map_values.at(idx3), min, max);
+                vy0 = scale(color_map_values.at(idx0), min_color, max_color);
+                vy1 = scale(color_map_values.at(idx1), min_color, max_color);
+                vy2 = scale(color_map_values.at(idx2), min_color, max_color);
+                vy3 = scale(color_map_values.at(idx3), min_color, max_color);
             }
-           	height0 = height_values.at(idx0) * height_scale;
-           	height1 = height_values.at(idx1) * height_scale;
-           	height2 = height_values.at(idx2) * height_scale;
-           	height3 = height_values.at(idx3) * height_scale;
+
+            if (heightClamping)
+            {
+            	// Clamp heights
+            	height0 = clamp(height_values.at(idx0)) * height_scale;
+	           	height1 = clamp(height_values.at(idx1)) * height_scale;
+	           	height2 = clamp(height_values.at(idx2)) * height_scale;
+	           	height3 = clamp(height_values.at(idx3)) * height_scale;
+            } else {
+            	// Scale heights
+            	height0 = scale(height_values.at(idx0), min_height, max_height) * height_scale;
+	           	height1 = scale(height_values.at(idx1), min_height, max_height) * height_scale;
+	           	height2 = scale(height_values.at(idx2), min_height, max_height) * height_scale;
+	           	height3 = scale(height_values.at(idx3), min_height, max_height) * height_scale;
+            }
+
+           	
 
             if (drawMatter)
             {
@@ -470,7 +483,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
         			if (clamping)
         				isoline_value = clamp(isoline_value);
         			else
-        				isoline_value = scale(isoline_value, min, max);
+        				isoline_value = scale(isoline_value, min_color, max_color);
 
         			float R, G, B;
 	            	double lambda_1, lambda_2, lambda_3, lambda_4, mean;

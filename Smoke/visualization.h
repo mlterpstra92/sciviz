@@ -34,6 +34,7 @@ public:
     int vector_dataset_idx;
     int height_dataset_idx;
     int clamping;
+    int heightClamping;
     int glyph_location_idx;
     int num_x_glyphs, num_y_glyphs;
     int glyph_shape;
@@ -54,7 +55,27 @@ public:
 
     void determineValuesMinMax(Model* model, int dataset_idx, std::vector<fftw_real>& values, fftw_real *min, fftw_real* max);
 
-    Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), height_scale(1.0f), drawMatter(1),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(0), isoline_value(0.06) {
+    Visualization(int a_color_dir,
+            int a_color_map_idx,
+            int a_frozen,
+            float a_vec_length) : color_dir(a_color_dir),
+            color_map_idx(a_color_map_idx),
+            frozen(a_frozen),
+            vec_base_length(a_vec_length),
+            vec_scale(1.0f),
+            height_scale(100.0f),
+            drawMatter(1),
+            drawHedgehogs(0),
+            numColors(256),
+            limitColors(0),
+            saturation(1.0f),
+            hue(1.0f),
+            clamping(0),
+            glyph_shape(LINES),
+            drawIsolines(0),
+            drawHeightplot(1),
+            isoline_value(0.06),
+            useTextures(1) {
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -76,7 +97,7 @@ public:
     void draw_color_legend(float minRho, float maxRho);
 
     //draw smoke
-    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min, fftw_real max);
+    void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min_color, fftw_real max_color, fftw_real min_height, fftw_real max_height);
 
     //draw velocities
     void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y);

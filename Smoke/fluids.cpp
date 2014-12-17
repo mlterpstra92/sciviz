@@ -12,7 +12,7 @@
 
 const int DIM = 50;             //size of simulation grid
 Model model(DIM);
-Visualization vis(0, 0, 0, 1000.0f);
+Visualization vis(0, vis.COLOR_RAINBOW, 0, 1000.0f);
 
 int window = -1; // Window ID for GLUT/GLUI
 
@@ -62,7 +62,7 @@ const float depth = 1000.0f;
 const float dist = 0.5f * depth;
 const float offX = 0.0f;
 const float offY = 0.0f;
-const float rotX = 15.0f;
+const float rotX = -50.0f;
 const float rotY = 0.0f;
 //display: Handle window redrawing events. Simply delegates to visualize().
 void display(void)
@@ -75,9 +75,9 @@ void display(void)
     gluLookAt(0.0, 0.0, dist + depth, 
               0.0, 0.0, 0.0, 
               0.0, 1.0, 0.0);
+    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, dist - depth);
     glRotatef(rotX, 1.0f, 0.0f, 0.0f);
     glRotatef(rotY, 0.0f, 1.0f, 0.0f);
-    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, dist - depth);
     vis.visualize(&model);
     glFlush();
     calcFPS(1000, "Real-time smoke simulation and visualization");
@@ -329,7 +329,12 @@ void create_GUI()
     height_scalar_list->add_item(4, "div Force");
 
     GLUI_Spinner* height_spinner = new GLUI_Spinner(heightplot_rollout, "Height scale factor", GLUI_SPINNER_FLOAT, &(vis.height_scale), HEIGHT_SPINNER_ID, glui_callback);
-    height_spinner->set_float_limits(0.0f, 10.0f);
+    height_spinner->set_float_limits(0.0f, 100.0f);
+    // Radio button for Scale / Clamp for height plot
+    GLUI_Panel* height_scale_clamp_panel = new GLUI_Panel(heightplot_rollout, "Height dataset manipulation");
+    GLUI_RadioGroup* height_scale_clamp = glui->add_radiogroup_to_panel(height_scale_clamp_panel, &(vis.heightClamping), HEIGHT_SCALE_CLAMP_ID, glui_callback);
+    glui->add_radiobutton_to_group( height_scale_clamp, "Scale");
+    glui->add_radiobutton_to_group( height_scale_clamp, "Clamp");
 }
 
 
