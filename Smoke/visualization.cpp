@@ -6,19 +6,11 @@
 #define UNSETBIT(a, n) (a) &= ~(1 << (n))
 #define CHECKBIT(a, n) (a) & (1 << n)
 
-//visualize: This is the main visualization function
-void Visualization::visualize(Model* model)
-{
-    fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
-    fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
-   	int dim = model->DIM * 2 * (model->DIM /2+1);
 
-    if (drawMatter || drawIsolines)
-    {	
-    	fftw_real* values;
-    	fftw_real min, max;
-    	// Scalar values
-    	switch (scalar_dataset_idx)
+void Visualization::determineValuesMinMax(Model* model, int dataset_idx, fftw_real *values, fftw_real *min, fftw_real* max)
+{
+	int dim = model->DIM * 2 * (model->DIM /2+1);
+	switch (dataset_idx)
     	{
     	case FLUID_VELOCITY:
     		// Calculate magnitudes
@@ -27,8 +19,8 @@ void Visualization::visualize(Model* model)
     		{
     			values[i] = ((fftw_real)sqrt(model->vx[i] * model->vx[i] + model->vy[i] * model->vy[i]));
     		}    			
-    		min = model->min_velo;
-    		max = model->max_velo;
+    		*min = model->min_velo;
+    		*max = model->max_velo;
 
     		break;
     	case FORCE_FIELD:
@@ -38,28 +30,43 @@ void Visualization::visualize(Model* model)
 	    	{
 	    		values[i] = ((fftw_real)sqrt(model->fx[i] * model->fx[i] + model->fy[i] * model->fy[i]));
 	    	}
-	    	min = model->min_force;
-	    	max = model->max_force;
+	    	*min = model->min_force;
+	    	*max = model->max_force;
 
     		break;
     	case DIVERGENCE_FORCE:
     		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
     		divergence(model->fx, model->fy, values, model);
-    		min = model->min_div;
-    		max = model->max_div;
+    		*min = model->min_div;
+    		*max = model->max_div;
     		break;
     	case DIVERGENCE_VELOCITY:
     		values = (fftw_real*)malloc(dim * sizeof(fftw_real));
     		divergence(model->vx, model->vy, values, model);
-    		min = model->min_div;
-    		max = model->max_div;
+    		*min = model->min_div;
+    		*max = model->max_div;
     		break;
     	case FLUID_DENSITY:
     	default:
     		values = model->rho;
-    		min = model->min_rho;
-    		max = model->max_rho;
+    		*min = model->min_rho;
+    		*max = model->max_rho;
     	}
+}
+//visualize: This is the main visualization function
+void Visualization::visualize(Model* model)
+{
+    fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
+    fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
+
+    if (drawMatter || drawIsolines)
+    {	
+    	fftw_real *values = nullptr;
+    	fftw_real *values2 = nullptr;
+    	fftw_real min, max;
+    	// Scalar values
+    	determineValuesMinMax(model, scalar_dataset_idx, values, &min, &max);
+
         draw_smoke(wn, hn, model->DIM, values, min, max);
         if(!clamping)
         	draw_color_legend(min, max);

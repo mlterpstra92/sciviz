@@ -48,6 +48,9 @@ public:
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
+
+    void determineValuesMinMax(Model* model, int dataset_idx, fftw_real *values, fftw_real *min, fftw_real* max);
+
     Visualization(int a_color_dir, int a_color_map_idx, int a_frozen, float a_vec_length) : color_dir(a_color_dir), color_map_idx(a_color_map_idx), frozen(a_frozen), vec_base_length(a_vec_length), vec_scale(1.0f), drawMatter(0),drawHedgehogs(0), numColors(256), limitColors(0), saturation(1.0f), hue(1.0f), clamping(0), glyph_shape(LINES), drawIsolines(1), isoline_value(0.06) {
         vec_length = vec_base_length * vec_scale;
     }
