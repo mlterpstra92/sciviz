@@ -93,7 +93,7 @@ void reshape(int w, int h)
     glViewport(tx, ty, tw, th);
     //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
     //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
-    gluPerspective(40.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
+    gluPerspective(30.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
     model.winWidth = tw;
     model.winHeight = th;
 }
@@ -335,6 +335,8 @@ void create_GUI()
     GLUI_RadioGroup* height_scale_clamp = glui->add_radiogroup_to_panel(height_scale_clamp_panel, &(vis.heightClamping), HEIGHT_SCALE_CLAMP_ID, glui_callback);
     glui->add_radiobutton_to_group( height_scale_clamp, "Scale");
     glui->add_radiobutton_to_group( height_scale_clamp, "Clamp");
+    minClamp = new GLUI_Spinner(heightplot_rollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_height_clamp_value), MIN_HEIGHT_CLAMP_ID, glui_callback);
+    maxClamp = new GLUI_Spinner(heightplot_rollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_height_clamp_value), MAX_HEIGHT_CLAMP_ID, glui_callback);
 }
 
 

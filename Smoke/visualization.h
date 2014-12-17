@@ -43,6 +43,7 @@ public:
     float isoline_value;
     int useTextures;
     float min_clamp_value, max_clamp_value;
+    float min_height_clamp_value, max_height_clamp_value;
     int multipleIsolines, num_isoline_value;
     float lower_isoline_value, upper_isoline_value;
     unsigned int texture_id[NUM_COLORMAPS];
@@ -75,7 +76,11 @@ public:
             drawIsolines(0),
             drawHeightplot(1),
             isoline_value(0.06),
-            useTextures(1) {
+            useTextures(1),
+            min_clamp_value(0.0f),
+            max_clamp_value(1.0f),
+            min_height_clamp_value(0.0f),
+            max_height_clamp_value(1.0f) {
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -117,7 +122,7 @@ public:
 
     void create_textures();
 
-    float clamp(float x);
+    float clamp(float x, fftw_real min, fftw_real max);
     float scale(float x, fftw_real min, fftw_real max);
     double interpolate(double v1, double v2, double iso);
 };

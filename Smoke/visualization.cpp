@@ -126,11 +126,11 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
 }
 
 //clamp: Clamp all values between 0 and 1
-float Visualization::clamp(float x)
+float Visualization::clamp(float x, fftw_real min, fftw_real max)
 {
-    if (x >= max_clamp_value) {
+    if (x >= max) {
         return 1.0;
-    } else if (x < min_clamp_value) {
+    } else if (x < min) {
         return 0.0;
     } else {
         return x;
@@ -406,10 +406,10 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
 
             if (clamping == 1)
             {  // Clamp
-                vy0 = clamp(color_map_values.at(idx0));
-                vy1 = clamp(color_map_values.at(idx1));
-                vy2 = clamp(color_map_values.at(idx2));
-                vy3 = clamp(color_map_values.at(idx3));
+                vy0 = clamp(color_map_values.at(idx0), min_clamp_value, max_clamp_value);
+                vy1 = clamp(color_map_values.at(idx1), min_clamp_value, max_clamp_value);
+                vy2 = clamp(color_map_values.at(idx2), min_clamp_value, max_clamp_value);
+                vy3 = clamp(color_map_values.at(idx3), min_clamp_value, max_clamp_value);
             }
             else
             {  // Scale
@@ -422,10 +422,10 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
             if (heightClamping)
             {
             	// Clamp heights
-            	height0 = clamp(height_values.at(idx0)) * height_scale;
-	           	height1 = clamp(height_values.at(idx1)) * height_scale;
-	           	height2 = clamp(height_values.at(idx2)) * height_scale;
-	           	height3 = clamp(height_values.at(idx3)) * height_scale;
+            	height0 = clamp(height_values.at(idx0), min_height_clamp_value, max_height_clamp_value) * height_scale;
+	           	height1 = clamp(height_values.at(idx1), min_height_clamp_value, max_height_clamp_value) * height_scale;
+	           	height2 = clamp(height_values.at(idx2), min_height_clamp_value, max_height_clamp_value) * height_scale;
+	           	height3 = clamp(height_values.at(idx3), min_height_clamp_value, max_height_clamp_value) * height_scale;
             } else {
             	// Scale heights
             	height0 = scale(height_values.at(idx0), min_height, max_height) * height_scale;
@@ -481,7 +481,7 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
         		{
         			float isoline_value = lower_isoline_value + ((double) iso_idx / num_isoline_value) * (upper_isoline_value - lower_isoline_value);
         			if (clamping)
-        				isoline_value = clamp(isoline_value);
+        				isoline_value = clamp(isoline_value, min_clamp_value, max_clamp_value);
         			else
         				isoline_value = scale(isoline_value, min_color, max_color);
 
