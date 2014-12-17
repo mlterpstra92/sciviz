@@ -328,10 +328,10 @@ void Visualization::draw_color_legend(float min, float max)
 		float R, G, B;
 		set_colormap((float)(i * stepSize + ((float)(i + 1) / numColors) * stepSize) / th, R, G, B);
 		glColor3f(R, G, B);
-		glVertex3f(tw * 0.9, i * stepSize, 0);
-		glVertex3f(tw, i * stepSize, 0);
-		glVertex3f(tw * 0.9, (i + 1) * stepSize, 0);
-		glVertex3f(tw, (i + 1) * stepSize, 0);
+		glVertex2f(tw * 0.9, i * stepSize);
+		glVertex2f(tw, i * stepSize);
+		glVertex2f(tw * 0.9, (i + 1) * stepSize);
+		glVertex2f(tw, (i + 1) * stepSize);
 	}
 	glEnd();
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -347,8 +347,8 @@ void Visualization::draw_color_legend(float min, float max)
 
 		// Display line for where the value is on the legend
 		glBegin(GL_LINES);
-		glVertex3f(tw * 0.9 - 5, (th / numbersToDraw) * i, 0);
-		glVertex3f(tw * 0.9, (th / numbersToDraw) * i, 0);
+		glVertex2f(tw * 0.9 - 5, (th / numbersToDraw) * i);
+		glVertex2f(tw * 0.9, (th / numbersToDraw) * i);
 		glEnd();
 	}
 	char* maxStr = NULL;
@@ -357,8 +357,8 @@ void Visualization::draw_color_legend(float min, float max)
 
 	display_text(tw * 0.9 - 50, th - 18, maxStr);
 	glBegin(GL_LINES);
-	glVertex3f(tw * 0.9 - 5, th, 0);
-	glVertex3f(tw * 0.9, th - 1, 0);
+	glVertex2f(tw * 0.9 - 5, th);
+	glVertex2f(tw * 0.9, th - 1);
 	glEnd();
 }
 
@@ -414,31 +414,31 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 				glBegin(GL_TRIANGLES);
 				if(useTextures) {
 					glTexCoord1f(vy0);
-					glVertex3f(px0, py0, 0);
+					glVertex2f(px0, py0);
 					glTexCoord1f(vy1);
-					glVertex3f(px1, py1, 0);
+					glVertex2f(px1, py1);
 					glTexCoord1f(vy2);
-					glVertex3f(px2, py2, 0);
+					glVertex2f(px2, py2);
 					glTexCoord1f(vy0);
-					glVertex3f(px0, py0, 0);
+					glVertex2f(px0, py0);
 					glTexCoord1f(vy2);
-					glVertex3f(px2, py2, 0);
+					glVertex2f(px2, py2);
 					glTexCoord1f(vy3);
-					glVertex3f(px3, py3, 0);
+					glVertex2f(px3, py3);
 				} else {
 					float R, G, B;
 					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px0, py0, 0);
+					glVertex2f(px0, py0);
 					set_colormap(vy1, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px1, py1, 0);
+					glVertex2f(px1, py1);
 					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px2, py2, 0);
+					glVertex2f(px2, py2);
 					set_colormap(vy0, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px0, py0, 0);
+					glVertex2f(px0, py0);
 					set_colormap(vy2, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px2, py2, 0);
+					glVertex2f(px2, py2);
 					set_colormap(vy3, R, G, B); glColor3f(R, G, B);
-					glVertex3f(px3, py3, 0);
+					glVertex2f(px3, py3);
 				}
 				glEnd();
             }
@@ -483,29 +483,29 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	        		case 14:
 	            		lambda_1 = interpolate(vy0, vy3, isoline_value);
 	            		lambda_2 = interpolate(vy0, vy1, isoline_value);
-	            		glVertex3f(px0 + lambda_1 * wn, py0, 0);
-	            		glVertex3f(px0, py0 + lambda_2 * hn, 0);
+	            		glVertex2f(px0 + lambda_1 * wn, py0);
+	            		glVertex2f(px0, py0 + lambda_2 * hn);
 	            		break;
 	        		case 2:
 	        		case 13:
 	        			lambda_1 = interpolate(vy0, vy3, isoline_value);
 	            		lambda_2 = interpolate(vy3, vy2, isoline_value);
-	            		glVertex3f(px0 + lambda_1 * wn, py0, 0);
-	            		glVertex3f(px3, py3 + lambda_2 * hn, 0);
+	            		glVertex2f(px0 + lambda_1 * wn, py0);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
 	            		break;
 	        		case 3:
 	        		case 12:
 	            		lambda_1 = interpolate(vy0, vy1, isoline_value);
 	            		lambda_2 = interpolate(vy3, vy2, isoline_value);
-	            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
-	            		glVertex3f(px3, py3 + lambda_2 * hn, 0);
+	            		glVertex2f(px0, py0 + lambda_1 * hn);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
 	            		break;
 	        		case 4:
 	        		case 11:
 	            		lambda_1 = interpolate(vy1, vy2, isoline_value);
 	            		lambda_2 = interpolate(vy3, vy2, isoline_value);
-	            		glVertex3f(px1 + lambda_1 * wn, py1, 0);
-	            		glVertex3f(px3, py3 + lambda_2 * hn, 0);
+	            		glVertex2f(px1 + lambda_1 * wn, py1);
+	            		glVertex2f(px3, py3 + lambda_2 * hn);
 	            		break;
 	            	case 5:
 	            		// KLOPT DIT?
@@ -516,31 +516,31 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	            		lambda_4 = interpolate(vy0, vy3, isoline_value);
 	        			if (mean > isoline_value)
 	        			{
-		            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
-		            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
-		            		glVertex3f(px3, py3 + lambda_3 * hn, 0);
-		            		glVertex3f(px0 + lambda_4 * wn, py0, 0);
+		            		glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
 	        			} else
 	        			{
-	        				glVertex3f(px0, py0 + lambda_1 * hn, 0);
-		            		glVertex3f(px0 + lambda_4 * wn, py0, 0);
-		            		glVertex3f(px3, py3 + lambda_3 * hn, 0);
-		            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
+	        				glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
 	        			}
 	            		break;
 	        		case 6:
 	        		case 9:
 	            		lambda_1 = interpolate(vy1, vy2, isoline_value);
 	            		lambda_2 = interpolate(vy0, vy3, isoline_value);
-	            		glVertex3f(px1 + lambda_1 * wn, py1, 0);
-	            		glVertex3f(px0 + lambda_2 * wn, py0, 0);
+	            		glVertex2f(px1 + lambda_1 * wn, py1);
+	            		glVertex2f(px0 + lambda_2 * wn, py0);
 	            		break;
 	        		case 7:
 	        		case 8:
 	            		lambda_1 = interpolate(vy0, vy1, isoline_value);
 	            		lambda_2 = interpolate(vy1, vy2, isoline_value);
-	            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
-	            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
+	            		glVertex2f(px0, py0 + lambda_1 * hn);
+	            		glVertex2f(px1 + lambda_2 * wn, py1);
 	            		break;
 	            	case 10:
 	            		// KLOPT DIT?
@@ -551,16 +551,16 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, fftw_real* v
 	            		lambda_4 = interpolate(vy0, vy3, isoline_value);
 	            		if (mean <= isoline_value)
 	        			{
-		            		glVertex3f(px0, py0 + lambda_1 * hn, 0);
-		            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
-		            		glVertex3f(px3, py3 + lambda_3 * hn, 0);
-		            		glVertex3f(px0 + lambda_4 * wn, py0, 0);
+		            		glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
 	        			} else
 	        			{
-	        				glVertex3f(px0, py0 + lambda_1 * hn, 0);
-		            		glVertex3f(px0 + lambda_4 * wn, py0, 0);
-		            		glVertex3f(px3, py3 + lambda_3 * hn, 0);
-		            		glVertex3f(px1 + lambda_2 * wn, py1, 0);
+	        				glVertex2f(px0, py0 + lambda_1 * hn);
+		            		glVertex2f(px0 + lambda_4 * wn, py0);
+		            		glVertex2f(px3, py3 + lambda_3 * hn);
+		            		glVertex2f(px1 + lambda_2 * wn, py1);
 	        			}
 	            		break;
 	        		default:
@@ -623,8 +623,8 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			{
 			case LINES:
 				glBegin(GL_LINES);
-				glVertex3f(x_start, y_start, 0);
-				glVertex3f(x_end, y_end, 0);
+				glVertex2f(x_start, y_start);
+				glVertex2f(x_end, y_end);
 				glEnd();
 				break;
 			case ARROWS:
@@ -692,14 +692,14 @@ void Visualization::draw_arrow(int x_start, int y_start, int x_end, int y_end, f
 	// We can now draw the arrow w.r.t. the origin
 	glBegin(GL_LINES);	
 	{
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, arrow_length, 0);
+		glVertex2f(0, 0);
+		glVertex2f(0, arrow_length);
 
-		glVertex3f(0, arrow_length, 0);
-		glVertex3f(head_width, arrow_length - head_width, 0);
+		glVertex2f(0, arrow_length);
+		glVertex2f(head_width, arrow_length - head_width);
 
-		glVertex3f(0, arrow_length, 0);
-		glVertex3f(-head_width, arrow_length - head_width, 0);
+		glVertex2f(0, arrow_length);
+		glVertex2f(-head_width, arrow_length - head_width);
 	}
 	glEnd();
 
@@ -721,9 +721,9 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 
 	glBegin(GL_TRIANGLES);
 	{
-		glVertex3f(-triangle_height / 4, 0, 0);
-		glVertex3f(triangle_height / 4, 0, 0);
-		glVertex3f(0, triangle_height, 0);
+		glVertex2f(-triangle_height / 4, 0);
+		glVertex2f(triangle_height / 4, 0);
+		glVertex2f(0, triangle_height);
 	}
 	glEnd();
 
