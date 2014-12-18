@@ -60,8 +60,6 @@ void calcFPS(int theTimeInterval = 1000, std::string theWindowTitle = "NONE")
 
 const float depth = 1000.0f;
 const float dist = 0.5f * depth;
-const float offX = 0.0f;
-const float offY = 0.0f;
 
 //display: Handle window redrawing events. Simply delegates to visualize().
 void display(void)
@@ -72,10 +70,7 @@ void display(void)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
     glViewport(tx, ty, tw, th);
-    //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
-    //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
     gluPerspective(25.0f / vis.zoom, (GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
 
     glMatrixMode(GL_MODELVIEW);
@@ -85,14 +80,14 @@ void display(void)
               0.0, 0.0, 0.0, 
               0.0, 1.0, 0.0);
     // Translate the GL origin to the simulation middle
-    // glTranslatef(0.5 * tw + offX, 0.5 * th + offY, 0);
-    // Now rotate along the axis w.r.t. this origin
     glTranslatef(0.0f, 0.0f, dist - depth);
+
+    // Now rotate along the axis w.r.t. this origin
     glRotatef(-vis.x_rot, 1.0f, 0.0f, 0.0f);
     glRotatef(-vis.y_rot, 0.0f, 1.0f, 0.0f);
     glRotatef(-vis.z_rot, 0.0f, 0.0f, 1.0f);
     // Translate to the middle of the simulation coordinates.
-    glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, 0.0f);
+    glTranslatef(-0.5 * tw, -0.5 * th, 0.0f);
 
     vis.visualize(&model);
 
@@ -121,8 +116,6 @@ void reshape(int w, int h)
     glLoadIdentity();
     GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
     glViewport(tx, ty, tw, th);
-    //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
-    //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
     gluPerspective(25.0f / vis.zoom, (GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
     model.winWidth = tw;
     model.winHeight = th;
@@ -224,12 +217,22 @@ void glui_callback(int control)
 
         case LOWER_ISOLINES_VALUE_ID:
         case UPPER_ISOLINES_VALUE_ID:
-            lower_iso_spinner->set_float_limits(0.0f, upper_iso_spinner->get_float_val());
+            lower_iso_spinner->set_float_limits(0.01f, upper_iso_spinner->get_float_val());
             upper_iso_spinner->set_float_limits(lower_iso_spinner->get_float_val(), 5.0f);
             break;
 
-        case DRAW_ISOLINES_ID:
-            vis.multipleIsolines = 0;
+        case ISOLINES_VALUE_ID:
+            vis.lower_isoline_value = vis.isoline_value;
+            vis.upper_isoline_value = vis.isoline_value;
+            break;
+        case MULTIPLE_ISOLINES_ID:
+            if (vis.multipleIsolines == 0)
+            {
+                vis.lower_isoline_value = vis.isoline_value;
+                vis.upper_isoline_value = vis.isoline_value;
+                vis.num_isoline_value = 1;
+            }
+
             break;
 
         case LIMIT_COLORS_ID:
@@ -240,9 +243,6 @@ void glui_callback(int control)
             vis.create_textures();
             vis.numColors = oldNum;  
             break;
-
-        case ZOOM_ID:
-            reshape(model.winWidth, model.winHeight);
         default:
             // Do no special actions
             break;
@@ -357,14 +357,14 @@ void create_GUI()
     iso_spinner->set_float_limits(0, 5);
     new GLUI_Checkbox(iso_ops_rollout, "Multiple isolines", &(vis.multipleIsolines), MULTIPLE_ISOLINES_ID, glui_callback);
     lower_iso_spinner = new GLUI_Spinner(iso_ops_rollout, "Lower Isoline limit", GLUI_SPINNER_FLOAT, &(vis.lower_isoline_value), LOWER_ISOLINES_VALUE_ID, glui_callback);
-    lower_iso_spinner->set_float_limits(0, 5);
+    lower_iso_spinner->set_float_limits(0.01, 5);
     upper_iso_spinner = new GLUI_Spinner(iso_ops_rollout, "Upper Isoline limit", GLUI_SPINNER_FLOAT, &(vis.upper_isoline_value), UPPER_ISOLINES_VALUE_ID, glui_callback);
-    upper_iso_spinner->set_float_limits(0, 5);
+    upper_iso_spinner->set_float_limits(0.01, 5);
     GLUI_Spinner* num_lines_spinner = new GLUI_Spinner(iso_ops_rollout, "No. of isolines", GLUI_SPINNER_INT, &(vis.num_isoline_value), NUM_ISOLINES_VALUE_ID, glui_callback);
     num_lines_spinner->set_int_limits(1, 20);
 
     GLUI_Rollout *heightplot_rollout = glui->add_rollout("Height plot", false);
-    new GLUI_Checkbox(heightplot_rollout, "Height plot", &(vis.drawHeightplot), DRAW_ISOLINES_ID, glui_callback);
+    new GLUI_Checkbox(heightplot_rollout, "Height plot", &(vis.drawHeightplot), DRAW_HEIGHTPLOT_ID, glui_callback);
     GLUI_Listbox *height_scalar_list = new GLUI_Listbox(heightplot_rollout, "Height dataset", &(vis.height_dataset_idx), DATASET_ID, glui_callback);
     height_scalar_list->add_item(0, "Rho");
     height_scalar_list->add_item(1, "||Fluid velocity||");

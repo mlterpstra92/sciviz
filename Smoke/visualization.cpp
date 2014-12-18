@@ -137,7 +137,7 @@ void Visualization::create_textures(){
 	glGenTextures(NUM_COLORMAPS,texture_id);			//Generate 3 texture names, for the textures we will create
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);				//Make sure that OpenGL will understand our CPU-side texture storage format
 
-	for(int i=0;i<=NUM_COLORMAPS;++i)
+	for(int i=0;i<NUM_COLORMAPS;++i)
 	{													//Generate all three textures:
 		glBindTexture(GL_TEXTURE_1D,texture_id[i]);		//Make i-th texture active (for setting it)
 		glTexParameterf(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -469,8 +469,8 @@ void Visualization::draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<
         		if (!multipleIsolines)
         		{
         			num_isoline_value = 1;
-        			lower_isoline_value = isoline_value;
-        			upper_isoline_value = isoline_value;
+        			// lower_isoline_value = isoline_value;
+        			// upper_isoline_value = isoline_value;
         		}
         		for (int iso_idx = 0; iso_idx < num_isoline_value; ++iso_idx)
         		{

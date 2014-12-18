@@ -87,7 +87,9 @@ public:
             min_clamp_value(0.0f),
             max_clamp_value(1.0f),
             min_height_clamp_value(0.0f),
-            max_height_clamp_value(1.0f) {
+            max_height_clamp_value(1.0f),
+            lower_isoline_value(0.01),
+            upper_isoline_value(0.02) {
         vec_length = vec_base_length * vec_scale;
     }
 
