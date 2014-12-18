@@ -45,6 +45,7 @@ public:
     float isoline_value;
     int useTextures;
     float min_clamp_value, max_clamp_value;
+    fftw_real min, max;
     float min_height_clamp_value, max_height_clamp_value;
     int multipleIsolines, num_isoline_value;
     float lower_isoline_value, upper_isoline_value;

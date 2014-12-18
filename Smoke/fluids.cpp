@@ -69,6 +69,15 @@ void display(void)
     int tx, ty, tw, th;
     GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
+    glViewport(tx, ty, tw, th);
+    //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
+    //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
+    gluPerspective(25.0f / vis.zoom, (GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -86,6 +95,20 @@ void display(void)
     glTranslatef(-0.5 * tw + offX, -0.5 * th + offY, 0.0f);
 
     vis.visualize(&model);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    if(!vis.clamping)
+        vis.draw_color_legend(vis.min, vis.max);
+    else
+        vis.draw_color_legend(vis.min_clamp_value, vis.max_clamp_value);
+
     glFlush();
     calcFPS(1000, "Real-time smoke simulation and visualization");
     glutSwapBuffers();

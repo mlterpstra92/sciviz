@@ -63,17 +63,12 @@ void Visualization::visualize(Model* model)
     {	
     	std::vector<fftw_real> color_map_values;
     	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
-    	fftw_real min, max;
     	fftw_real min_height = 0, max_height = 1;
     	// Scalar color_map_values
     	determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     	if (drawHeightplot)
     		determineValuesMinMax(model, height_dataset_idx, height_values, &min_height, &max_height);
         draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max, min_height, max_height);
-        if(!clamping)
-        	draw_color_legend(min, max);
-        else
-        	draw_color_legend(min_clamp_value, max_clamp_value);
     }
     if (drawHedgehogs)
     {
