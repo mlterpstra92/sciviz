@@ -374,6 +374,7 @@ int main(int argc, char **argv)
     glutMotionFunc(drag);
     create_GUI();
 
+    glEnable(GL_DEPTH_TEST);
     glEnable (GL_LINE_SMOOTH);
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
