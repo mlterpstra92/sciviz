@@ -251,8 +251,6 @@ void create_GUI()
     new GLUI_Checkbox(generalRollout, "Textures", &(vis.useTextures), TEXTURE_ID, glui_callback);
 
     // Add spinners
-    GLUI_Spinner* timestep_spinner = new GLUI_Spinner(generalRollout, "Timestep", GLUI_SPINNER_FLOAT, &(model.dt), TIMESTEP_SPINNER_ID, glui_callback);
-    timestep_spinner->set_float_limits(0.0f, 1.0f);
 
     GLUI_Spinner* viscosity_spinner = new GLUI_Spinner(generalRollout, "Viscosity multiplier", GLUI_SPINNER_FLOAT, &(model.visc_scale_factor), VISCOSITY_SPINNER_ID, glui_callback);
     viscosity_spinner->set_float_limits(-1.0f, 100.0f);
@@ -267,6 +265,22 @@ void create_GUI()
     minClamp->set_float_limits(0.0f, maxClamp->get_float_val());
     maxClamp->set_float_limits(minClamp->get_float_val(), 100.0f);
     maxClamp->set_speed(0.1);
+
+    // x rotation spinner
+    GLUI_Spinner* x_rot_spinner = new GLUI_Spinner(generalRollout, "x rotation", GLUI_SPINNER_FLOAT, &(vis.x_rot), X_ROT_ID, glui_callback);
+    x_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // y rotation spinner
+    GLUI_Spinner* y_rot_spinner = new GLUI_Spinner(generalRollout, "y rotation", GLUI_SPINNER_FLOAT, &(vis.y_rot), Y_ROT_ID, glui_callback);
+    y_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // z rotation spinner
+    GLUI_Spinner* z_rot_spinner = new GLUI_Spinner(generalRollout, "z rotation", GLUI_SPINNER_FLOAT, &(vis.z_rot), Z_ROT_ID, glui_callback);
+    z_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // z rotation spinner
+    GLUI_Spinner* zoom_spinner = new GLUI_Spinner(generalRollout, "zoom", GLUI_SPINNER_FLOAT, &(vis.zoom), ZOOM_ID, glui_callback);
+    zoom_spinner->set_float_limits(0.2f, 10.0f);
 
 
     // COLOR MAP ROLLOUT
@@ -314,16 +328,16 @@ void create_GUI()
     glyph_shape_list->add_item(1, "Arrows");
     glyph_shape_list->add_item(2, "Triangles");
 
-    GLUI_Rollout *scalar_ops_rollout = glui->add_rollout("Scalars", false);
-    new GLUI_Checkbox(scalar_ops_rollout, "Isolines", &(vis.drawIsolines), DRAW_ISOLINES_ID, glui_callback);
-    GLUI_Spinner* iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Isoline value", GLUI_SPINNER_FLOAT, &(vis.isoline_value), ISOLINES_VALUE_ID, glui_callback);
+    GLUI_Rollout *iso_ops_rollout = glui->add_rollout("Isolines", false);
+    new GLUI_Checkbox(iso_ops_rollout, "Isolines", &(vis.drawIsolines), DRAW_ISOLINES_ID, glui_callback);
+    GLUI_Spinner* iso_spinner = new GLUI_Spinner(iso_ops_rollout, "Isoline value", GLUI_SPINNER_FLOAT, &(vis.isoline_value), ISOLINES_VALUE_ID, glui_callback);
     iso_spinner->set_float_limits(0, 5);
-    new GLUI_Checkbox(scalar_ops_rollout, "Multiple isolines", &(vis.multipleIsolines), MULTIPLE_ISOLINES_ID, glui_callback);
-    lower_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Lower Isoline limit", GLUI_SPINNER_FLOAT, &(vis.lower_isoline_value), LOWER_ISOLINES_VALUE_ID, glui_callback);
+    new GLUI_Checkbox(iso_ops_rollout, "Multiple isolines", &(vis.multipleIsolines), MULTIPLE_ISOLINES_ID, glui_callback);
+    lower_iso_spinner = new GLUI_Spinner(iso_ops_rollout, "Lower Isoline limit", GLUI_SPINNER_FLOAT, &(vis.lower_isoline_value), LOWER_ISOLINES_VALUE_ID, glui_callback);
     lower_iso_spinner->set_float_limits(0, 5);
-    upper_iso_spinner = new GLUI_Spinner(scalar_ops_rollout, "Upper Isoline limit", GLUI_SPINNER_FLOAT, &(vis.upper_isoline_value), UPPER_ISOLINES_VALUE_ID, glui_callback);
+    upper_iso_spinner = new GLUI_Spinner(iso_ops_rollout, "Upper Isoline limit", GLUI_SPINNER_FLOAT, &(vis.upper_isoline_value), UPPER_ISOLINES_VALUE_ID, glui_callback);
     upper_iso_spinner->set_float_limits(0, 5);
-    GLUI_Spinner* num_lines_spinner = new GLUI_Spinner(scalar_ops_rollout, "No. of isolines", GLUI_SPINNER_INT, &(vis.num_isoline_value), NUM_ISOLINES_VALUE_ID, glui_callback);
+    GLUI_Spinner* num_lines_spinner = new GLUI_Spinner(iso_ops_rollout, "No. of isolines", GLUI_SPINNER_INT, &(vis.num_isoline_value), NUM_ISOLINES_VALUE_ID, glui_callback);
     num_lines_spinner->set_int_limits(1, 20);
 
     GLUI_Rollout *heightplot_rollout = glui->add_rollout("Height plot", false);
@@ -345,21 +359,6 @@ void create_GUI()
     minClamp = new GLUI_Spinner(heightplot_rollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_height_clamp_value), MIN_HEIGHT_CLAMP_ID, glui_callback);
     maxClamp = new GLUI_Spinner(heightplot_rollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_height_clamp_value), MAX_HEIGHT_CLAMP_ID, glui_callback);
 
-    // x rotation spinner
-    GLUI_Spinner* x_rot_spinner = new GLUI_Spinner(heightplot_rollout, "x rotation", GLUI_SPINNER_FLOAT, &(vis.x_rot), X_ROT_ID, glui_callback);
-    x_rot_spinner->set_float_limits(0.0f, 360.0f);
-
-    // y rotation spinner
-    GLUI_Spinner* y_rot_spinner = new GLUI_Spinner(heightplot_rollout, "y rotation", GLUI_SPINNER_FLOAT, &(vis.y_rot), Y_ROT_ID, glui_callback);
-    y_rot_spinner->set_float_limits(0.0f, 360.0f);
-
-    // z rotation spinner
-    GLUI_Spinner* z_rot_spinner = new GLUI_Spinner(heightplot_rollout, "z rotation", GLUI_SPINNER_FLOAT, &(vis.z_rot), Z_ROT_ID, glui_callback);
-    z_rot_spinner->set_float_limits(0.0f, 360.0f);
-
-    // z rotation spinner
-    GLUI_Spinner* zoom_spinner = new GLUI_Spinner(heightplot_rollout, "zoom", GLUI_SPINNER_FLOAT, &(vis.zoom), ZOOM_ID, glui_callback);
-    zoom_spinner->set_float_limits(0.2f, 10.0f);
 }
 
 
