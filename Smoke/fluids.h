@@ -36,7 +36,8 @@ enum {
 	  HEIGHT_SPINNER_ID,
 	  X_ROT_ID,
 	  Y_ROT_ID,
-	  Z_ROT_ID
+	  Z_ROT_ID,
+	  ZOOM_ID
 };
 
 #endif

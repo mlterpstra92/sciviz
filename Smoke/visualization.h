@@ -25,6 +25,7 @@ public:
     float vec_scale;            //scale factor
     float height_scale;         //height scale factor
     float x_rot, y_rot, z_rot;         // How much rotation along x, y and z axes?
+    float zoom;
     int drawMatter;
     int drawHedgehogs;
     int numColors;
@@ -69,6 +70,7 @@ public:
             x_rot(0.0f),
             y_rot(0.0f),
             z_rot(0.0f),
+            zoom(1.0f),
             drawMatter(1),
             drawHedgehogs(0),
             numColors(256),

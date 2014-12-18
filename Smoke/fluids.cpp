@@ -100,7 +100,7 @@ void reshape(int w, int h)
     glViewport(tx, ty, tw, th);
     //gluOrtho2D(0.0, (GLdouble)tw, 0.0, (GLdouble)th);
     //glFrustum(0.0, (GLdouble)tw, 0.0, (GLdouble)th, -100, 100);
-    gluPerspective(25.0f,(GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
+    gluPerspective(25.0f / vis.zoom, (GLdouble)tw / (GLdouble)th, 1.0f, 2500.0f);
     model.winWidth = tw;
     model.winHeight = th;
 }
@@ -218,6 +218,8 @@ void glui_callback(int control)
             vis.numColors = oldNum;  
             break;
 
+        case ZOOM_ID:
+            reshape(model.winWidth, model.winHeight);
         default:
             // Do no special actions
             break;
@@ -334,7 +336,7 @@ void create_GUI()
     height_scalar_list->add_item(4, "div Force");
 
     GLUI_Spinner* height_spinner = new GLUI_Spinner(heightplot_rollout, "Height scale factor", GLUI_SPINNER_FLOAT, &(vis.height_scale), HEIGHT_SPINNER_ID, glui_callback);
-    height_spinner->set_float_limits(0.0f, 100.0f);
+    height_spinner->set_float_limits(0.0f, 500.0f);
     // Radio button for Scale / Clamp for height plot
     GLUI_Panel* height_scale_clamp_panel = new GLUI_Panel(heightplot_rollout, "Height dataset manipulation");
     GLUI_RadioGroup* height_scale_clamp = glui->add_radiogroup_to_panel(height_scale_clamp_panel, &(vis.heightClamping), HEIGHT_SCALE_CLAMP_ID, glui_callback);
@@ -354,6 +356,10 @@ void create_GUI()
     // z rotation spinner
     GLUI_Spinner* z_rot_spinner = new GLUI_Spinner(heightplot_rollout, "z rotation", GLUI_SPINNER_FLOAT, &(vis.z_rot), Z_ROT_ID, glui_callback);
     z_rot_spinner->set_float_limits(0.0f, 360.0f);
+
+    // z rotation spinner
+    GLUI_Spinner* zoom_spinner = new GLUI_Spinner(heightplot_rollout, "zoom", GLUI_SPINNER_FLOAT, &(vis.zoom), ZOOM_ID, glui_callback);
+    zoom_spinner->set_float_limits(0.2f, 10.0f);
 }
 
 
