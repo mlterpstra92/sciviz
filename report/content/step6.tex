@@ -1,0 +1,14 @@
+%!TEX root = ../report.tex
+\section{Height plot}
+In order to implement a height plot, a conversion from 2D to 3D is needed.
+This can be done by converting the \texttt{glVertex2f(x, y)} to \texttt{glVertex3f(x,y,z)} in the function \texttt{draw\_smoke}.
+\texttt{x, y} are already known, \texttt{z} will become the value of a selected dataset, which can differ from the dataset that is used for the colormap.
+When heights are not plotted, \texttt{z} can be simply set to 0, this creates the already existing 2D plot.
+
+When converting to 3D, a problem arises that you need to specify the view point and view volume.
+In other words, the specification of the camera and bounding boxes need to be set.
+This problem can be fixed by using \texttt{gluLookAt, gluPerspective, glRotatef} and \texttt{glTranslatef}.
+
+Rotation of the simulation grid is done by first translating to the center of the grid and from that point the rotations are performed so that the center stays does not move.
+
+The color legend is drawn separately in 2D, so it will have a fixed position on the screen.
