@@ -769,8 +769,16 @@ void Visualization::draw_streamtubes()
 	{
 		Point3d seed = *it;
 		glPushMatrix();
-		glTranslatef(seed.x, seed.y, 1);
+		glTranslatef(seed.x, seed.y, seed.z);
 		glutSolidSphere(4, 50, 50);
 		glPopMatrix();
 	}
+}
+
+void Visualization::set_last_z_value(double zval)
+{
+	Point3d elem = streamTubeSeeds.back();
+	elem.z = zval;
+	removeSeedPoint();
+	streamTubeSeeds.push_back(elem);
 }

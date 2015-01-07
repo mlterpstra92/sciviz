@@ -2,6 +2,7 @@
 #define FLUIDS_H
 GLUI_Spinner* minClamp, *maxClamp, *lower_iso_spinner, *upper_iso_spinner;
 int getCoordinates = 0;
+int zval;
 enum {
 	  ANIMATE_ID, 
 	  DRAW_HEDGEHOGS_ID, 
@@ -42,7 +43,8 @@ enum {
 	  ZOOM_ID,
 	  DRAW_STREAMTUBES_ID,
 	  ADD_SEEDPOINT_ID,
-	  REMOVE_SEEDPOINT_ID
+	  REMOVE_SEEDPOINT_ID,
+	  Z_VALUE_SPINNER_ID
 };
 
 #endif

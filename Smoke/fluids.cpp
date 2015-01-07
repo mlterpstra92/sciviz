@@ -249,6 +249,9 @@ void glui_callback(int control)
         case REMOVE_SEEDPOINT_ID:
             vis.removeSeedPoint();
             break;
+        case Z_VALUE_SPINNER_ID:
+            vis.set_last_z_value(zval);
+            break;
         default:
             // Do no special actions
             break;
@@ -392,6 +395,8 @@ void create_GUI()
     new GLUI_Checkbox(streamtubes_rollout, "Enable stream tubes", &(vis.enableStreamtubes), DRAW_STREAMTUBES_ID, glui_callback);
     new GLUI_Button(streamtubes_rollout, "Add seed point", ADD_SEEDPOINT_ID, glui_callback);
     new GLUI_Button(streamtubes_rollout, "Remove seed point", REMOVE_SEEDPOINT_ID, glui_callback);
+    GLUI_Spinner* z_value_spinner = new GLUI_Spinner(streamtubes_rollout, "z-value", GLUI_SPINNER_INT, &zval, Z_VALUE_SPINNER_ID, glui_callback);
+    z_value_spinner->set_int_limits(-50, 0);
 }
 
 
