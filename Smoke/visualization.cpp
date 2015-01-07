@@ -760,7 +760,8 @@ void Visualization::addSeedPoint(double x, double y, double z)
 
 void Visualization::removeSeedPoint()
 {
-	streamTubeSeeds.pop_back();
+	if(!streamTubeSeeds.empty())
+		streamTubeSeeds.pop_back();
 }
 
 void Visualization::draw_streamtubes()
