@@ -86,7 +86,7 @@ public:
             clamping(0),
             glyph_shape(LINES),
             drawIsolines(0),
-            drawHeightplot(1),
+            drawHeightplot(0),
             isoline_value(0.06),
             useTextures(1),
             min_clamp_value(0.0f),
@@ -94,7 +94,8 @@ public:
             min_height_clamp_value(0.0f),
             max_height_clamp_value(1.0f),
             lower_isoline_value(0.01),
-            upper_isoline_value(0.02) {
+            upper_isoline_value(0.02),
+            enableStreamtubes(1) {
         vec_length = vec_base_length * vec_scale;
     }
 
