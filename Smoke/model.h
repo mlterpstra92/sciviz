@@ -20,7 +20,7 @@ public:
     fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
     fftw_real *fx, *fy;             //(fx,fy)   = user-controlled simulation forces, steered with the mouse
     fftw_real *rho, *rho0;          //smoke density at the current (rho) and previous (rho0) moment
-    fftw_real *copied_forces, *copied_velos;          //pointer for copied values to store in queue
+    fftw_real *copied_vx, *copied_vy, *copied_fx, *copied_fy; //pointer for copied values to store in queue
     fftw_real min_rho, max_rho;     // Min and max values of the 2d rho matrix
     fftw_real min_velo, max_velo;   // Min and max magnitudes of the velocities
     fftw_real min_force, max_force; // Min and max magnitudes of the forces
