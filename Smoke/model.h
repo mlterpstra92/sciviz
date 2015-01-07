@@ -3,6 +3,7 @@
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include <math.h>               //for various math functions
 #include <cfloat>
+#include <queue>
 
 class Model {
 public:
@@ -13,10 +14,13 @@ public:
     double dt;            //simulation time step
     float visc, base_visc, visc_scale_factor;          //fluid viscosity
     int winWidth, winHeight;          //size of the graphics window, in pixels
+    std::queue<fftw_real *> q_vx, q_vy; // Time slices
+    std::queue<fftw_real *> q_fx, q_fy; // Time slices
     fftw_real *vx, *vy;             //(vx,vy)   = velocity field at the current moment
     fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous moment
     fftw_real *fx, *fy;             //(fx,fy)   = user-controlled simulation forces, steered with the mouse
     fftw_real *rho, *rho0;          //smoke density at the current (rho) and previous (rho0) moment
+    fftw_real *copied_forces, *copied_velos;          //pointer for copied values to store in queue
     fftw_real min_rho, max_rho;     // Min and max values of the 2d rho matrix
     fftw_real min_velo, max_velo;   // Min and max magnitudes of the velocities
     fftw_real min_force, max_force; // Min and max magnitudes of the forces
