@@ -768,6 +768,9 @@ void Visualization::draw_streamtubes()
 	for (auto it=streamTubeSeeds.begin(); it != streamTubeSeeds.end(); ++it)
 	{
 		Point3d seed = *it;
+		glPushMatrix();
+		glTranslatef(seed.x, seed.y, 1);
 		glutSolidSphere(4, 50, 50);
+		glPopMatrix();
 	}
 }
