@@ -245,6 +245,7 @@ void glui_callback(int control)
             break;
         case ADD_SEEDPOINT_ID:
             getCoordinates = 1;
+            zval = 0;
             break;
         case REMOVE_SEEDPOINT_ID:
             vis.removeSeedPoint();
@@ -400,28 +401,19 @@ void create_GUI()
 }
 
 
-GLdouble ox=0.0,oy=0.0,oz=0.0;
-void Mouse(int button,int state,int x,int y) {
-    GLint viewport[4];
-    GLdouble modelview[16],projection[16];
-    GLfloat wx=x,wy,wz;
-
-    if(state!=GLUT_DOWN)
-        return;
-    GLUI_Master.get_viewport_area( &viewport[0], &viewport[1], &viewport[2], &viewport[3] );
-    y=viewport[3]-y;
-    wy=y;
-    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
-    glGetDoublev(GL_PROJECTION_MATRIX,projection);
-    glReadPixels(x,y,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&wz);
-    gluUnProject(wx,wy,wz,modelview,projection,viewport,&ox,&oy,&oz);
+void Mouse(int button,int state,int mx,int my) {
+    mx /= 0.8;
+    // Compute the array index that corresponds to the cursor location
+    float X = ((double)(DIM + 1) * ((double)mx / (double)model.winWidth));
+    float Y = ((double)(DIM + 1) * ((double)(model.winHeight - my) / (double)model.winHeight));
+    X = X > (DIM - 1) ? DIM - 1 : (X < 0 ? 0 : X);
+    Y = Y > (DIM - 1) ? DIM - 1 : (Y < 0 ? 0 : Y); 
 
     if(getCoordinates)
     {
-        vis.addSeedPoint(ox, oy, oz);
+        vis.addSeedPoint(X, Y, 0);
         getCoordinates = 0;
     }
-    glutPostRedisplay();
 }
 
 //main: The main program

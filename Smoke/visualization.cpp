@@ -90,7 +90,7 @@ void Visualization::visualize(Model* model)
     }
     if (enableStreamtubes)
     {
-    	draw_streamtubes();
+    	draw_streamtubes(wn, hn);
     }
 }
 //-----------COLOR MAPS ----------//
@@ -764,13 +764,13 @@ void Visualization::removeSeedPoint()
 		streamTubeSeeds.pop_back();
 }
 
-void Visualization::draw_streamtubes()
+void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
 {
 	for (auto it=streamTubeSeeds.begin(); it != streamTubeSeeds.end(); ++it)
 	{
 		Point3d seed = *it;
 		glPushMatrix();
-		glTranslatef(seed.x, seed.y, seed.z * 8);
+		glTranslatef(seed.x * wn + wn, seed.y * hn + hn, seed.z * 8);
 		glutSolidSphere(4, 50, 50);
 		glPopMatrix();
 	}

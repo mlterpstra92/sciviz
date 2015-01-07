@@ -143,7 +143,7 @@ public:
 
     void addSeedPoint(double x, double y, double z);
     void removeSeedPoint();
-    void draw_streamtubes();
+    void draw_streamtubes(fftw_real wn, fftw_real hn);
     void set_last_z_value(double zval);
 };
 
