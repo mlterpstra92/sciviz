@@ -18,11 +18,9 @@ Model::Model (int n)
     vy       = (fftw_real*) malloc(dim);
     vx0      = (fftw_real*) malloc(dim);
     vy0      = (fftw_real*) malloc(dim);
-    copied_velos = (fftw_real*) malloc(dim);
     dim      = n * n * sizeof(fftw_real);
     fx       = (fftw_real*) malloc(dim);
     fy       = (fftw_real*) malloc(dim);
-    copied_forces = (fftw_real*) malloc(dim);
     rho      = (fftw_real*) malloc(dim);
     rho0     = (fftw_real*) malloc(dim);
     plan_rc  = rfftw2d_create_plan(n, n, FFTW_REAL_TO_COMPLEX, FFTW_IN_PLACE);
@@ -154,6 +152,10 @@ void Model::do_one_simulation_step(const int DIM)
     // Store the last 50 timeframes, if queue exceeds 50 frames, pop first before push
     if (q_vx.size() >= 50)
     {
+        free(q_vx.front());
+        free(q_vy.front());
+        free(q_fx.front());
+        free(q_fy.front());
         q_vx.pop();
         q_vy.pop();
         q_fx.pop();
@@ -161,17 +163,21 @@ void Model::do_one_simulation_step(const int DIM)
     }
     // Copy all current simulation velocities and push them in to the queue
     size_t dim = DIM * 2 * (DIM/2+1);
-    std::copy(vx, vx + dim, copied_velos);
-    q_vx.push(copied_velos);
-    std::copy(vy, vy + dim, copied_velos);
-    q_vy.push(copied_velos);
+    copied_vx = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    copied_vy = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    std::copy(vx, vx + dim, copied_vx);
+    q_vx.push(copied_vx);
+    std::copy(vy, vy + dim, copied_vy);
+    q_vy.push(copied_vy);
     
     // Copy all current simulation forces and push them in to the queue
     dim = DIM * DIM;
-    std::copy(fx, fx + dim, copied_forces);
-    q_fx.push(copied_forces);
-    std::copy(fy, fy + dim, copied_forces);
-    q_fy.push(copied_forces);
+    copied_fx = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    copied_fy = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    std::copy(fx, fx + dim, copied_fx);
+    q_fx.push(copied_fx);
+    std::copy(fy, fy + dim, copied_fy);
+    q_fy.push(copied_fy);
 }
 
 
