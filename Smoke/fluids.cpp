@@ -243,6 +243,12 @@ void glui_callback(int control)
             vis.create_textures();
             vis.numColors = oldNum;  
             break;
+        case ADD_SEEDPOINT_ID:
+            getCoordinates = 1;
+            break;
+        case REMOVE_SEEDPOINT_ID:
+            vis.removeSeedPoint();
+            break;
         default:
             // Do no special actions
             break;
@@ -382,10 +388,36 @@ void create_GUI()
     minClamp = new GLUI_Spinner(heightplot_rollout, "Min clamp", GLUI_SPINNER_FLOAT, &(vis.min_height_clamp_value), MIN_HEIGHT_CLAMP_ID, glui_callback);
     maxClamp = new GLUI_Spinner(heightplot_rollout, "Max clamp", GLUI_SPINNER_FLOAT, &(vis.max_height_clamp_value), MAX_HEIGHT_CLAMP_ID, glui_callback);
 
+    GLUI_Rollout *streamtubes_rollout = glui->add_rollout("Stream tubes", false);
+    new GLUI_Checkbox(streamtubes_rollout, "Enable stream tubes", &(vis.enableStreamtubes), DRAW_STREAMTUBES_ID, glui_callback);
+    new GLUI_Button(streamtubes_rollout, "Add seed point", ADD_SEEDPOINT_ID, glui_callback);
+    new GLUI_Button(streamtubes_rollout, "Remove seed point", REMOVE_SEEDPOINT_ID, glui_callback);
 }
 
 
+GLdouble ox=0.0,oy=0.0,oz=0.0;
+void Mouse(int button,int state,int x,int y) {
+    GLint viewport[4];
+    GLdouble modelview[16],projection[16];
+    GLfloat wx=x,wy,wz;
 
+    if(state!=GLUT_DOWN)
+        return;
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    y=viewport[3]-y;
+    wy=y;
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX,projection);
+    glReadPixels(x,y,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&wz);
+    gluUnProject(wx,wy,wz,modelview,projection,viewport,&ox,&oy,&oz);
+
+    if(getCoordinates)
+    {
+        vis.addSeedpoint(ox, oy, oz);
+        getCoordinates = 0;
+    }
+    glutPostRedisplay();
+}
 
 //main: The main program
 int main(int argc, char **argv)
@@ -399,6 +431,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     GLUI_Master.set_glutReshapeFunc(reshape);
     GLUI_Master.set_glutIdleFunc(do_one_step);
+    GLUI_Master.set_glutMouseFunc(Mouse);
     glutMotionFunc(drag);
     create_GUI();
 

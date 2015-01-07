@@ -10,7 +10,6 @@
 #define NUM_COLORMAPS 4
 
 using namespace std;
-
 class Visualization {
 private:
     void rgbToHSV(float R,float G,float B, float& H, float& S, float& V);
@@ -50,6 +49,7 @@ public:
     int multipleIsolines, num_isoline_value;
     float lower_isoline_value, upper_isoline_value;
     unsigned int texture_id[NUM_COLORMAPS];
+    int enableStreamtubes;
     enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
     enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
