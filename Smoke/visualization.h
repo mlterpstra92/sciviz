@@ -6,10 +6,14 @@
 #include "model.h"
 #include <string>
 #include <iostream>
+#include <list>
 #include "GL/glui.h"
 #define NUM_COLORMAPS 4
 
 using namespace std;
+typedef struct point3d {
+    double x, y, z;
+} Point3d;
 class Visualization {
 private:
     void rgbToHSV(float R,float G,float B, float& H, float& S, float& V);
@@ -54,6 +58,7 @@ public:
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
     enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
+    std::list<Point3d> streamTubeSeeds;
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
 
@@ -134,6 +139,10 @@ public:
     float clamp(float x, fftw_real min, fftw_real max);
     float scale(float x, fftw_real min, fftw_real max);
     double interpolate(double v1, double v2, double iso);
+
+    void addSeedPoint(double x, double y, double z);
+    void removeSeedPoint();
+    void draw_streamtubes();
 };
 
 #endif

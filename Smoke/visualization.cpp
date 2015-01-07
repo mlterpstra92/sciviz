@@ -88,6 +88,10 @@ void Visualization::visualize(Model* model)
     	}
         draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
     }
+    if (enableStreamtubes)
+    {
+    	draw_streamtubes();
+    }
 }
 //-----------COLOR MAPS ----------//
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
@@ -747,4 +751,23 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 	glEnd();
 
 	glPopMatrix();
+}
+
+void Visualization::addSeedPoint(double x, double y, double z)
+{
+	streamTubeSeeds.push_back(Point3d{x, y, z});
+}
+
+void Visualization::removeSeedPoint()
+{
+	streamTubeSeeds.pop_back();
+}
+
+void Visualization::draw_streamtubes()
+{
+	for (auto it=streamTubeSeeds.begin(); it != streamTubeSeeds.end(); ++it)
+	{
+		Point3d seed = *it;
+		glutSolidSphere(4, 50, 50);
+	}
 }

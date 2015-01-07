@@ -413,7 +413,7 @@ void Mouse(int button,int state,int x,int y) {
 
     if(getCoordinates)
     {
-        vis.addSeedpoint(ox, oy, oz);
+        vis.addSeedPoint(ox, oy, oz);
         getCoordinates = 0;
     }
     glutPostRedisplay();
