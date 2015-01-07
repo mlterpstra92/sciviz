@@ -755,12 +755,13 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 
 void Visualization::addSeedPoint(double x, double y, double z)
 {
-	streamTubeSeeds.push_back(Point3d{x, y, z});
+	streamTubeSeeds.push_back(Point3d{x, y, 0});
 }
 
 void Visualization::removeSeedPoint()
 {
-	streamTubeSeeds.pop_back();
+	if(!streamTubeSeeds.empty())
+		streamTubeSeeds.pop_back();
 }
 
 void Visualization::draw_streamtubes()
@@ -769,7 +770,7 @@ void Visualization::draw_streamtubes()
 	{
 		Point3d seed = *it;
 		glPushMatrix();
-		glTranslatef(seed.x, seed.y, seed.z);
+		glTranslatef(seed.x, seed.y, seed.z * 8);
 		glutSolidSphere(4, 50, 50);
 		glPopMatrix();
 	}

@@ -408,7 +408,7 @@ void Mouse(int button,int state,int x,int y) {
 
     if(state!=GLUT_DOWN)
         return;
-    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLUI_Master.get_viewport_area( &viewport[0], &viewport[1], &viewport[2], &viewport[3] );
     y=viewport[3]-y;
     wy=y;
     glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
