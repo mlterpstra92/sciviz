@@ -142,7 +142,7 @@ void Model::streamtube_flow()
 {
     for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
     {
-        fftw_real dx, dy;
+        fftw_real interp_x, interp_y;
         Point3d seed = (*streamtube).seed;
         Point3d previous = seed;
         (*streamtube).tail.clear();
