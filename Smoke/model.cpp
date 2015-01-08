@@ -143,20 +143,51 @@ void Model::streamtube_flow()
     for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
     {
         fftw_real dx, dy;
-        Point3d newPoint;
-        Point3d lastPoint = (*streamtube).back();
-        // Calculate dx and dy using interpolation
-        dx = interpolate();
-        dy = interpolate();
-        // newpoint = point + v(p)
-        newPoint.x = lastPoint.x + dx;
-        newPoint.y = lastPoint.y + dy;
-        newPoint.z = lastPoint.z - 1;
-        // Insert new point at second position
-        auto insertPosition = (*streamtube).begin();
-        std::advance(insertPosition, 1);
-        std::insert(insertPosition, newPoint);
+        Point3d previous;
+        Point3d seed = (*streamtube).seed;
+        previous = seed;
+        (*streamtube).tail.clear();
+        auto time_slice = time_slices.end();
+        std::advance(time_slice, seed.z);
+        for (; time_slice != time_slices.end(); ++time_slice)
+        {
+            Point3d current;
+            // pair of vx, vy of certain time
+            fftw_real* vel_x = (*time_slice).first;
+            fftw_real* vel_y = (*time_slice).second;
+            // Calculate dx and dy using interpolation
+            dx = interpolate(vel_x, previous.x, previous.y);
+            dy = interpolate(vel_y, previous.x, previous.y);
+            // newpoint = point + v(p)
+            current.x = previous.x + dx;
+            current.y = previous.y + dy;
+            current.z = previous.z + 1;
+            // Insert the newly calculated point
+            // TODO: OF TOCH FRONT????????????????
+            (*streamtube).tail.push_back(current);
+            previous = current;
+        }
     }
+}
+
+void Model::store_history()
+{
+    // Store the last 50 timeframes, if queue exceeds 50 frames, pop first before push
+    if (time_slices.size() >= 50)
+    {
+        auto tmppair = time_slices.front();
+        free(tmppair.first);
+        free(tmppair.second);
+        time_slices.pop_front();
+    }
+    // Copy all current simulation velocities and push them in to the queue
+    size_t dim = DIM * 2 * (DIM/2+1);
+    copied_vx = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    copied_vy = (fftw_real*) malloc(dim * sizeof(fftw_real));
+    std::copy(vx, vx + dim, copied_vx);
+    std::copy(vy, vy + dim, copied_vy);
+    auto pair = std::make_pair(copied_vx, copied_vy);
+    time_slices.push_back(pair);
 }
 //do_one_simulation_step: Do one complete cycle of the simulation:
 //      - set_forces:
@@ -169,35 +200,7 @@ void Model::do_one_simulation_step(const int DIM)
     solve(DIM, vx, vy, vx0, vy0, visc, dt);
     diffuse_matter(DIM, vx, vy, rho, rho0, dt);
     streamtube_flow();
-    // Store the last 50 timeframes, if queue exceeds 50 frames, pop first before push
-    if (q_vx.size() >= 50)
-    {
-        free(q_vx.front());
-        free(q_vy.front());
-        free(q_fx.front());
-        free(q_fy.front());
-        q_vx.pop();
-        q_vy.pop();
-        q_fx.pop();
-        q_fy.pop();
-    }
-    // Copy all current simulation velocities and push them in to the queue
-    size_t dim = DIM * 2 * (DIM/2+1);
-    copied_vx = (fftw_real*) malloc(dim * sizeof(fftw_real));
-    copied_vy = (fftw_real*) malloc(dim * sizeof(fftw_real));
-    std::copy(vx, vx + dim, copied_vx);
-    q_vx.push(copied_vx);
-    std::copy(vy, vy + dim, copied_vy);
-    q_vy.push(copied_vy);
-    
-    // Copy all current simulation forces and push them in to the queue
-    dim = DIM * DIM;
-    copied_fx = (fftw_real*) malloc(dim * sizeof(fftw_real));
-    copied_fy = (fftw_real*) malloc(dim * sizeof(fftw_real));
-    std::copy(fx, fx + dim, copied_fx);
-    q_fx.push(copied_fx);
-    std::copy(fy, fy + dim, copied_fy);
-    q_fy.push(copied_fy);
+    store_history();
 }
 
 
@@ -272,3 +275,32 @@ void Model::set_forces(const int DIM)
     }
 }
 
+// Use interpolation to calculate the value of the dataset v at index coordinates (x, y)
+fftw_real Model::interpolate(fftw_real *v, double x, double y)
+{
+    int x_lower = floor(x);
+    int x_upper = ceil(x);
+    int y_lower = floor(y);
+    int y_upper = ceil(y);
+    if (x_lower == x_upper || y_lower == y_upper)
+        cout << "Warning: Trying to interpolate exactly at a grid coordinate.";
+    
+    // The fraction (between 0 and 1) of how far the point is in between the gridpoints
+    double alpha_x = x - x_lower;
+    double alpha_y = y - y_lower;
+
+    fftw_real upper_left =  v[y_upper * DIM + x_lower];
+    fftw_real upper_right = v[y_upper * DIM + x_upper];
+    fftw_real lower_left =  v[y_lower * DIM + x_lower];
+    fftw_real lower_right = v[y_lower * DIM + x_upper];
+
+    // See http://en.wikipedia.org/wiki/Bilinear_interpolation#mediaviewer/File:Bilinear_interpolation_visualisation.svg
+    fftw_real red =     lower_right * alpha_x       * (1 - alpha_y);
+    fftw_real green =   lower_left  * (1 - alpha_x) * (1 - alpha_y);
+    fftw_real blue =    upper_right * alpha_x       * alpha_y;
+    fftw_real yellow =  upper_left  * (1 - alpha_x) * alpha_y;
+
+    fftw_real value = red + green + blue + yellow;
+
+    return value;
+}

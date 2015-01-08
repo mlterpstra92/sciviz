@@ -753,24 +753,24 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 	glPopMatrix();
 }
 
-void Visualization::addSeedPoint(std::list<std::list<Point3d>>* streamTubes, double x, double y, double z)
+void Visualization::addSeedPoint(std::list<streamTube>* streamTubes, double x, double y, double z)
 {
 	//C++11 magic! 
-	streamTubes->push_back({{x, y, 0}});
+	streamTubes->push_back({{x, y, z}, {}});
 }
 
-void Visualization::removeSeedPoint(std::list<std::list<Point3d>>* streamTubes)
+void Visualization::removeSeedPoint(std::list<streamTube>* streamTubes)
 {
 	if(!streamTubes->empty())
 		streamTubes->pop_back();
 }
 
-void Visualization::draw_streamtubes(std::list<std::list<Point3d>>* streamTubes, fftw_real wn, fftw_real hn)
+void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_real wn, fftw_real hn)
 {
 	for (auto streamtube = streamTubes->begin(); streamtube != streamTubes->end(); ++streamtube)
 	{
 		//Draw the seed as sphere first
-		Point3d seed = (*streamtube).front();
+		Point3d seed = (*streamtube).seed;
 		glPushMatrix();
 		//glutSolidSphere draws a sphere at the origin, so translate to the correct location
 		//factor 8 for z value was chosen for prettyfy-ing the animation
@@ -781,23 +781,26 @@ void Visualization::draw_streamtubes(std::list<std::list<Point3d>>* streamTubes,
 		//Iterate over points of the streamtube, but skip the first element since it's the seed
 		Point3d prevPoint = seed;
 		glBegin(GL_LINES);
-		auto tubepoint = (*streamtube).begin();
-		std::advance(tubepoint, 1);
-		for (; tubepoint != (*streamtube).end(); ++tubepoint)
+		glLineWidth(3);
+		for (auto tubepoint = (*streamtube).tail.begin(); tubepoint != (*streamtube).tail.end(); ++tubepoint)
 		{
 			Point3d point = *tubepoint;
 			//Draw a line between the previous point and current point
 			//After drawing set the previous point to the current and draw next
-			glVertex3f(prevPoint.x, prevPoint.y, prevPoint.z);
-			glVertex3f(point.x, point.y, point.z);
+			glVertex3f(prevPoint.x * wn + wn, prevPoint.y * hn + hn, prevPoint.z * 8);
+			glVertex3f(point.x * wn + wn, point.y * hn + hn, point.z * 8);
 			prevPoint = point;
 		} 
 		glEnd();
 	}
 }
 
-void Visualization::set_last_z_value(std::list<std::list<Point3d>>* streamTubes, double zval)
+void Visualization::set_last_z_value(std::list<streamTube>* streamTubes, double zval)
 {
-	std::list<Point3d>& elem = streamTubes->back();
-	elem.front().z = zval;
+	if (!streamTubes->empty())
+	{
+		streamTube& streamtube = streamTubes->back();
+		streamtube.seed.z = zval;
+		streamtube.tail.clear();
+	}
 }
