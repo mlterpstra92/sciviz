@@ -58,7 +58,8 @@ public:
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
     enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
-    std::list<Point3d> streamTubeSeeds;
+    std::list<std::list<Point3d>> streamTubes;
+
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
 

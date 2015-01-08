@@ -755,20 +755,20 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 
 void Visualization::addSeedPoint(double x, double y, double z)
 {
-	streamTubeSeeds.push_back(Point3d{x, y, 0});
+	streamTubes.push_back({{x, y, 0}});
 }
 
 void Visualization::removeSeedPoint()
 {
-	if(!streamTubeSeeds.empty())
-		streamTubeSeeds.pop_back();
+	if(!streamTubes.empty())
+		streamTubes.pop_back();
 }
 
 void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
 {
-	for (auto it=streamTubeSeeds.begin(); it != streamTubeSeeds.end(); ++it)
+	for (auto it=streamTubes.begin(); it != streamTubes.end(); ++it)
 	{
-		Point3d seed = *it;
+		Point3d seed = (*it).front();
 		glPushMatrix();
 		glTranslatef(seed.x * wn + wn, seed.y * hn + hn, seed.z * 8);
 		glutSolidSphere(4, 50, 50);
@@ -778,8 +778,6 @@ void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
 
 void Visualization::set_last_z_value(double zval)
 {
-	Point3d elem = streamTubeSeeds.back();
-	elem.z = zval;
-	removeSeedPoint();
-	streamTubeSeeds.push_back(elem);
+	std::list<Point3d>& elem = streamTubes.back();
+	elem.front().z = zval;
 }
