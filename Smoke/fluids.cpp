@@ -245,13 +245,12 @@ void glui_callback(int control)
             break;
         case ADD_SEEDPOINT_ID:
             getCoordinates = 1;
-            zval = 0;
             break;
         case REMOVE_SEEDPOINT_ID:
-            vis.removeSeedPoint();
+            vis.removeSeedPoint(&model.streamTubes);
             break;
         case Z_VALUE_SPINNER_ID:
-            vis.set_last_z_value(zval);
+            vis.set_last_z_value(&model.streamTubes, vis.zval);
             break;
         default:
             // Do no special actions
@@ -396,7 +395,7 @@ void create_GUI()
     new GLUI_Checkbox(streamtubes_rollout, "Enable stream tubes", &(vis.enableStreamtubes), DRAW_STREAMTUBES_ID, glui_callback);
     new GLUI_Button(streamtubes_rollout, "Add seed point", ADD_SEEDPOINT_ID, glui_callback);
     new GLUI_Button(streamtubes_rollout, "Remove seed point", REMOVE_SEEDPOINT_ID, glui_callback);
-    GLUI_Spinner* z_value_spinner = new GLUI_Spinner(streamtubes_rollout, "z-value", GLUI_SPINNER_INT, &zval, Z_VALUE_SPINNER_ID, glui_callback);
+    GLUI_Spinner* z_value_spinner = new GLUI_Spinner(streamtubes_rollout, "z-value", GLUI_SPINNER_INT, &(vis.zval), Z_VALUE_SPINNER_ID, glui_callback);
     z_value_spinner->set_int_limits(-50, 0);
 }
 
@@ -411,7 +410,7 @@ void Mouse(int button,int state,int mx,int my) {
 
     if(getCoordinates)
     {
-        vis.addSeedPoint(X, Y, 0);
+        vis.addSeedPoint(&model.streamTubes, X, Y, vis.zval);
         getCoordinates = 0;
     }
 }

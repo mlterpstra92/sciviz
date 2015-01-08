@@ -11,9 +11,6 @@
 #define NUM_COLORMAPS 4
 
 using namespace std;
-typedef struct point3d {
-    double x, y, z;
-} Point3d;
 class Visualization {
 private:
     void rgbToHSV(float R,float G,float B, float& H, float& S, float& V);
@@ -54,11 +51,11 @@ public:
     float lower_isoline_value, upper_isoline_value;
     unsigned int texture_id[NUM_COLORMAPS];
     int enableStreamtubes;
+    int zval;
     enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
     enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
-    std::list<std::list<Point3d>> streamTubes;
 
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
@@ -96,7 +93,8 @@ public:
             max_height_clamp_value(1.0f),
             lower_isoline_value(0.01),
             upper_isoline_value(0.02),
-            enableStreamtubes(1) {
+            enableStreamtubes(1),
+            zval(-50) {
         vec_length = vec_base_length * vec_scale;
     }
 
@@ -142,10 +140,10 @@ public:
     float scale(float x, fftw_real min, fftw_real max);
     double interpolate(double v1, double v2, double iso);
 
-    void addSeedPoint(double x, double y, double z);
-    void removeSeedPoint();
-    void draw_streamtubes(fftw_real wn, fftw_real hn);
-    void set_last_z_value(double zval);
+    void addSeedPoint(std::list<streamTube>* streamTubes, double x, double y, double z);
+    void removeSeedPoint(std::list<streamTube>* streamTubes);
+    void draw_streamtubes(std::list<streamTube>* streamTubes, fftw_real wn, fftw_real hn);
+    void set_last_z_value(std::list<streamTube>* streamTubes, double zval);
 };
 
 #endif
