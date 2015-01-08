@@ -260,7 +260,7 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     int y_lower = floor(y);
     int y_upper = ceil(y);
     if (x_lower == x_upper || y_lower == y_upper)
-        cout << "Warning: Trying to interpolate exactly at a grid coordinate.";
+        cout << "Warning: Trying to interpolate exactly at a grid coordinate." << endl;
     
     // The fraction (between 0 and 1) of how far the point is in between the gridpoints
     double alpha_x = x - x_lower;
