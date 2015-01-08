@@ -4,7 +4,11 @@
 #include <math.h>               //for various math functions
 #include <cfloat>
 #include <queue>
+#include <list>
 
+typedef struct point3d {
+    double x, y, z;
+} Point3d;
 class Model {
 public:
     Model (int);
@@ -26,6 +30,7 @@ public:
     fftw_real min_force, max_force; // Min and max magnitudes of the forces
     fftw_real min_div, max_div; // Min and max magnitudes of the forces
     rfftwnd_plan plan_rc, plan_cr;  //simulation domain discretization
+    std::list<std::list<Point3d>> streamTubes;
 
     //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------
 
@@ -54,6 +59,7 @@ public:
     //            Also dampen forces and matter density to get a stable simulation.
     void set_forces(const int DIM);
 
+    void streamtube_flow();
     //do_one_simulation_step: Do one complete cycle of the simulation:
     //      - set_forces:
     //      - solve:            read forces from the user

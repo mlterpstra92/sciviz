@@ -248,10 +248,10 @@ void glui_callback(int control)
             zval = 0;
             break;
         case REMOVE_SEEDPOINT_ID:
-            vis.removeSeedPoint();
+            vis.removeSeedPoint(&model.streamTubes);
             break;
         case Z_VALUE_SPINNER_ID:
-            vis.set_last_z_value(zval);
+            vis.set_last_z_value(&model.streamTubes, zval);
             break;
         default:
             // Do no special actions
@@ -411,7 +411,7 @@ void Mouse(int button,int state,int mx,int my) {
 
     if(getCoordinates)
     {
-        vis.addSeedPoint(X, Y, 0);
+        vis.addSeedPoint(&model.streamTubes, X, Y, 0);
         getCoordinates = 0;
     }
 }

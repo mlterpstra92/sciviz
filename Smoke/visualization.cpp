@@ -90,7 +90,7 @@ void Visualization::visualize(Model* model)
     }
     if (enableStreamtubes)
     {
-    	draw_streamtubes(wn, hn);
+    	draw_streamtubes(&(model->streamTubes), wn, hn);
     }
 }
 //-----------COLOR MAPS ----------//
@@ -753,21 +753,21 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 	glPopMatrix();
 }
 
-void Visualization::addSeedPoint(double x, double y, double z)
+void Visualization::addSeedPoint(std::list<std::list<Point3d>>* streamTubes, double x, double y, double z)
 {
 	//C++11 magic! 
-	streamTubes.push_back({{x, y, 0}});
+	streamTubes->push_back({{x, y, 0}});
 }
 
-void Visualization::removeSeedPoint()
+void Visualization::removeSeedPoint(std::list<std::list<Point3d>>* streamTubes)
 {
-	if(!streamTubes.empty())
-		streamTubes.pop_back();
+	if(!streamTubes->empty())
+		streamTubes->pop_back();
 }
 
-void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
+void Visualization::draw_streamtubes(std::list<std::list<Point3d>>* streamTubes, fftw_real wn, fftw_real hn)
 {
-	for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
+	for (auto streamtube = streamTubes->begin(); streamtube != streamTubes->end(); ++streamtube)
 	{
 		//Draw the seed as sphere first
 		Point3d seed = (*streamtube).front();
@@ -796,8 +796,8 @@ void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
 	}
 }
 
-void Visualization::set_last_z_value(double zval)
+void Visualization::set_last_z_value(std::list<std::list<Point3d>>* streamTubes, double zval)
 {
-	std::list<Point3d>& elem = streamTubes.back();
+	std::list<Point3d>& elem = streamTubes->back();
 	elem.front().z = zval;
 }

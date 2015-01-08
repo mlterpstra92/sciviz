@@ -138,7 +138,26 @@ void Model::solve(int n, fftw_real* vx, fftw_real* vy, fftw_real* vx0, fftw_real
     }
 }
 
-
+void Model::streamtube_flow()
+{
+    for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
+    {
+        fftw_real dx, dy;
+        Point3d newPoint;
+        Point3d lastPoint = (*streamtube).back();
+        // Calculate dx and dy using interpolation
+        dx = interpolate();
+        dy = interpolate();
+        // newpoint = point + v(p)
+        newPoint.x = lastPoint.x + dx;
+        newPoint.y = lastPoint.y + dy;
+        newPoint.z = lastPoint.z - 1;
+        // Insert new point at second position
+        auto insertPosition = (*streamtube).begin();
+        std::advance(insertPosition, 1);
+        std::insert(insertPosition, newPoint);
+    }
+}
 //do_one_simulation_step: Do one complete cycle of the simulation:
 //      - set_forces:
 //      - solve:            read forces from the user
@@ -149,6 +168,7 @@ void Model::do_one_simulation_step(const int DIM)
     set_forces(DIM);
     solve(DIM, vx, vy, vx0, vy0, visc, dt);
     diffuse_matter(DIM, vx, vy, rho, rho0, dt);
+    streamtube_flow();
     // Store the last 50 timeframes, if queue exceeds 50 frames, pop first before push
     if (q_vx.size() >= 50)
     {
