@@ -143,9 +143,8 @@ void Model::streamtube_flow()
     for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
     {
         fftw_real dx, dy;
-        Point3d previous;
         Point3d seed = (*streamtube).seed;
-        previous = seed;
+        Point3d previous = seed;
         (*streamtube).tail.clear();
         auto time_slice = time_slices.end();
         std::advance(time_slice, seed.z);
@@ -156,19 +155,14 @@ void Model::streamtube_flow()
             fftw_real* vel_x = (*time_slice).first;
             fftw_real* vel_y = (*time_slice).second;
             // Calculate dx and dy using interpolation
-            dx = interpolate(vel_x, previous.x, previous.y);
-            dy = interpolate(vel_y, previous.x, previous.y);
-            // if(dx == FLT_MAX || dy == FLT_MAX)
-            //     break;
-            // newpoint = point + v(p)
-            current.x = previous.x + dx * 10;
-            current.y = previous.y + dy * 10;
+            interp_x = interpolate(vel_x, previous.x, previous.y);
+            interp_y = interpolate(vel_y, previous.x, previous.y);
+            current.x = previous.x + interp_x * 10;
+            current.y = previous.y + interp_y * 10;
             current.z = previous.z + 1;
-            current.magnitude = dx*dx + dy*dy * 100000;
+            current.magnitude = (interp_x * interp_x + interp_y * interp_y) * 10e4;
             current.magnitude = current.magnitude > 20 ? 20 : current.magnitude;
-            current.magnitude = current.magnitude < 1 ? 1 : current.magnitude;
             // Insert the newly calculated point
-            // TODO: OF TOCH FRONT????????????????
             (*streamtube).tail.push_back(current);
             previous = current;
         }
