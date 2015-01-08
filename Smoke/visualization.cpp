@@ -765,12 +765,13 @@ void Visualization::removeSeedPoint(std::list<streamTube>* streamTubes)
 		streamTubes->pop_back();
 }
 
-void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_real wn, fftw_real hn)
+void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_real wn, fftw_real hn )
 {
 	for (auto streamtube = streamTubes->begin(); streamtube != streamTubes->end(); ++streamtube)
 	{
 		//Draw the seed as sphere first
 		Point3d seed = (*streamtube).seed;
+		glColor3f(1, 1, 1);
 		glPushMatrix();
 		//glutSolidSphere draws a sphere at the origin, so translate to the correct location
 		//factor 8 for z value was chosen for prettyfy-ing the animation
@@ -780,18 +781,24 @@ void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_re
 
 		//Iterate over points of the streamtube, but skip the first element since it's the seed
 		Point3d prevPoint = seed;
-		glBegin(GL_LINES);
-		glLineWidth(3);
+		GLUquadric* quad = gluNewQuadric();
 		for (auto tubepoint = (*streamtube).tail.begin(); tubepoint != (*streamtube).tail.end(); ++tubepoint)
 		{
 			Point3d point = *tubepoint;
 			//Draw a line between the previous point and current point
 			//After drawing set the previous point to the current and draw next
-			glVertex3f(prevPoint.x * wn + wn, prevPoint.y * hn + hn, prevPoint.z * 8);
-			glVertex3f(point.x * wn + wn, point.y * hn + hn, point.z * 8);
+			//glVertex3f(prevPoint.x * wn + wn, prevPoint.y * hn + hn, -prevPoint.z * 8);
+			//glVertex3f(point.x * wn + wn, point.y * hn + hn, -point.z * 8);
+			glPushMatrix();
+			glTranslatef(point.x * wn + wn, point.y * hn + hn, point.z * 8 - 8);
+			float R, G, B;
+			bipolar(point.magnitude / 10.0, &R, &G, &B);
+			glColor3f(R, G, B);
+			gluCylinder(quad, prevPoint.magnitude, point.magnitude, 8, 50, 50);
+			glPopMatrix();
 			prevPoint = point;
 		} 
-		glEnd();
+		gluDeleteQuadric(quad);
 	}
 }
 

@@ -158,10 +158,15 @@ void Model::streamtube_flow()
             // Calculate dx and dy using interpolation
             dx = interpolate(vel_x, previous.x, previous.y);
             dy = interpolate(vel_y, previous.x, previous.y);
+            // if(dx == FLT_MAX || dy == FLT_MAX)
+            //     break;
             // newpoint = point + v(p)
-            current.x = previous.x + dx;
-            current.y = previous.y + dy;
+            current.x = previous.x + dx * 10;
+            current.y = previous.y + dy * 10;
             current.z = previous.z + 1;
+            current.magnitude = dx*dx + dy*dy * 100000;
+            current.magnitude = current.magnitude > 20 ? 20 : current.magnitude;
+            current.magnitude = current.magnitude < 1 ? 1 : current.magnitude;
             // Insert the newly calculated point
             // TODO: OF TOCH FRONT????????????????
             (*streamtube).tail.push_back(current);
@@ -282,9 +287,7 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     int x_upper = ceil(x);
     int y_lower = floor(y);
     int y_upper = ceil(y);
-    if (x_lower == x_upper || y_lower == y_upper)
-        cout << "Warning: Trying to interpolate exactly at a grid coordinate." << endl;
-    
+
     // The fraction (between 0 and 1) of how far the point is in between the gridpoints
     double alpha_x = x - x_lower;
     double alpha_y = y - y_lower;
@@ -293,6 +296,13 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     fftw_real upper_right = v[y_upper * DIM + x_upper];
     fftw_real lower_left =  v[y_lower * DIM + x_lower];
     fftw_real lower_right = v[y_lower * DIM + x_upper];
+
+    if (upper_right > DIM || upper_right < 0 ||
+        upper_left  > DIM || upper_left  < 0 ||
+        lower_right > DIM || lower_right < 0 ||
+        lower_left  > DIM || lower_left  < 0)
+        return 0;
+
 
     // See http://en.wikipedia.org/wiki/Bilinear_interpolation#mediaviewer/File:Bilinear_interpolation_visualisation.svg
     fftw_real red =     lower_right * alpha_x       * (1 - alpha_y);

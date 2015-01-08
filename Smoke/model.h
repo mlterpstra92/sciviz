@@ -11,6 +11,7 @@ using namespace std;
 
 typedef struct point3d {
     double x, y, z;
+    double magnitude;
 } Point3d;
 
 typedef struct streamtube {
