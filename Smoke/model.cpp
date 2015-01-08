@@ -252,3 +252,32 @@ void Model::set_forces(const int DIM)
     }
 }
 
+// Use interpolation to calculate the value of the dataset v at index coordinates (x, y)
+fftw_real Model::interpolate(fftw_real *v, double x, double y)
+{
+    int x_lower = floor(x);
+    int x_upper = ceil(x);
+    int y_lower = floor(y);
+    int y_upper = ceil(y);
+    if (x_lower == x_upper || y_lower == y_upper)
+        cout << "Warning: Trying to interpolate exactly at a grid coordinate.";
+    
+    // The fraction (between 0 and 1) of how far the point is in between the gridpoints
+    double alpha_x = x - x_lower;
+    double alpha_y = y - y_lower;
+
+    fftw_real upper_left =  v[y_upper * DIM + x_lower];
+    fftw_real upper_right = v[y_upper * DIM + x_upper];
+    fftw_real lower_left =  v[y_lower * DIM + x_lower];
+    fftw_real lower_right = v[y_lower * DIM + x_upper];
+
+    // See http://en.wikipedia.org/wiki/Bilinear_interpolation#mediaviewer/File:Bilinear_interpolation_visualisation.svg
+    fftw_real red =     lower_right * alpha_x       * (1 - alpha_y);
+    fftw_real green =   lower_left  * (1 - alpha_x) * (1 - alpha_y);
+    fftw_real blue =    upper_right * alpha_x       * alpha_y;
+    fftw_real yellow =  upper_left  * (1 - alpha_x) * alpha_y;
+
+    fftw_real value = red + green + blue + yellow;
+
+    return value;
+}

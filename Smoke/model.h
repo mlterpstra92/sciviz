@@ -4,6 +4,9 @@
 #include <math.h>               //for various math functions
 #include <cfloat>
 #include <queue>
+#include <iostream>
+
+using namespace std;
 
 class Model {
 public:
@@ -60,6 +63,9 @@ public:
     //      - diffuse_matter:   compute a new set of velocities
     //      - gluPostRedisplay: draw a new visualization frame
     void do_one_simulation_step(const int DIM);
+
+    // Use interpolation to calculate the value of the vector field v at index coordinates (x, y)
+    fftw_real interpolate(fftw_real *v, double x, double y);
 
 };
 #endif
