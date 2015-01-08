@@ -4,11 +4,16 @@ In order to visualize stream tubes, a history of previous time frames is needed 
 
 \subsection{History of time frames}
 The model of the program did not store any data of previous time frames, so the model had to be changed. 
-During every simulation step, \texttt{solve} calculates the \texttt{vx, vy, fx, fy} values and fills the corresponding pointers.
-To keep track of the history of these pointers, four different queues were created that all store a specific list of pointers (either \texttt{vx}, \texttt{vy}, \texttt{fx} or \texttt{fy}).
+During every simulation step, \texttt{solve} calculates the \texttt{vx, vy} values and fills the corresponding pointers.
+To keep track of the history of these pointers, a queue was created that stores a pair of pointers (\texttt{vx} and \texttt{vy}).
 Since a queue keeps track of references instead of values, a copy of the newly calculated values has to be created and this copy needs to be stored.
 
 The queue was designed to be a circular queue of size 50, this means that the data is pushed to the queue until the size is less than 50.
 As soon as the size of the queue becomes 50, an element is popped first before the new value is pushed.
 This mechanism makes sure that the size of the queue never becomes larger than 50. 
 The benefit of using a circular queue is that the 50 most recent time frames are now stored.
+
+\subsection{Stream tubes}
+The trajectory of the stream tube traces out the path of a particle released at a placed seed. 
+A tube is created using OpenGLs cylinders.
+The magnitude and color of the cylinders correspond to the velocity at that point and time in the visualization. 
