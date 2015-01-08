@@ -288,6 +288,12 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     int y_lower = floor(y);
     int y_upper = ceil(y);
 
+    if (x_lower > DIM || x_lower < 0 ||
+        x_upper > DIM || x_upper < 0 ||
+        y_lower > DIM || y_lower < 0 ||
+        y_upper > DIM || y_upper < 0)
+        return 0;
+
     // The fraction (between 0 and 1) of how far the point is in between the gridpoints
     double alpha_x = x - x_lower;
     double alpha_y = y - y_lower;
@@ -297,13 +303,6 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     fftw_real lower_left =  v[y_lower * DIM + x_lower];
     fftw_real lower_right = v[y_lower * DIM + x_upper];
 
-    if (upper_right > DIM || upper_right < 0 ||
-        upper_left  > DIM || upper_left  < 0 ||
-        lower_right > DIM || lower_right < 0 ||
-        lower_left  > DIM || lower_left  < 0)
-        return 0;
-
-
     // See http://en.wikipedia.org/wiki/Bilinear_interpolation#mediaviewer/File:Bilinear_interpolation_visualisation.svg
     fftw_real red =     lower_right * alpha_x       * (1 - alpha_y);
     fftw_real green =   lower_left  * (1 - alpha_x) * (1 - alpha_y);
@@ -311,6 +310,6 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     fftw_real yellow =  upper_left  * (1 - alpha_x) * alpha_y;
 
     fftw_real value = red + green + blue + yellow;
-
+    
     return value;
 }
