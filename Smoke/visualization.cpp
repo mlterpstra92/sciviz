@@ -755,6 +755,7 @@ void Visualization::draw_triangle(int x_start, int y_start, int x_end, int y_end
 
 void Visualization::addSeedPoint(double x, double y, double z)
 {
+	//C++11 magic! 
 	streamTubes.push_back({{x, y, 0}});
 }
 
@@ -766,13 +767,32 @@ void Visualization::removeSeedPoint()
 
 void Visualization::draw_streamtubes(fftw_real wn, fftw_real hn)
 {
-	for (auto it=streamTubes.begin(); it != streamTubes.end(); ++it)
+	for (auto streamtube = streamTubes.begin(); streamtube != streamTubes.end(); ++streamtube)
 	{
-		Point3d seed = (*it).front();
+		//Draw the seed as sphere first
+		Point3d seed = (*streamtube).front();
 		glPushMatrix();
+		//glutSolidSphere draws a sphere at the origin, so translate to the correct location
+		//factor 8 for z value was chosen for prettyfy-ing the animation
 		glTranslatef(seed.x * wn + wn, seed.y * hn + hn, seed.z * 8);
 		glutSolidSphere(4, 50, 50);
 		glPopMatrix();
+
+		//Iterate over points of the streamtube, but skip the first element since it's the seed
+		Point3d prevPoint = seed;
+		glBegin(GL_LINES);
+		auto tubepoint = (*streamtube).begin();
+		std::advance(tubepoint, 1);
+		for (; tubepoint != (*streamtube).end(); ++tubepoint)
+		{
+			Point3d point = *tubepoint;
+			//Draw a line between the previous point and current point
+			//After drawing set the previous point to the current and draw next
+			glVertex3f(prevPoint.x, prevPoint.y, prevPoint.z);
+			glVertex3f(point.x, point.y, point.z);
+			prevPoint = point;
+		} 
+		glEnd();
 	}
 }
 
