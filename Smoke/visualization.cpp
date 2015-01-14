@@ -786,15 +786,13 @@ void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_re
 		//Iterate over points of the streamtube, but skip the first element since it's the seed
 		Point3d prevPoint = seed;
 		GLUquadric* quad = gluNewQuadric();
-		gluQuadricDrawStyle( quad, GLU_FILL );
-		gluQuadricNormals( quad, GLU_SMOOTH );
+		gluQuadricDrawStyle(quad, GLU_FILL);
+		gluQuadricNormals(quad, GLU_SMOOTH);
 		for (auto tubepoint = (*streamtube).tail.begin(); tubepoint != (*streamtube).tail.end(); ++tubepoint)
 		{
 			Point3d point = *tubepoint;
 			//Draw a line between the previous point and current point
 			//After drawing set the previous point to the current and draw next
-			//glVertex3f(prevPoint.x * wn + wn, prevPoint.y * hn + hn, -prevPoint.z * 8);
-			//glVertex3f(point.x * wn + wn, point.y * hn + hn, -point.z * 8);
 			glPushMatrix();
 			glTranslatef(point.x * wn + wn, point.y * hn + hn, point.z * 8 - 8);
 			float R, G, B;

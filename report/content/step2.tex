@@ -1,8 +1,13 @@
 %!TEX root = ../report.tex
 \section{Color mapping}
+	The aim of color mapping is to assign a color to pixels based on the value at that point in the dataset. The purpose of the color mapping operation is to make the dataset more insightful and can be used to give more insight and understanding in the dataset.
 	\subsection*{New color map}
-		Implemented the `bipolar' color map.
-		Also, the ability to switch between color maps is added in the UI, using a drop-down menu.
+		In the original implementation there were three colormaps given:
+		\begin{description}
+			\item[Rainbow] One of the given color mapping methods is the famous and much hated\cite{RainbowMisleading} rainbow colormap. Usually this is the default colormap for many applications because it is easy to calculate (Linear interpolation between (0, 0, 255) and (255, 0, 0)) and bright, saturated colors are visually appealing.
+		\end{description}
+		%Implemented the `bipolar' color map.
+		%Also, the ability to switch between color maps is added in the UI, using a drop-down menu.
 	\subsection*{Color legend}
 		The legend for the color map has been implemented.
 		On the side of the GLUT subwindow, the reference color map is drawn with the values corresponding to the colors next to it.
