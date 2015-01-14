@@ -396,7 +396,9 @@ void create_GUI()
     new GLUI_Button(streamtubes_rollout, "Add seed point", ADD_SEEDPOINT_ID, glui_callback);
     new GLUI_Button(streamtubes_rollout, "Remove seed point", REMOVE_SEEDPOINT_ID, glui_callback);
     GLUI_Spinner* z_value_spinner = new GLUI_Spinner(streamtubes_rollout, "z-value", GLUI_SPINNER_INT, &(vis.zval), Z_VALUE_SPINNER_ID, glui_callback);
-    z_value_spinner->set_int_limits(-50, 0);
+    z_value_spinner->set_int_limits(-model.history_size, 0);
+    GLUI_Spinner* tube_disp_factor_spinner = new GLUI_Spinner(streamtubes_rollout, "Displacement factor", GLUI_SPINNER_INT, &(model.tube_disp_factor), TUBE_DISP_FACTOR_SPINNER_ID, glui_callback);
+    tube_disp_factor_spinner->set_int_limits(0, 20);
 }
 
 

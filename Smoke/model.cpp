@@ -26,6 +26,9 @@ Model::Model (int n)
     plan_rc  = rfftw2d_create_plan(n, n, FFTW_REAL_TO_COMPLEX, FFTW_IN_PLACE);
     plan_cr  = rfftw2d_create_plan(n, n, FFTW_COMPLEX_TO_REAL, FFTW_IN_PLACE);
 
+    tube_disp_factor = 10;
+    history_size = 100;
+
     for (i = 0; i < n * n; i++)                      //Initialize data structures to 0
     {
         vx[i] = vy[i] = vx0[i] = vy0[i] = fx[i] = fy[i] = rho[i] = rho0[i] = 0.0f;
@@ -157,8 +160,8 @@ void Model::streamtube_flow()
             // Calculate dx and dy using interpolation
             interp_x = interpolate(vel_x, previous.x, previous.y);
             interp_y = interpolate(vel_y, previous.x, previous.y);
-            current.x = previous.x + interp_x * 10;
-            current.y = previous.y + interp_y * 10;
+            current.x = previous.x + interp_x * dt * tube_disp_factor;
+            current.y = previous.y + interp_y * dt * tube_disp_factor;
             current.z = previous.z + 1;
             current.magnitude = (interp_x * interp_x + interp_y * interp_y) * 10e4;
             current.magnitude = current.magnitude > 20 ? 20 : current.magnitude;
@@ -172,7 +175,7 @@ void Model::streamtube_flow()
 void Model::store_history()
 {
     // Store the last 50 timeframes, if queue exceeds 50 frames, pop first before push
-    if (time_slices.size() >= 50)
+    if (time_slices.size() >= history_size)
     {
         auto tmppair = time_slices.front();
         free(tmppair.first);

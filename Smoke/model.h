@@ -40,6 +40,8 @@ public:
     fftw_real min_div, max_div; // Min and max magnitudes of the forces
     rfftwnd_plan plan_rc, plan_cr;  //simulation domain discretization
     std::list<streamTube> streamTubes;
+    int tube_disp_factor;
+    unsigned int history_size;
 
     //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------
 
