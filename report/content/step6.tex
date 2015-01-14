@@ -1,5 +1,6 @@
 %!TEX root = ../report.tex
 \section{Height plot}
+\label{sec:height_plot}
 In order to implement a height plot, a conversion from 2D to 3D is needed.
 This can be done by converting the \texttt{glVertex2f(x, y)} to \texttt{glVertex3f(x,y,z)} in the function \texttt{draw\_smoke}.
 \texttt{x, y} are already known, \texttt{z} will become the value of a selected dataset, which can differ from the dataset that is used for the colormap.

@@ -1,5 +1,6 @@
 %!TEX root = ../report.tex
 \section{Isolines}
+\label{sec:isolines}
 Isolines show all points of a scalar dataset's domain where the scalar equals a certain value (or multiple values).
 An efficient algorithm to construct these isolines is called the `Marching squares' algorithm, which was applied in our program.
 The general idea of the algorithm is to loop over all cells - consisting of four vertices - and check for all vertices if the value at that vertex is above or below a certain threshold, or the isoline value.
