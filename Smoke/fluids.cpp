@@ -436,6 +436,18 @@ int main(int argc, char **argv)
     glEnable(GL_DEPTH_TEST);
     glEnable (GL_LINE_SMOOTH);
     glEnable (GL_BLEND);
+    glShadeModel(GL_SMOOTH);
+
+
+    GLfloat light_position2[] = { 10.0, 10.0, -20.0, 0.0 };
+    GLfloat light_Ka2[] = { 0.2, 0.3, 0.3, 1.0 }; // default ambient light
+    GLfloat light_Kd2[] = { 1.0, 1.0, 1.0, 1.0 }; // default diffuse light
+    GLfloat light_Ks2[] = { 1.0, 1.0, 1.0, 1.0 }; // default specular light
+    glLightfv( GL_LIGHT0, GL_POSITION, light_position2 );
+    glLightfv( GL_LIGHT0, GL_AMBIENT, light_Ka2 );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, light_Kd2 );
+    glLightfv( GL_LIGHT0, GL_SPECULAR, light_Ks2 );
+
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glHint (GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
     glLineWidth(2);

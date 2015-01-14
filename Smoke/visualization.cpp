@@ -767,6 +767,10 @@ void Visualization::removeSeedPoint(std::list<streamTube>* streamTubes)
 
 void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_real wn, fftw_real hn )
 {
+	glEnable( GL_LIGHTING );
+    glEnable( GL_LIGHT0 );
+    glEnable (GL_COLOR_MATERIAL);
+
 	for (auto streamtube = streamTubes->begin(); streamtube != streamTubes->end(); ++streamtube)
 	{
 		//Draw the seed as sphere first
@@ -782,6 +786,8 @@ void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_re
 		//Iterate over points of the streamtube, but skip the first element since it's the seed
 		Point3d prevPoint = seed;
 		GLUquadric* quad = gluNewQuadric();
+		gluQuadricDrawStyle( quad, GLU_FILL );
+		gluQuadricNormals( quad, GLU_SMOOTH );
 		for (auto tubepoint = (*streamtube).tail.begin(); tubepoint != (*streamtube).tail.end(); ++tubepoint)
 		{
 			Point3d point = *tubepoint;
@@ -793,6 +799,14 @@ void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_re
 			glTranslatef(point.x * wn + wn, point.y * hn + hn, point.z * 8 - 8);
 			float R, G, B;
 			bipolar(point.magnitude / 10.0, &R, &G, &B);
+			GLfloat ambient[] = {R, G, B, 1.0f};
+			GLfloat specular[] = {0, 0, 0, 1.0f};
+			GLfloat diffuse[] = {R, G, B, 1.0f};
+			glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+			glMaterialf(GL_FRONT, GL_SHININESS, 20);
+			
 			glColor3f(R, G, B);
 			gluCylinder(quad, prevPoint.magnitude, point.magnitude, 8, 50, 50);
 			glPopMatrix();
@@ -800,6 +814,9 @@ void Visualization::draw_streamtubes(std::list<streamTube>* streamTubes, fftw_re
 		} 
 		gluDeleteQuadric(quad);
 	}
+	glDisable( GL_LIGHTING );
+    glDisable( GL_LIGHT0 );
+    glDisable (GL_COLOR_MATERIAL);
 }
 
 void Visualization::set_last_z_value(std::list<streamTube>* streamTubes, double zval)
