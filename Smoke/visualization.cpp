@@ -58,14 +58,13 @@ void Visualization::visualize(Model* model)
 {
     fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
-
+	std::vector<fftw_real> color_map_values;
+    // color_map_values is filled with scalar values
+    determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     if (drawMatter || drawIsolines)
     {	
-    	std::vector<fftw_real> color_map_values;
     	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
     	fftw_real min_height = 0, max_height = 1;
-    	// Scalar color_map_values
-    	determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     	if (drawHeightplot)
     		determineValuesMinMax(model, height_dataset_idx, height_values, &min_height, &max_height);
         draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max, min_height, max_height);
@@ -86,7 +85,7 @@ void Visualization::visualize(Model* model)
     		direction_x = model->vx;
     		direction_y = model->vy;
     	}
-        draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
+        draw_velocities(wn, hn, model, direction_x, direction_y, color_map_values);
     }
     if (enableStreamtubes)
     {
@@ -607,10 +606,11 @@ double Visualization::interpolate(double v1, double v2, double iso)
 	return (v1 - iso) / (v1 - v2);
 }
 
-void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
+void Visualization::draw_velocities(fftw_real wn, fftw_real hn, Model* model, fftw_real* direction_x, fftw_real* direction_y, std::vector<fftw_real> scalar_values)
 {	
-	int i, j;
-
+	int i, j, DIM;
+	float R, G, B;
+	DIM = model->DIM;
 	float x_scale_factor = ((float)DIM / num_x_glyphs);
 	float y_scale_factor = ((float)DIM / num_y_glyphs);
 	for (i = 0; i < num_x_glyphs; i++)
@@ -643,6 +643,8 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 			float x_end = x_start + vec_length * value_x;
 			float y_end = y_start + vec_length * value_y;
 			direction_to_color(value_x, value_y, color_dir);
+			set_colormap(interpolate(x_start, y_start, scalar_values), R, G, B);
+			glColor3f(R, G, B);
 			switch(glyph_shape)
 			{
 			case LINES:
