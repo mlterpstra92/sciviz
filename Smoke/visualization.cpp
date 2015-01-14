@@ -58,14 +58,13 @@ void Visualization::visualize(Model* model)
 {
     fftw_real  wn = (fftw_real)model->winWidth / (fftw_real)(model->DIM + 1)*0.8;   // Grid cell width
     fftw_real  hn = (fftw_real)model->winHeight / (fftw_real)(model->DIM + 1);  // Grid cell height
-
+	std::vector<fftw_real> color_map_values;
+    // color_map_values is filled with scalar values
+    determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     if (drawMatter || drawIsolines)
     {	
-    	std::vector<fftw_real> color_map_values;
     	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
     	fftw_real min_height = 0, max_height = 1;
-    	// Scalar color_map_values
-    	determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     	if (drawHeightplot)
     		determineValuesMinMax(model, height_dataset_idx, height_values, &min_height, &max_height);
         draw_smoke(wn, hn, model->DIM, color_map_values, height_values, min, max, min_height, max_height);
@@ -86,7 +85,7 @@ void Visualization::visualize(Model* model)
     		direction_x = model->vx;
     		direction_y = model->vy;
     	}
-        draw_velocities(wn, hn, model->DIM, direction_x, direction_y);
+        draw_velocities(wn, hn, model->DIM, direction_x, direction_y, color_map_values, min, max);
     }
     if (enableStreamtubes)
     {
@@ -607,10 +606,10 @@ double Visualization::interpolate(double v1, double v2, double iso)
 	return (v1 - iso) / (v1 - v2);
 }
 
-void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y)
+void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y, std::vector<fftw_real> scalar_values, fftw_real min_color, fftw_real max_color)
 {	
 	int i, j;
-
+	float R, G, B;
 	float x_scale_factor = ((float)DIM / num_x_glyphs);
 	float y_scale_factor = ((float)DIM / num_y_glyphs);
 	for (i = 0; i < num_x_glyphs; i++)
@@ -640,9 +639,25 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 				             anti_alpha * beta      * direction_y[floor_y_index * DIM + ceil_x_index] + 
 				             alpha      * anti_beta * direction_y[ceil_y_index * DIM + floor_x_index]);
 
+			float scalar = (anti_alpha * anti_beta * scalar_values.at(floor_y_index * DIM + floor_x_index) + 
+				             alpha      * beta      * scalar_values.at(ceil_y_index * DIM + ceil_x_index) + 
+				             anti_alpha * beta      * scalar_values.at(floor_y_index * DIM + ceil_x_index) + 
+				             alpha      * anti_beta * scalar_values.at(ceil_y_index * DIM + floor_x_index));
+
+			if (clamping == 1)
+            {  // Clamp
+                scalar = clamp(scalar, min_clamp_value, max_clamp_value);
+            }
+            else
+            {  // Scale
+                scalar = scale(scalar, min_color, max_color);
+            }
+
 			float x_end = x_start + vec_length * value_x;
 			float y_end = y_start + vec_length * value_y;
 			direction_to_color(value_x, value_y, color_dir);
+			set_colormap(scalar, R, G, B);
+			glColor3f(R, G, B);
 			switch(glyph_shape)
 			{
 			case LINES:

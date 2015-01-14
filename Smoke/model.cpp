@@ -285,6 +285,7 @@ fftw_real Model::interpolate(fftw_real *v, double x, double y)
     int y_lower = floor(y);
     int y_upper = ceil(y);
 
+    std::cout << x << std::endl;
     if (x_lower > DIM || x_lower < 0 ||
         x_upper > DIM || x_upper < 0 ||
         y_lower > DIM || y_lower < 0 ||

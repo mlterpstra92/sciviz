@@ -119,7 +119,7 @@ public:
     void draw_smoke(fftw_real wn, fftw_real hn, int DIM, std::vector<fftw_real> color_map_values, std::vector<fftw_real> height_values, fftw_real min_color, fftw_real max_color, fftw_real min_height, fftw_real max_height);
 
     //draw velocities
-    void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y);
+    void draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_real* direction_x, fftw_real* direction_y, std::vector<fftw_real> scalar_values, fftw_real min_color, fftw_real max_color);
 
     void divergence(fftw_real* f_x, fftw_real* f_y, std::vector<fftw_real>& grad, Model* model);
 
