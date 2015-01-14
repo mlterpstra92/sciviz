@@ -616,9 +616,19 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
 	{
 		for (j = 0; j < num_y_glyphs; j++)
 		{
-			float x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
-			float y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
-
+			float x_start, y_start;
+ 			switch(glyph_location_idx)
+ 			{
+ 			case JITTER:
+				x_start = (wn + (fftw_real)i * wn) * x_scale_factor + jitter_displacement[i*num_x_glyphs + j] * jitter;
+				y_start = (hn + (fftw_real)j * hn) * y_scale_factor + jitter_displacement[j*num_y_glyphs + i] * jitter;
+ 				break;
+ 			case UNIFORM:
+ 			default:
+				x_start = (wn + (fftw_real)i * wn) * x_scale_factor;
+				y_start = (hn + (fftw_real)j * hn) * y_scale_factor;
+ 				break;
+ 			}
 			int floor_x_index = i * x_scale_factor;
 			int ceil_x_index = (floor_x_index + 1) % DIM;
 			int floor_y_index = j * y_scale_factor;
@@ -653,8 +663,11 @@ void Visualization::draw_velocities(fftw_real wn, fftw_real hn, int DIM, fftw_re
                 scalar = scale(scalar, min_color, max_color);
             }
 
+ 			
 			float x_end = x_start + vec_length * value_x;
 			float y_end = y_start + vec_length * value_y;
+
+
 			direction_to_color(value_x, value_y, color_dir);
 			set_colormap(scalar, R, G, B);
 			glColor3f(R, G, B);

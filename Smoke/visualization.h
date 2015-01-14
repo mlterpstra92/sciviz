@@ -52,10 +52,12 @@ public:
     unsigned int texture_id[NUM_COLORMAPS];
     int enableStreamtubes;
     int zval;
+    float jitter;
     enum COLORMAP_TYPE {COLOR_BLACKWHITE = 0, COLOR_RAINBOW, COLOR_BIPOLAR, COLOR_ZEBRA};
     enum DATASET_TYPE {FLUID_DENSITY, FLUID_VELOCITY, FORCE_FIELD, DIVERGENCE_VELOCITY, DIVERGENCE_FORCE};
-    enum SAMPLING_TYPE {UNIFORM, RANDOM, JITTER};
+    enum SAMPLING_TYPE {UNIFORM, JITTER};
     enum GLYPH_TYPE {LINES, ARROWS, TRIANGLES};
+    std::vector<float> jitter_displacement;
 
 
     //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
@@ -94,10 +96,19 @@ public:
             lower_isoline_value(0.01),
             upper_isoline_value(0.02),
             enableStreamtubes(1),
-            zval(-50) {
+            zval(-50)
+             {
         vec_length = vec_base_length * vec_scale;
-    }
+        for (int i = 0; i < 200*200; ++i)
+            jitter_displacement.push_back(RandomFloat(-1, 1));
 
+    }
+    float RandomFloat(float a, float b) {
+        float random = ((float) rand()) / (float) RAND_MAX;
+        float diff = b - a;
+        float r = random * diff;
+        return a + r;
+    }
     void visualize(Model* model);
     //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
     void rainbow(float value, float* R, float* G, float* B);
