@@ -440,7 +440,7 @@ int main(int argc, char **argv)
 
 
     GLfloat light_position2[] = { 10.0, 10.0, -20.0, 0.0 };
-    GLfloat light_Ka2[] = { 0.2, 0.3, 0.3, 1.0 }; // default ambient light
+    GLfloat light_Ka2[] = { 0.2, 0.2, 0.2, 1.0 }; // default ambient light
     GLfloat light_Kd2[] = { 1.0, 1.0, 1.0, 1.0 }; // default diffuse light
     GLfloat light_Ks2[] = { 1.0, 1.0, 1.0, 1.0 }; // default specular light
     glLightfv( GL_LIGHT0, GL_POSITION, light_position2 );
