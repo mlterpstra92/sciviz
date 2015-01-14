@@ -81,6 +81,7 @@ public:
 
     // Use interpolation to calculate the value of the vector field v at index coordinates (x, y)
     fftw_real interpolate(fftw_real *v, double x, double y);
+    fftw_real interpolate_vec(std::vector<fftw_real> &v, double x, double y);
 
 };
 #endif
