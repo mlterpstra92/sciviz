@@ -1,11 +1,15 @@
 %!TEX root = ../report.tex
 \section{Color mapping}
+	\label{sec:color_mapping}
 	The aim of color mapping is to assign a color to pixels based on the value at that point in the dataset. The purpose of the color mapping operation is to make the dataset more insightful and can be used to give more insight and understanding in the dataset.
 	\subsection*{New color map}
 		In the original implementation there were three colormaps given:
 		\begin{description}
 			\item[Rainbow] One of the given color mapping methods is the famous and much hated\cite{RainbowMisleading} rainbow colormap. Usually this is the default colormap for many applications because it is easy to calculate (Linear interpolation between (0, 0, 255) and (255, 0, 0)) and bright, saturated colors are visually appealing.
+			\item[Grayscale] The grayscale colormap is another well-known colormap. It maps every value in the dataset to a value representing a gray hue, typically between 0 and 255. It is quite easy to implement in RGB space (R = G = B = value) and in HSV space (H = 0, S = 0, V = value).
+			\item[Banded] This colormap is similar to the rainbow colormap as described above, but in this colormap several contiguous scalar values are assigned the same color. 
 		\end{description}
+		These options are, however, somewhat limited. To give users more options and to make the dataset more insightful 
 		%Implemented the `bipolar' color map.
 		%Also, the ability to switch between color maps is added in the UI, using a drop-down menu.
 	\subsection*{Color legend}
@@ -32,3 +36,5 @@
 	\subsection*{HSV color space}
 		We also added the feature to change the hue and saturation.
 		For this, we used the conversion function from RGB to HSV and vice versa, as described in \cite{telea2014data}.
+	\subsection*{1D textures}
+		blabla textures.

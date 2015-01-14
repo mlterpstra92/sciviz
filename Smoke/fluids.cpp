@@ -345,8 +345,10 @@ void create_GUI()
 
     GLUI_Listbox *glyph_location_list = new GLUI_Listbox(glyphRollout, "Glyph location", &(vis.glyph_location_idx), GLYPH_LOCATION_ID, glui_callback);
     glyph_location_list->add_item(0, "Uniform");
-    glyph_location_list->add_item(1, "Random");
-    glyph_location_list->add_item(2, "Jitter");
+    glyph_location_list->add_item(1, "Jitter");
+
+    GLUI_Spinner* jitter_spinner = new GLUI_Spinner(glyphRollout, "Jiiter", GLUI_SPINNER_FLOAT, &(vis.jitter), JITTER_SPINNER_ID, glui_callback);
+    jitter_spinner->set_float_limits(-10.0f, 10.0f);
 
     vis.num_x_glyphs = model.DIM;
     vis.num_y_glyphs = model.DIM;
