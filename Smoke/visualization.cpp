@@ -720,12 +720,8 @@ void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, std::vector<fftw_
 // Calculates angle from x_start, y_start, x_end and y_end in degrees
 float Visualization::calc_angle(float x_dif, float y_dif)
 {
-	float angle;
-	if (y_dif < 0) {
-		angle = M_PI - atan(x_dif/y_dif);
-	} else {
-		angle = -atan(x_dif/y_dif);
-	}
+	float angle = (M_PI * (!!(y_dif < 0))) - atan(x_dif / y_dif);
+	
 	// Convert angle from radians to degrees
 	angle *= 180/M_PI;
 	return angle;
