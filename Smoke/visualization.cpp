@@ -123,16 +123,18 @@ float Visualization::scale(float x, fftw_real min, fftw_real max)
     return (x - min) / (max - min);;
 }
 
-//clamp: Clamp all values between 0 and 1
+//clamp: Clamp all values between min and max
 float Visualization::clamp(float x, fftw_real min, fftw_real max)
 {
-    if (x >= max) {
-        return 1.0;
-    } else if (x < min) {
-        return 0.0;
-    } else {
-        return x;
-    }
+	float retVal = 0;
+    if (x >= max) 
+        retVal = max;
+    else if (x < min) 
+        retVal = min;
+    else
+    	retVal = x;
+
+    return retVal;
 }
 
 void Visualization::create_textures(){
