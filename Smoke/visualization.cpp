@@ -63,6 +63,7 @@ void Visualization::visualize(Model* model)
     determineValuesMinMax(model, scalar_dataset_idx, color_map_values, &min, &max);
     if (drawMatter || drawIsolines)
     {	
+    	// Initialize a vector of length numCells with value 0
     	std::vector<fftw_real> height_values(model->DIM * model-> DIM, 0);
     	fftw_real min_height = 0, max_height = 1;
     	if (drawHeightplot)
@@ -714,14 +715,13 @@ void Visualization::divergence(fftw_real* f_x, fftw_real* f_y, std::vector<fftw_
 			model->min_div = std::min(divergence, model->min_div);
 		}
 	}
-
 }
 
 // Calculates angle from x_start, y_start, x_end and y_end in degrees
 float Visualization::calc_angle(float x_dif, float y_dif)
 {
 	float angle = (M_PI * (!!(y_dif < 0))) - atan(x_dif / y_dif);
-	
+
 	// Convert angle from radians to degrees
 	angle *= 180/M_PI;
 	return angle;
