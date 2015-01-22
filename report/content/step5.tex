@@ -13,7 +13,7 @@ At each side where a line should be drawn, we interpolate to determine the exact
 Since the starting location of a line is the end location of another line from a different cell, a reasonably smooth, closed curve is created.
 
 \(16\) cases seems like a lot, but we have exploited the symmetry of the geometry to reduce it to only \(8\) cases where something has to happen.
-For example, these are two cases that can be handled identically:
+For example, two cases that can be handled identically are shown in Figure~\ref{fig:iso_example}.
 \begin{figure}[htb]
     \centering
     \begin{tikzpicture}[node distance=2cm,
@@ -42,6 +42,7 @@ For example, these are two cases that can be handled identically:
             (8) edge [-] node {} (5);
     \end{tikzpicture}
     \caption{Two cases that can be handled in the same manner, namely, by drawing the isoline between the edges \((1)-(4)\) and \((3)-(4)\). A black node indicates a value higher than the isoline value, and a white node indicates a value lower than the isoline value.}
+    \label{fig:iso_example}
 \end{figure}
 
 \subsection{Interaction}
