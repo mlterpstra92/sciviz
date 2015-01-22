@@ -3,7 +3,7 @@
 	\label{sec:color_mapping}
 	The aim of color mapping is to assign a color to pixels based on the value at that point in the dataset. 
 	The purpose of the color mapping operation is to make the dataset more insightful and can be used to give more insight and understanding in the dataset.
-	\subsection*{New color map}
+	\subsection{New color map}
 		In the original implementation there were three colormaps given:
 		\begin{description}
 			\item[Rainbow] ~\\
@@ -60,7 +60,7 @@
 		\end{description}
 
 		We have added in GLUI a dropdown menu that lets users select one of the aforementioned colormaps and is then applied in real-time to the scalar dataset, including the option to select the number of bands.
-	\subsection*{Color legend}
+	\subsection{Color legend}
 		For colormapping, it is crucial to be able to make the inverse mapping. 
 		That is, be able to see a color in your dataset and be able to tell to which value it corresponds. 
 		To ease this process, we have implemented a color legend at the edge of the screen. 
@@ -68,7 +68,7 @@
 		We have chosen for a maximum of 10 values because at this value, the total numbers displayed remains clear and fits on nearly all resolutions, while remaining detailed enough for mental value interpolation.
 		% The legend for the color map has been implemented.
 		% On the side of the GLUT subwindow, the reference color map is drawn with the values corresponding to the colors next to it.
-	\subsection*{More datasets for color map}
+	\subsection{More datasets for color map}
 		By default, only one, the density of the matter which flows in the vector field - \(\rho\), scalar dataset is available for visualization. 
 		While this is very interesting on its own, there are several other scalar datasets either readily available for visualization or can be derived from the vector field.
 
@@ -84,7 +84,7 @@
 		\[\| a \|\ = \sqrt{a_x^2 + a_y^2}\]
 		In case of fluid density, the existing reference to \texttt{rho} in the model can be used.
 		%misschien plaatjes?
-	\subsection*{Scaling \& clamping}
+	\subsection{Scaling \& clamping}
 		By default, the values of the colormap are clamped between 0.0 and 1.0. 
 		This means that any value higher than 1.0 will be the color at the higher clamp value and vice versa for values lower than 0.0.
 		While this could work in practice, it is desirable to have the option to modify this displaying behavior because datasets as the divergence or the fluid velocity are about very small values whose meaning would disappear if default clamping is used.
@@ -96,7 +96,7 @@
 		Secondly, we have implemented scaling behavior. 
 		In this option the scale values \texttt{min} and \texttt{max} are set to respectively the lowest and the highest values in the scalar dataset. 
 		This causes that all colors in the dataset are relative to the respective colors of the minimum value and the maximum value of the dataset which is an intuitive way to display a scalar dataset.
-	\subsection*{Limit number of colors}
+	\subsection{Limit number of colors}
 		By default, 256 different colors are used in a dataset. 
 		This provides a diverse and gradual amount of colors which can be mapped onto a dataset.
 		However, it is sometimes desirable to use fewer colors because, for example, an user is not interested in small differences between neighboring values.
@@ -117,13 +117,13 @@
 			  \caption{The same rainbow colormap banded to 16 colors. A boxing effect is visible which could be useful.}
 			  \label{fig:rainbow_banded}
 		\end{figure}
-	\subsection*{HSV color space}
+	\subsection{HSV color space}
 		Generally, humans are not good at manipulating colors in the \texttt{RGB}-space. 
 		When an user is asked for the \texttt{RGB}-value of red (\texttt{\#ff0000}) at 50\% saturation and a brightness of 75\%, people will generally not be able to tell the corresponding \texttt{RGB}-value (\texttt{\#bf5f5f}).
 		To make this process more natural for human perception, we have added the option to manipulate colors in HSV space, which is a mapping of the RGB colorspace to define it in terms of hue, saturation and value (or brightness).
 		Controls are added to manipulate the saturation and value, both ranging from 0\% to 100\%.
 		For this, we used the conversion function from RGB to HSV and vice versa, as described in \cite{telea2014data}.
-	\subsection*{1D textures}
+	\subsection{1D textures}
 		The entire simulation is run on a grid.
 		By default, smooth shading is used, meaning the colors of the vertices of objects are interpolated over the surface areas of objects.
 		It is a fast and acceptable model, but it does not allow for discontinuous color bands which can be present in the simulation.
