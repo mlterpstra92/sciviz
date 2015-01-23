@@ -7,7 +7,7 @@
 		In the original implementation there were three colormaps given:
 		\begin{description}
 			\item[Rainbow] ~\\
-			One of the given color mapping methods is the famous and much hated\cite{RainbowMisleading}\cite{moreland2009diverging} rainbow colormap. 
+			One of the given color mapping methods is the famous and much criticized\cite{RainbowMisleading}\cite{moreland2009diverging} rainbow colormap. 
 			Usually this is the default colormap for many applications because it is easy to calculate (Linear interpolation between (0, 0, 255) and (255, 0, 0)) and bright, saturated colors are visually appealing.
 			\begin{figure}[htb]
 			  \centering
@@ -39,7 +39,7 @@
 			The bipolar color map is a continuous diverging colormap between two colors. 
 			At each end of the spectrum there is one color and colors for intermediate values is a linear interpolation of the two. 
 			Because there is only a variation in hue and not in saturation or value this colormap is arguably better than a rainbow colormap.
-			The end colors are settable by the user and can therefore also be helpful for people with deuteranope or protanopic vision\cite{moreland2009diverging}
+			The end colors are customizable by the user and can therefore also be helpful for people with deuteranope or protanopic vision.\cite{moreland2009diverging}
 			\begin{figure}[htb]
 			  \centering
 			  \includegraphics[angle=270, width=\linewidth, totalheight=1em, frame]{./content/pictures/bipolar.png}
@@ -69,9 +69,9 @@
 		% The legend for the color map has been implemented.
 		% On the side of the GLUT subwindow, the reference color map is drawn with the values corresponding to the colors next to it.
 	\subsection{More datasets for color map}
-		By default, only one, the density of the matter which flows in the vector field - \(\rho\), scalar dataset is available for visualization. 
+		In the skeleton application, only one scalar dataset, the density of the matter which flows in the vector field, was available for visualization. 
 		While this is very interesting on its own, there are several other scalar datasets either readily available for visualization or can be derived from the vector field.
-
+		
 		We provided the means to choose the dataset on which color mapping can be applied.
 		The function \texttt{draw\_smoke} receives a pointer to an array containing the values of the dataset that needs to be visualized.
 		There are three different datasets that this pointer can reference:
