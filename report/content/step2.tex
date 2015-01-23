@@ -105,6 +105,7 @@
 		A value can be set which corresponds to the number of colors which can be used from a color map.
 		The available colors are chosen uniformly over the entire range of colors.
 		The results are visible in figures~\ref{fig:rainbow} and~\ref{fig:rainbow_banded}.
+		The difference between limited color banding and the default color banding can be seen in Figure~\ref{fig:banded_difference}.
 		\begin{figure}[htb]
 			  \centering
 			  \includegraphics[angle=270, width=\linewidth, totalheight=1em, frame]{./content/pictures/rainbow.png}
@@ -117,9 +118,16 @@
 			  \caption{The same rainbow colormap banded to 16 colors. A boxing effect is visible which could be useful.}
 			  \label{fig:rainbow_banded}
 		\end{figure}
+		\begin{figure}[htb]
+			  \centering
+			  \includegraphics[width=\linewidth]{./content/pictures/limit_colors.png}
+			  \caption{Limited color banding at work.}
+			  \label{fig:banded_difference}
+		\end{figure}
+
 	\subsection{HSV color space}
 		Generally, humans are not good at manipulating colors in the \texttt{RGB}-space. 
-		When an user is asked for the \texttt{RGB}-value of red (\texttt{\#ff0000}) at 50\% saturation and a brightness of 75\%, people will generally not be able to tell the corresponding \texttt{RGB}-value (\texttt{\#bf5f5f}).
+		When a user is asked for the \texttt{RGB}-value of red (\texttt{\#ff0000}) at 50\% saturation and a brightness of 75\%, people will generally not be able to tell the corresponding \texttt{RGB}-value (\texttt{\#bf5f5f}).
 		To make this process more natural for human perception, we have added the option to manipulate colors in HSV space, which is a mapping of the RGB colorspace to define it in terms of hue, saturation and value (or brightness).
 		Controls are added to manipulate the saturation and value, both ranging from 0\% to 100\%.
 		For this, we used the conversion function from RGB to HSV and vice versa, as described in \cite{telea2014data}.
