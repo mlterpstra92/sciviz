@@ -5,14 +5,18 @@
 	\subsection{Skeleton Compilation}
     The provided skeleton code has been refactored according to the Model View Controller pattern. This creates a good separation between classes and reduces code clutter.
     In our specific case, \texttt{model.cpp} and \texttt{model.h} correspond to the model part. \texttt{visualization.cpp} and \texttt{visualization.h} keep track of all the visualization parameters and the visualization of the model data.
-    The skeleton code was written in C and has been - partly - rewritten to be compatible C++.
+    The skeleton code was written in C and has been - partly - rewritten to be compilable C++.
+
+    In the last parts of the assignment, we ended up with a lot of code in \texttt{visualization.cpp}, which was a bit unpleasant.
+    A better strategy would have been to split this class up early on, into the several visualizations that we wanted to implement.
 
     \subsection{GLUI}
-        In order to show different kind of visualizations, there are some configuration parameters needed.
-        To easily set these parameters, a framework named GLUI \cite{glui} is incorporated in our project.
+        In order to show different kinds of visualizations, some configuration parameters are required.
+        To easily adjust these parameters, a framework named GLUI \cite{glui} is used in our project.
         GLUI is able to create check boxes, radio buttons, spinners and more.
-        All these buttons are binded to variables in \texttt{visualization.h}, this creates an organized place where all visualization parameters are set.
-        The resulting menu can be seen in figure \ref{fig:menu}.
+        All these buttons are bound to variables in \texttt{visualization.h}.
+        This creates an organized place where all visualization parameters are stored.
+        The resulting menu can be seen in Figure~\ref{fig:menu}.
         \begin{figure}[htb]
             \centering
             \includegraphics[width =0.5\textwidth]{content/pictures/menu.png}
