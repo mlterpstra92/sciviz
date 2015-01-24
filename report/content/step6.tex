@@ -1,21 +1,24 @@
 %!TEX root = ../report.tex
 \section{Height plot}
 \label{sec:height_plot}
-All previous operations were implemented in a 2D plane.
+All previous visualizations were projected to a 2D plane.
 While all previous operations were also most apt to implement in a 2D domain, it is a waste to not use an extra dimension which can convey extra information that might aid in visualizing a dataset.
 
 To make use of this extra dimension we have implemented an option to view the scalar dataset as a height plot.
-In a height plot, every point of the plane is warped along the surface normal proportionate to the scalar value at that point.
+In a height plot, every point of the plane is raised along the surface normal\footnote{Of the original 2D grid.} proportional to the scalar value at that point.
 In the case of our simulation, we know that the surface is always pointed in the direction of the positive \texttt{z}-axis.
 This property has eased implementation as all calls to \verb glVertex2f  can be replaced with a call to \verb glVertex3f  with the third parameter set to 0 if height plotting is not used, and the scalar value of the dataset otherwise.
 
-Besides warping a dataset by the current dataset, which conveys enough interesting extra visual cues to the user as it is, it is also possible to warp a scalar dataset with the values of another scalar dataset. 
-This effectively allows an user to view two scalar datasets at the same time by showing the color-mapped scalar values of one dataset with the height information of the other dataset. 
+Besides height-plotting with the current scalar dataset, which conveys enough interesting extra visual cues to the user as it is, it is also possible to height-plot a scalar dataset with the values of another scalar dataset. 
+This effectively allows a user to view two scalar datasets at the same time by showing the colormapped scalar values of one dataset and the height information of the other dataset. 
 
 Of course, some controls must be provided to manipulate the view of the simulation in order to obtain the best visualization. 
-We have accommodated this option by implementing three spinners which can alter the view angle around the \texttt{x}-, \texttt{y}- and \texttt{z}-axis between 0 and 360 degrees, providing vision on the simulation from every possible angle.
+We have accommodated this by implementing three spinners which can alter the view angle around the \texttt{x}-, \texttt{y}- and \texttt{z}-axis between 0 and 360 degrees, providing vision on the simulation from every possible angle.
 Moreover, we have implemented a simple spinner to implement zoom functionality. 
-Using the spinner a zoom factor between 0.2 and 10 can be set, allowing for enough zoom possibility.
+Using the spinner a zoom factor between 0.2 and 10 can be set, allowing for sufficient zoom possibilities.
+
+Certain combinations of datasets, displacement datasets and color mapping may provide a rich and detailed description of the data, as Figure~\ref{fig:height_diff} illustrates.
+The \(\rho\) dataset is visualized using a zebra color map, but displaced using the divergence of the velocity field, \(\nabla \vec{v}\).
 \begin{figure}[htb]
 	  \centering
 	  \includegraphics[width=\linewidth]{./content/pictures/heightplot.png}
@@ -29,8 +32,6 @@ Using the spinner a zoom factor between 0.2 and 10 can be set, allowing for enou
 	  \label{fig:height_diff}
 \end{figure}
 
-Certain combinations of datasets, displacement datasets and color mapping may provide a rich and detailed description of the data, as figure~\ref{fig:height_diff} illustrates.
-The \(\rho\) dataset is visualized using a zebra color map, but displaced using the divergence of the velocity field, \(\nabla \mathbf{v}\).
 
 % In order to implement a height plot, a conversion from 2D to 3D is needed.
 % This can be done by converting the \texttt{glVertex2f(x, y)} to \texttt{glVertex3f(x,y,z)} in the function \texttt{draw\_smoke}.
