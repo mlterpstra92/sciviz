@@ -56,7 +56,7 @@
 			It turns out that, however unintuitive it may seem, the zebra colormap is useful.
 			The width of the bands are an indication of change in the scalar dataset values.
 			Small and frequent bands correspond to areas with high change, and areas with wide bands are subject to little change.
-			In other words, the zebra colormap gives an indication of the magnitude of the gradient \(\mid\mid\nabla f\mid\mid\) of the scalar dataset\cite[p. 156]{telea2014data}
+			In other words, the zebra colormap gives an indication of the magnitude of the gradient \(\mid\mid\nabla f\mid\mid\) of the scalar dataset.\cite[p. 156]{telea2014data}
 			\begin{figure}[htb]
 				\centering
 				\includegraphics[angle=270, width=\linewidth, totalheight=1em, frame]{./content/pictures/zebra_16.png}
@@ -104,7 +104,7 @@
 		Secondly, we have implemented scaling behavior. 
 		In this option the scale values \texttt{min} and \texttt{max} are set to respectively the lowest and the highest values in the scalar dataset at that moment in time. 
 		This causes that all colors in the dataset are relative to the respective colors of the minimum value and the maximum value of the dataset which is an intuitive way to display a scalar dataset.
-		However, this is not always ideal, since the scale of the colormap changes continuously, which makes it hard for the user to interpret the absolute value.
+		However, this is not always useful, since the continuously changing scale of the colormap makes it hard for the user to interpret the meaning of the color because the mental inverse mapping also continuously changes.
 
 	\clearpage
 
@@ -139,10 +139,10 @@
 		\end{figure}
 
 	\subsection{HSV color space}
-		Generally, humans are not good at distinguishing colors in the RGB color space. 
+		Generally, humans are not good at manipulating colors in the RGB color space. 
 		When a user is asked for the RGB value of red (\texttt{\#ff0000}) at 50\% saturation and a brightness of 75\%, people will generally not be able to pick out the corresponding RGB value (\texttt{\#bf5f5f}).
 		To make this process more natural for human perception, we have added the option to manipulate colors in HSV space, which is a mapping of the RGB colorspace to define it in terms of hue, saturation and value (or brightness).
-		Controls are added to manipulate the saturation and value, both ranging from 0\% to 100\%.
+		Controls are added to manipulate the hue and saturation, both ranging from 0\% to 100\%.
 		For this, we used the conversion function from RGB to HSV and vice versa, as described in \cite{telea2014data}.
 
 	\subsection{1D textures}
