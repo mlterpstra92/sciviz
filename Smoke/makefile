@@ -5,7 +5,7 @@
 CPP = g++ -std=c++11 -O3 -ffast-math -g -Wall
 # Clang optimizing
 # CPP = clang++ -std=c++11 -O3 -ffast-math -g -Wall
-LIBS        = -lglui -lglut -lGLU -lGL -lrfftw -lfftw -lm
+LIBS        = -lglui -lglut -lGLU -lGL -lsrfftw -lsfftw  -lm
 EXECUTABLE = smoke
 
 OBJS = fluids.o model.o visualization.o
